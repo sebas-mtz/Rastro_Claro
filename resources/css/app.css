@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Import custom styles for the Hato360/FarmManager UI.
+ *
+ * These rules complement the Tailwind base by defining a cohesive design
+ * system used in the custom pages (Splash, Login, Home and Animals).
+ */
+
+
