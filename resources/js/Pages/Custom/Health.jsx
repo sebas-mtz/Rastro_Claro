@@ -1,6 +1,7 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
+import ModalAnimalSelect from './ModalAnimalSelect';
 
 function Health(props) {
   const { flash } = usePage().props || {};
@@ -17,7 +18,13 @@ function Health(props) {
     year,
     month,
     month_iso,
+    especies = [], // Asegúrate de que estas props se pasen desde el controlador
+    razasPorEspecie = {},
+    estadosProductivos = {},
   } = props;
+
+  // Estado para el modal de selección de animal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // pestañas del panel derecho
   const [tab, setTab] = useState('vacunas');
@@ -82,6 +89,14 @@ function Health(props) {
       { preserveScroll: true }
     );
   }
+
+  // Manejador para seleccionar animal desde el modal
+  const handleAnimalSelect = (animal) => {
+    setData('animal_id', animal.id);
+  };
+
+  // Obtener el animal seleccionado para mostrarlo
+  const selectedAnimal = animals.find(a => a.id === data.animal_id);
 
   return (
     <>
@@ -157,20 +172,51 @@ function Health(props) {
               </div>
 
               <form onSubmit={submit} className="form-grid">
+                {/* Campo de Animal con botón en lugar de select */}
                 <label>
                   Animal
-                  <select
-                    value={data.animal_id}
-                    onChange={e => setData('animal_id', e.target.value)}
-                    required
-                  >
-                    <option value="">Selecciona</option>
-                    {animals.map(a => (
-                      <option key={a.id} value={a.id}>
-                        {a.arete ?? `#${a.id}`}
-                      </option>
-                    ))}
-                  </select>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      value={selectedAnimal ? 
+                        `${selectedAnimal.arete || `#${selectedAnimal.id}`}${selectedAnimal.alias ? ` - ${selectedAnimal.alias}` : ''} (${selectedAnimal.especie})` : 
+                        ''
+                      }
+                      placeholder="Ningún animal seleccionado"
+                      readOnly
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        backgroundColor: '#f9fafb',
+                        fontSize: '0.875rem'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(true)}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        whiteSpace: 'nowrap'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
+                    >
+                      Seleccionar
+                    </button>
+                  </div>
+                  {errors.animal_id && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                      {errors.animal_id}
+                    </span>
+                  )}
                 </label>
 
                 <label>
@@ -178,6 +224,13 @@ function Health(props) {
                   <select
                     value={data.vacuna_id}
                     onChange={e => setData('vacuna_id', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem'
+                    }}
                   >
                     <option value="">Sin vacuna</option>
                     {vacunas.map(v => (
@@ -195,6 +248,13 @@ function Health(props) {
                     value={data.fecha}
                     onChange={e => setData('fecha', e.target.value)}
                     required
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem'
+                    }}
                   />
                 </label>
 
@@ -204,6 +264,13 @@ function Health(props) {
                     type="time"
                     value={data.hora}
                     onChange={e => setData('hora', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem'
+                    }}
                   />
                 </label>
 
@@ -212,10 +279,19 @@ function Health(props) {
                   <textarea
                     value={data.notas}
                     onChange={e => setData('notas', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem',
+                      minHeight: '80px',
+                      fontFamily: 'inherit'
+                    }}
                   />
                 </label>
 
-                <div className="errors">
+                <div className="errors" style={{ color: '#ef4444', fontSize: '0.875rem' }}>
                   {Object.values(errors || {}).join(' ')}
                 </div>
 
@@ -223,6 +299,16 @@ function Health(props) {
                   type="submit"
                   className="btn primary"
                   disabled={processing}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: processing ? '#9ca3af' : '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: processing ? 'not-allowed' : 'pointer',
+                    fontSize: '0.875rem',
+                    width: '100%'
+                  }}
                 >
                   {processing ? 'Guardando...' : 'Guardar cita'}
                 </button>
@@ -393,11 +479,22 @@ function Health(props) {
           </div>
         </div>
       </div>
+
+      {/* Modal de selección de animal */}
+      <ModalAnimalSelect
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={handleAnimalSelect}
+        animals={animals}
+        especies={especies}
+        razasPorEspecie={razasPorEspecie}
+        estadosProductivos={estadosProductivos}
+      />
     </>
   );
 }
 
-//Layout con sidebar light
+// Layout con sidebar light
 Health.layout = page => <AppLayout>{page}</AppLayout>;
 
 export default Health;

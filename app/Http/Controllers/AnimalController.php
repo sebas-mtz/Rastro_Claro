@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 use App\Models\Animal;
 use App\Models\Lote;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -18,7 +17,7 @@ class AnimalController extends Controller
         "Caprino" => ["Saanen", "Boer", "Alpina", "Toggenburg", "Otra"],
         "Ovino" => ["Dorper", "Merino", "Suffolk", "Katahdin", "Otra"],
         "Equino" => ["Cuarto de Milla", "Pura Sangre", "Árabe", "Criollo", "Otra"],
-        "Aves de corral" => ["Leghorn", "Rhode Island", "Plymouth Rock", "Sussex", "Otra"],
+        "Aves de corral (gallinas y pollitos)" => ["Leghorn", "Rhode Island", "Plymouth Rock", "Sussex", "Otra"],
 
         // 🐓 Razas de gallos (USA + LATAM)
         "Gallos" => [
@@ -53,9 +52,6 @@ class AnimalController extends Controller
 
     public function index()
     {
-
-
-
         return Inertia::render('Animals/Index', [
             'animales' => Animal::with('lote')->get(),
             'lotes' => Lote::all(),
@@ -64,16 +60,6 @@ class AnimalController extends Controller
             'estadosProductivos' => $this->estadosProductivos,
         ]);
     }
-
-
-
-
-
-
-
-
-
-
 
 
     public function store(Request $request)
@@ -121,9 +107,6 @@ class AnimalController extends Controller
         return back()->with('success', 'Animal agregado exitosamente.');
     }
 
-
-
-
     public function show(Animal $animal)
     {
         $animal->load(['lote', 'producciones']);
@@ -137,9 +120,6 @@ class AnimalController extends Controller
         ]);
     }
 
-
-
-
     public function edit(Animal $animal)
     {
 
@@ -150,25 +130,8 @@ class AnimalController extends Controller
             'especies' => $this->especies,
             'razasPorEspecie' => $this->razasPorEspecie,
             'estadosProductivos' => $this->estadosProductivos,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         ]);
     }
-
-
-
 
     public function update(Request $request, Animal $animal)
     {
@@ -184,8 +147,6 @@ class AnimalController extends Controller
             'estado_productivo' => 'nullable|string',
             'lote_id' => 'nullable|exists:lotes,id',
         ]);
-
-        // ⚠️ Validación de edición para evitar duplicados
         $repite = Animal::where('id', '!=', $animal->id)
                         ->where(function($q) use ($request) {
                             $q->where('raza', $request->raza)
@@ -193,15 +154,12 @@ class AnimalController extends Controller
                         })
                         ->where('arete', $request->arete)
                         ->exists();
-
         if ($repite) {
             return back()->withErrors([
                 'arete' => 'Este arete ya está usado en esta raza o lote.'
             ]);
         }
-
         $animal->update($validated);
-
         return back()->with('success', 'Animal actualizado.');
     }
 
