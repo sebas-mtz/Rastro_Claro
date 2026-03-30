@@ -16,9 +16,13 @@ use Inertia\Inertia;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\PrediccionController;
-use App\Http\Controllers\ReproduccionController;
 use App\Http\Controllers\PaymentController;
-// GOOGLE
+use App\Http\Controllers\EventoReproductivoController;
+use App\Http\Controllers\ServicioReproductivoController;
+use App\Http\Controllers\DiagnosticoGestacionController;
+use App\Http\Controllers\PartoController;
+use App\Http\Controllers\CriaController;
+
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])
     ->name('auth.google');
 
@@ -156,13 +160,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/sacrificios/estadisticas', [SacrificioController::class, 'estadisticas']);
     Route::get('/api/sacrificios/tendencias', [SacrificioController::class, 'tendencias']);
 
-  
+  // Vista principal
+  Route::get('/reproduccion', [EventoReproductivoController::class, 'index'])
+  ->name('reproduccion.index');
+
+// Detalle de un evento
+Route::get('/reproduccion/eventos/{eventoReproductivo}', [EventoReproductivoController::class, 'show'])
+  ->name('reproduccion.eventos.show');
+
+// Eliminar evento
+Route::delete('/reproduccion/eventos/{eventoReproductivo}', [EventoReproductivoController::class, 'destroy'])
+  ->name('reproduccion.eventos.destroy');
+
+// Servicios (monta natural / IA / IATF)
+Route::post('/reproduccion/servicios', [ServicioReproductivoController::class, 'store'])
+  ->name('reproduccion.servicios.store');
+
+// Diagnósticos de gestación
+Route::post('/reproduccion/diagnosticos', [DiagnosticoGestacionController::class, 'store'])
+  ->name('reproduccion.diagnosticos.store');
+
+// Partos
+Route::post('/reproduccion/partos', [PartoController::class, 'store'])
+  ->name('reproduccion.partos.store');
+
+// Crías
+Route::get('/reproduccion/crias/{cria}', [CriaController::class, 'show'])
+  ->name('reproduccion.crias.show');
+
+Route::patch('/reproduccion/crias/{cria}/asignar-arete', [CriaController::class, 'asignarArete'])
+  ->name('reproduccion.crias.asignar-arete');
+
+// Estadísticas, alertas y calendario — llamadas AJAX desde el frontend
+Route::get('/api/reproduccion/estadisticas', [EventoReproductivoController::class, 'estadisticas'])
+  ->name('reproduccion.estadisticas');
+
+Route::get('/api/reproduccion/alertas', [EventoReproductivoController::class, 'alertas'])
+  ->name('reproduccion.alertas');
+
+Route::get('/api/reproduccion/calendario', [EventoReproductivoController::class, 'calendario'])
+  ->name('reproduccion.calendario');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/reproducciones', [ReproduccionController::class, 'index'])->name('reproducciones.index');
-    Route::post('/reproducciones', [ReproduccionController::class, 'store'])->name('reproducciones.store');
-    Route::put('/reproducciones/{reproduccion}', [ReproduccionController::class, 'update'])->name('reproducciones.update');
-    Route::delete('/reproducciones/{reproduccion}', [ReproduccionController::class, 'destroy'])->name('reproducciones.destroy');
+   
 });
 
     /*

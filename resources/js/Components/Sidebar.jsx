@@ -91,9 +91,9 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href={route('reproducciones.index')}
+              href={route('reproduccion.index')}
               className={
-                'sl-item ' + (isActive('/producciones') ? 'active' : '')
+                'sl-item ' + (isActive('/reproduccion') ? 'active' : '')
               }
             >
               <span className="sl-ico"></span>

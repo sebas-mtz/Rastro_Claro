@@ -1,217 +1,239 @@
 import React, { useMemo, useState } from "react";
-import { Head, Link } from "@inertiajs/react";
-
-// 👇 IMPORTA el layout con sidebar (igual que Producciones)
+import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
+import { Activity, Baby, BarChart3, Plus, CalendarDays, Heart } from "lucide-react";
 
-import { Heart, Activity, Baby, BarChart3, Plus, CalendarDays } from "lucide-react";
-
-// Tabs (cada una en su archivo)
-import Celos from "./Celos";
+import Eventos from "./Eventos";
 import Gestaciones from "./Gestaciones";
 import Partos from "./Partos";
 import Estadisticas from "./Estadisticas";
+import ServicioModal from "./ServicioModal";
+import DiagnosticoModal from "./DiagnosticoModal.jsx";
+import PartoModal from "./PartoModal";
+import CalendarioReproductivo from "./CalendarioReproductivo";
 
-// (opcional) Modal único
-import ReproduccionModal from "./ReproduccionModal";
+function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [] }) {
 
-function ReproduccionIndex({
-  auth,
-  reproducciones,
-  animales = [],
-  lotes = [],
-  stats = {},
-}) {
-  const [tab, setTab] = useState("celos");
-  const [showModal, setShowModal] = useState(false);
-  const [defaultTipoEvento, setDefaultTipoEvento] = useState("celo");
+  const [tab, setTab] = useState("eventos");
 
-  const openModalFor = (tipo) => {
-    setDefaultTipoEvento(tipo);
-    setShowModal(true);
-  };
+  // Control de modales separados por tipo
+  const [modalServicio, setModalServicio]       = useState(false);
+  const [modalDiagnostico, setModalDiagnostico] = useState(false);
+  const [modalParto, setModalParto]             = useState(false);
 
-  const cards = useMemo(
-    () => [
-      { key: "fertilidad", label: "Tasa de Fertilidad", value: stats?.fertilidad ?? "—" },
-      { key: "gestacion", label: "En Gestación", value: stats?.gestacion ?? "—" },
-      { key: "nacimientos30d", label: "Nacimientos (30d)", value: stats?.nacimientos30d ?? "—" },
-      { key: "proximosCelos", label: "Próximos Celos", value: stats?.proximosCelos ?? "—" },
-    ],
-    [stats]
-  );
+  const hembras = animales.filter(a => a.sexo === "hembra");
+  const machos  = animales.filter(a => a.sexo === "macho");
+
+  // ── Cards ──────────────────────────────────────────────────────────────
+  const cards = useMemo(() => {
+    const servicios = eventos.filter(e => e.tipo_evento === "servicio").length;
+
+    const gestantes = eventos.filter(e =>
+      e.tipo_evento === "diagnostico" &&
+      e.diagnostico?.resultado === "positivo"
+    ).length;
+
+    const partos = eventos.filter(e => e.tipo_evento === "parto").length;
+
+    const fertilidad = servicios > 0
+      ? Math.round((gestantes / servicios) * 100)
+      : 0;
+
+    return [
+      { label: "Fertilidad",   value: `${fertilidad}%` },
+      { label: "En gestación", value: gestantes },
+      { label: "Partos",       value: partos },
+      { label: "Servicios",    value: servicios },
+    ];
+  }, [eventos]);
+
+  // ── Próximos eventos ───────────────────────────────────────────────────
+  const proximosEventos = useMemo(() => {
+    return eventos
+      .filter(e => {
+        // Partos próximos (gestantes con fecha probable en los próximos 30 días)
+        if (e.tipo_evento === "diagnostico" && e.diagnostico?.resultado === "positivo") {
+          const fechaProbable = e.diagnostico?.fecha_probable_parto;
+          if (!fechaProbable) return false;
+          const dias = (new Date(fechaProbable) - new Date()) / 86400000;
+          return dias >= 0 && dias <= 30;
+        }
+        // Servicios sin diagnóstico posterior (pendientes de diagnóstico)
+        if (e.tipo_evento === "servicio") {
+          const diasDesdeServicio = (new Date() - new Date(e.fecha)) / 86400000;
+          return diasDesdeServicio >= 40;
+        }
+        return false;
+      })
+      .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+      .slice(0, 5);
+  }, [eventos]);
+
+  const tabs = [
+    { key: "eventos",      label: "Eventos",     icon: <Heart size={15} /> },
+    { key: "gestaciones",  label: "Gestaciones", icon: <Activity size={15} /> },
+    { key: "partos",       label: "Partos",      icon: <Baby size={15} /> },
+    { key: "estadisticas", label: "Estadísticas",icon: <BarChart3 size={15} /> },
+  ];
 
   return (
     <>
-      <Head title="Módulo de Reproducción" />
+      <Head title="Reproducción" />
 
-      {/* ✅ MISMAS MEDIDAS QUE PRODUCCIONES */}
       <div className="py-8 px-6 max-w-7xl mx-auto space-y-6">
-        {/* ENCABEZADO */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Módulo de Reproducción</h1>
-            <p className="text-gray-600">
-              Controla celos, gestaciones, partos y estadísticas reproductivas.
-            </p>
-
-            
+            <h1 className="text-2xl font-bold">Reproducción</h1>
+            <p className="text-gray-500 text-sm">Gestión del ciclo reproductivo bovino</p>
           </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button
-              type="button"
-              onClick={() => openModalFor(tab === "partos" ? "parto" : tab === "gestaciones" ? "diagnostico_gestacion" : "celo")}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-black transition"
+              onClick={() => setModalServicio(true)}
+              className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm"
             >
-              <Plus className="w-4 h-4" />
-              Registrar evento
+              <Plus size={15} /> Servicio
+            </button>
+            <button
+              onClick={() => setModalDiagnostico(true)}
+              className="border px-4 py-2 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50"
+            >
+              <Activity size={15} /> Diagnóstico
+            </button>
+            <button
+              onClick={() => setModalParto(true)}
+              className="border px-4 py-2 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50"
+            >
+              <Baby size={15} /> Parto
             </button>
           </div>
         </div>
 
-        {/* CARDS (misma idea de dashboard) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {cards.map((c) => (
-            <div key={c.key} className="bg-white rounded-2xl shadow p-5 border border-gray-100">
-              <div className="text-sm text-gray-500">{c.label}</div>
-              <div className="mt-2 text-2xl font-bold text-gray-800">{c.value}</div>
+        {/* CARDS */}
+        <div className="grid md:grid-cols-4 gap-4">
+          {cards.map((c, i) => (
+            <div key={i} className="bg-white p-5 rounded-xl shadow-sm border">
+              <p className="text-sm text-gray-500">{c.label}</p>
+              <p className="text-2xl font-bold mt-1">{c.value}</p>
             </div>
           ))}
         </div>
 
-        {/* ✅ CONTENIDO PRINCIPAL: Izquierda calendario / derecha tabs */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* izquierda */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="bg-white rounded-2xl shadow p-5 border border-gray-100">
-              <div className="flex items-center gap-2 font-semibold text-gray-800">
-                <CalendarDays className="w-5 h-5" />
-                Calendario Reproductivo
-              </div>
-              <p className="text-sm text-gray-500 mt-1">Programación de celos y partos</p>
+        {/* LAYOUT PRINCIPAL */}
+        <div className="grid lg:grid-cols-12 gap-6">
 
-              {/* Aquí pon tu componente de calendario real */}
-              <div className="mt-4 h-72 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-sm text-gray-500">
-                Calendario aquí
+          {/* IZQUIERDA */}
+          <div className="lg:col-span-4 space-y-4">
+
+            {/* CALENDARIO */}
+            <div className="bg-white p-5 rounded-xl shadow-sm border">
+              <div className="flex items-center gap-2 font-semibold text-sm mb-4">
+                <CalendarDays size={16} />
+                Calendario reproductivo
               </div>
+              <CalendarioReproductivo eventos={eventos} />
             </div>
 
-            <div className="bg-white rounded-2xl shadow p-5 border border-gray-100">
-              <h3 className="font-semibold text-gray-800">Eventos próximos</h3>
-
-              {/* Placeholder (luego lo alimentas con data real) */}
-              <div className="mt-3 space-y-3">
-                <div className="rounded-xl bg-purple-50 p-3">
-                  <div className="text-sm font-semibold">Parto esperado</div>
-                  <div className="text-sm text-gray-600">Blanquita #008 - 25 Sep</div>
-                </div>
-                <div className="rounded-xl bg-orange-50 p-3">
-                  <div className="text-sm font-semibold">Celo esperado</div>
-                  <div className="text-sm text-gray-600">Bella #001 - 22 Sep</div>
-                </div>
+            {/* PRÓXIMOS EVENTOS */}
+            <div className="bg-white p-5 rounded-xl shadow-sm border">
+              <h3 className="font-semibold text-sm mb-3">Próximos eventos</h3>
+              <div className="space-y-2">
+                {proximosEventos.length === 0 ? (
+                  <p className="text-sm text-gray-400">Sin eventos próximos</p>
+                ) : (
+                  proximosEventos.map((e) => (
+                    <div key={e.id} className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm font-medium">
+                        {e.tipo_evento === "diagnostico"
+                          ? "Parto próximo"
+                          : "Diagnóstico pendiente"}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {e.hembra?.alias || "Animal"} —{" "}
+                        {e.tipo_evento === "diagnostico"
+                          ? e.diagnostico?.fecha_probable_parto
+                          : e.fecha}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
 
-          {/* derecha */}
-          <div className="lg:col-span-8 space-y-4">
-            {/* PESTAÑAS (estilo Producciones) */}
-            <div className="flex gap-6 border-b pb-3 text-gray-600">
-              <button
-                className={`flex items-center gap-2 pb-2 ${
-                  tab === "celos"
-                    ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-                    : "hover:text-blue-600"
-                }`}
-                onClick={() => setTab("celos")}
-              >
-                <Heart size={18} />
-                Celos
-              </button>
+          {/* DERECHA */}
+          <div className="lg:col-span-8">
 
-              <button
-                className={`flex items-center gap-2 pb-2 ${
-                  tab === "gestaciones"
-                    ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-                    : "hover:text-blue-600"
-                }`}
-                onClick={() => setTab("gestaciones")}
-              >
-                <Activity size={18} />
-                Gestaciones
-              </button>
-
-              <button
-                className={`flex items-center gap-2 pb-2 ${
-                  tab === "partos"
-                    ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-                    : "hover:text-blue-600"
-                }`}
-                onClick={() => setTab("partos")}
-              >
-                <Baby size={18} />
-                Partos
-              </button>
-
-              <button
-                className={`flex items-center gap-2 pb-2 ${
-                  tab === "estadisticas"
-                    ? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-                    : "hover:text-blue-600"
-                }`}
-                onClick={() => setTab("estadisticas")}
-              >
-                <BarChart3 size={18} />
-                Estadísticas
-              </button>
+            {/* TABS */}
+            <div className="flex gap-1 border-b mb-4">
+              {tabs.map(t => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                    tab === t.key
+                      ? "border-blue-600 text-black"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
             </div>
 
-            {/* CONTENIDO */}
-            {tab === "celos" && (
-              <Celos
+            {tab === "eventos" && (
+              <Eventos
                 animales={animales}
-                reproducciones={reproducciones}
-                onNuevoCelo={() => openModalFor("celo")}
+                eventos={eventos}
+                onNuevo={() => setModalServicio(true)}
               />
             )}
-
             {tab === "gestaciones" && (
               <Gestaciones
                 animales={animales}
-                reproducciones={reproducciones}
-                onNuevoDiagnostico={() => openModalFor("diagnostico_gestacion")}
+                eventos={eventos}
+                onNuevoDiagnostico={() => setModalDiagnostico(true)}
               />
             )}
-
             {tab === "partos" && (
               <Partos
                 animales={animales}
-                reproducciones={reproducciones}
-                onNuevoParto={() => openModalFor("parto")}
+                eventos={eventos}
+                onNuevoParto={() => setModalParto(true)}
               />
             )}
-
             {tab === "estadisticas" && (
-              <Estadisticas animales={animales} lotes={lotes} reproducciones={reproducciones} />
+              <Estadisticas animales={animales} lotes={lotes} eventos={eventos} />
             )}
           </div>
         </div>
       </div>
 
-      {/* Modal */}
-      <ReproduccionModal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        animales={animales}
+      {/* MODALES */}
+      <ServicioModal
+        show={modalServicio}
+        onClose={() => setModalServicio(false)}
+        hembras={hembras}
+        machos={machos}
         lotes={lotes}
-        defaultTipoEvento={defaultTipoEvento}
+      />
+      <DiagnosticoModal
+        show={modalDiagnostico}
+        onClose={() => setModalDiagnostico(false)}
+        hembras={hembras}
+        eventos={eventos}
+      />
+      <PartoModal
+        show={modalParto}
+        onClose={() => setModalParto(false)}
+        hembras={hembras}
+        eventos={eventos}
       />
     </>
   );
 }
 
-// ✅ CONECTA CON SIDEBAR (igual que Producciones)
 ReproduccionIndex.layout = (page) => (
   <AppLayout user={page.props.auth.user}>{page}</AppLayout>
 );
