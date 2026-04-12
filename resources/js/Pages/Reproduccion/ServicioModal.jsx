@@ -102,14 +102,14 @@ export default function ServicioModal({ show, onClose, hembras = [], machos = []
             {/* MACHO (solo monta natural) */}
             {esMontaNatural && (
               <div className="col-span-2">
-                <label className="text-sm font-medium">Toro *</label>
+                <label className="text-sm font-medium">Macho *</label>
                 <select
                   name="macho_id"
                   value={data.macho_id}
                   onChange={e => setData("macho_id", Number(e.target.value))}
                   className="w-full border rounded-lg p-2 mt-1 text-sm"
                 >
-                  <option value="">Seleccionar toro...</option>
+                  <option value="">Seleccionar macho...</option>
                   {machosFiltrados.map(m => (
                     <option key={m.id} value={m.id}>
                       {m.alias} ({m.arete})

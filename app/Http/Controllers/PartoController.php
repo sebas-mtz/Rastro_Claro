@@ -15,7 +15,7 @@ class PartoController extends Controller
     // POST /reproduccion/partos
     public function store(Request $request): RedirectResponse
     {
-        $datos = $request->validate([
+            $datos = $request->validate([
             'hembra_id'              => 'required|exists:animals,id',
             'lote_id'                => 'nullable|exists:lotes,id',
             'fecha'                  => 'required|date|before_or_equal:today',
@@ -80,7 +80,7 @@ class PartoController extends Controller
                         'especie'           => $madre->especie,
                         'raza'              => $madre->raza,
                         'arete'             => $criaDatos['arete'] ?? null,
-                        'sexo'              => $criaDatos['sexo'],
+                        'sexo' => $criaDatos['sexo'] === 'macho' ? 'M' : 'F',
                         'fecha_nac'         => $datos['fecha'],
                         'peso'              => $criaDatos['peso_nacimiento'] ?? null,
                         'estado_productivo' => 'activo',
@@ -107,9 +107,7 @@ class PartoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error al registrar el parto: ' . $e->getMessage())
-                ->withInput();
+            dd($e->getMessage()); 
         }
     }
 }

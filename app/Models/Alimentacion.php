@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;   // 👈 ESTA ES LA CLAVE
+use Illuminate\Database\Eloquent\Model;
 
 class Alimentacion extends Model
 {
@@ -13,12 +13,21 @@ class Alimentacion extends Model
 
     protected $fillable = [
         'fecha',
+        'hora',
+        'tipo',
+        'cantidad',
+        'unidad',
         'animal_id',
         'lote_id',
         'racion_id',
-        'consumo_kg',
-        'costo',
-        'proveedor_id',
+        'programacion_alimentacion_id',
+        'generado_automaticamente',
+        'notas',
+    ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'generado_automaticamente' => 'boolean',
     ];
 
     public function animal()
@@ -34,5 +43,13 @@ class Alimentacion extends Model
     public function racion()
     {
         return $this->belongsTo(Racion::class);
+    }
+
+    public function programacion()
+    {
+        return $this->belongsTo(
+            ProgramacionAlimentacion::class,
+            'programacion_alimentacion_id'
+        );
     }
 }

@@ -22,6 +22,9 @@ use App\Http\Controllers\ServicioReproductivoController;
 use App\Http\Controllers\DiagnosticoGestacionController;
 use App\Http\Controllers\PartoController;
 use App\Http\Controllers\CriaController;
+use App\Http\Controllers\RacionController;
+use App\Http\Controllers\ProgramacionAlimentacionController;
+
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])
     ->name('auth.google');
@@ -130,7 +133,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | CRUD Producciones (ProduccionController)
     |----------------------------------------------------------------------
     */
-   Route::get('/producciones', [ProduccionController::class, 'index'])->name('producciones.index');
+    Route::get('/producciones', [ProduccionController::class, 'index'])->name('producciones.index');
+    Route::get('/producciones/create', [ProduccionController::class, 'create'])->name('producciones.create');
+    Route::post('/producciones', [ProduccionController::class, 'store'])->name('producciones.store');
+    Route::get('/producciones/{produccion}', [ProduccionController::class, 'show'])->name('producciones.show');
+    Route::get('/producciones/{produccion}/edit', [ProduccionController::class, 'edit'])->name('producciones.edit');
+    Route::put('/producciones/{produccion}', [ProduccionController::class, 'update'])->name('producciones.update');
+    Route::delete('/producciones/{produccion}', [ProduccionController::class, 'destroy'])->name('producciones.destroy');
+    
+    // 🔥 Ruta extra (producciones por animal)
+    Route::get('/animales/{animal}/producciones', [ProduccionController::class, 'getProduccionesAnimal'])
+        ->name('animales.producciones');
+
 
     /*
     |----------------------------------------------------------------------
@@ -140,10 +154,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/alimentacion', [AlimentacionController::class, 'index'])->name('alimentacion.index');
     Route::post('/alimentacion', [AlimentacionController::class, 'store'])->name('alimentacion.store');
     Route::put('/alimentacion/{alimentacion}', [AlimentacionController::class, 'update'])->name('alimentacion.update');
+    Route::delete('/alimentaciones/{alimentacion}', [AlimentacionController::class, 'destroy'])->name('alimentaciones.destroy');
     // Crear nuevo alimento en inventario
     Route::post('/alimentacion/inventario', [InventarioInsumoController::class, 'store'])->name('alimentacion.inventario.store');
+Route::put('/alimentacion/inventario/{item}', [InventarioInsumoController::class, 'update'])
+->name('alimentacion.inventario.update');
     // Reabastecer (la que ya teníamos)
     Route::put('/alimentacion/inventario/{item}/reabastecer',[InventarioInsumoController::class, 'reabastecer'])->name('alimentacion.inventario.reabastecer');
+    Route::patch('alimentacion/inventario/{item}/reactivar', [InventarioInsumoController::class, 'reactivar'])
+    ->name('alimentacion.inventario.reactivar');
+    
+Route::post('/raciones', [RacionController::class, 'store'])->name('raciones.store');
+Route::put('/raciones/{racion}', [RacionController::class, 'update'])->name('raciones.update');
+Route::delete('/raciones/{racion}', [RacionController::class, 'destroy'])->name('raciones.destroy');
+Route::post('/raciones/verificar-disponibilidad', [RacionController::class, 'verificarDisponibilidad'])
+    ->name('raciones.verificarDisponibilidad');
+    Route::patch('raciones/{racion}/reactivar', [RacionController::class, 'reactivar'])
+    ->name('raciones.reactivar');
+ 
+
+    //Para programación de consumos
+    Route::get('/programaciones-alimentacion', [ProgramacionAlimentacionController::class, 'index'])->name('programaciones-alimentacion.index');
+Route::post('/programaciones-alimentacion', [ProgramacionAlimentacionController::class, 'store'])->name('programaciones-alimentacion.store');
+Route::put('/programaciones-alimentacion/{programacionAlimentacion}', [ProgramacionAlimentacionController::class, 'update'])->name('programaciones-alimentacion.update');
+Route::delete('/programaciones-alimentacion/{programacionAlimentacion}', [ProgramacionAlimentacionController::class, 'destroy'])->name('programaciones-alimentacion.destroy');
+Route::patch('/programaciones-alimentacion/{programacionAlimentacion}/toggle-activa', [ProgramacionAlimentacionController::class, 'toggleActiva'])->name('programaciones-alimentacion.toggleActiva');
     /*
     |----------------------------------------------------------------------
     | Nuevos módulos: faenas, ventas, sacrificios

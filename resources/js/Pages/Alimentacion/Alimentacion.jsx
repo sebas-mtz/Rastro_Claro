@@ -7,14 +7,16 @@ import Raciones from './Tabs/Raciones';
 import Conversion from './Tabs/Conversion';
 import Inventario from './Tabs/Inventario';
 import Sugerencias from './tabs/Sugerencias.jsx';
+import AlimentacionModal from './tabs/AlimentaciónModal';
 
 export default function Alimentacion() {
-    const [tab, setTab] = useState('raciones');
+    const [tab, setTab] = useState('Alimentación');
 
     const tabs = [
+        { key: 'Alimentación', label: 'Alimentacion' },
         { key: 'raciones', label: 'Raciones' },
-        { key: 'conversion', label: 'Conversión Alimenticia' },
         { key: 'inventario', label: 'Inventario' },
+        { key: 'conversion', label: 'Conversión Alimenticia' },
         { key: 'sugerencias', label: 'Sugerencias' },
     ];
 
@@ -49,9 +51,10 @@ export default function Alimentacion() {
 
                 {/* CONTENIDO DE TABS */}
                 <div className="mt-6">
+                {tab === 'Alimentación' && <AlimentacionModal />}
                     {tab === 'raciones' && <Raciones />}
-                    {tab === 'conversion' && <Conversion />}
                     {tab === 'inventario' && <Inventario />}
+                    {tab === 'conversion' && <Conversion />}
                     {tab === 'sugerencias' && <Sugerencias />}
                 </div>
             </div>
