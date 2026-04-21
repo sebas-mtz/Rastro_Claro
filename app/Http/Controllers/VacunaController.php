@@ -3,64 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vacuna;
-use App\Http\Requests\StoreVacunaRequest;
-use App\Http\Requests\UpdateVacunaRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class VacunaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Response
     {
-        //
+        $vacunas = Vacuna::orderBy('nombre')->get();
+
+        return Inertia::render('Vacunas/Index', [
+            'vacunas' => $vacunas,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Vacunas/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreVacunaRequest $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'nombre'           => ['required', 'string', 'max:255'],
+            'patogeno'         => ['nullable', 'string', 'max:255'],
+            'pauta'            => ['nullable', 'string', 'max:255'],
+            'refuerzo_dias'    => ['nullable', 'integer', 'min:1'],
+            'especie_objetivo' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        Vacuna::create($validated);
+
+        return redirect()->route('vacunas.index')
+            ->with('success', 'Vacuna registrada correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Vacuna $vacuna)
+    public function show(Vacuna $vacuna): Response
     {
-        //
+        // Cargamos los eventos de vacunación relacionados para mostrar historial
+        $vacuna->load(['eventosSalud.animal']);
+
+        return Inertia::render('Vacunas/Show', [
+            'vacuna' => $vacuna,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vacuna $vacuna)
+    public function edit(Vacuna $vacuna): Response
     {
-        //
+        return Inertia::render('Vacunas/Edit', [
+            'vacuna' => $vacuna,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateVacunaRequest $request, Vacuna $vacuna)
+    public function update(Request $request, Vacuna $vacuna): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'nombre'           => ['required', 'string', 'max:255'],
+            'patogeno'         => ['nullable', 'string', 'max:255'],
+            'pauta'            => ['nullable', 'string', 'max:255'],
+            'refuerzo_dias'    => ['nullable', 'integer', 'min:1'],
+            'especie_objetivo' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $vacuna->update($validated);
+
+        return redirect()->route('vacunas.index')
+            ->with('success', 'Vacuna actualizada correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Vacuna $vacuna)
+    public function destroy(Vacuna $vacuna): RedirectResponse
     {
-        //
+        $vacuna->delete();
+
+        return redirect()->route('vacunas.index')
+            ->with('success', 'Vacuna eliminada.');
     }
 }

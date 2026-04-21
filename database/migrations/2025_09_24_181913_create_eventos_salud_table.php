@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('saluds', function (Blueprint $table) {
+        Schema::create('eventos_salud', function (Blueprint $table) {
             $table->id();
             $table->foreignId('animal_id')->constrained('animals')->onDelete('cascade');
             $table->date('fecha_programada');
@@ -19,8 +19,15 @@ return new class extends Migration
             $table->string('tratamiento')->nullable();
             $table->foreignId('vacuna_id')->nullable()->constrained('vacunas')->cascadeOnDelete();
             $table->string('dosis')->nullable();
+$table->string('tipo')->default('consulta'); // consulta|vacunacion|revision|emergencia
+$table->string('responsable')->nullable();
+$table->string('lote_vacuna')->nullable(); 
             $table->text('observaciones')->nullable();
             $table->timestamps();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
         });
         
     }

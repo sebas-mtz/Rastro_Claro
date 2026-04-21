@@ -21,13 +21,13 @@ class PrediccionController extends Controller
         // ============================
 
         $prodUltimos30 = Produccion::whereBetween('fecha', [$hace30, $hoy])
-            ->selectRaw('tipo, SUM(cantidad) as total')
+            ->selectRaw('tipo, SUM(valor) as total')
             ->groupBy('tipo')
             ->get()
             ->keyBy('tipo');
 
         $prodPrevios30 = Produccion::whereBetween('fecha', [$hace60, $hace30])
-            ->selectRaw('tipo, SUM(cantidad) as total')
+            ->selectRaw('tipo, SUM(valor) as total')
             ->groupBy('tipo')
             ->get()
             ->keyBy('tipo');

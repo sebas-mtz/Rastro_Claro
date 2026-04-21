@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Models\Animal;
 use App\Models\Produccion;
 use App\Models\InventarioInsumo;
-use App\Models\Salud;
+use App\Models\EventoSalud;
 use Carbon\Carbon;
 
 class CustomController extends Controller
@@ -29,11 +29,11 @@ class CustomController extends Controller
         $animalsDiff   = $nuevosEsteMes - $nuevosMesAnt;
 
         // próximos partos (ajusta según tu tabla de salud)
-        $upcomingBirths = Salud::whereBetween('fecha_aplicacion', [$hoy, $hoy->copy()->addDays(7)])
+        $upcomingBirths = EventoSalud::whereBetween('fecha_aplicacion', [$hoy, $hoy->copy()->addDays(7)])
             ->count();
 
         // alertas de vacunación (pendientes o próximas)
-        $vaccinationAlerts = Salud::where('fecha_aplicacion', '<=', $hoy->copy()->addDays(3))
+        $vaccinationAlerts = EventoSalud::where('fecha_aplicacion', '<=', $hoy->copy()->addDays(3))
             ->count();
 
         // inventario de alimento

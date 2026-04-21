@@ -1,7 +1,7 @@
 <?php
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomController;
-use App\Http\Controllers\SaludController;
+use App\Http\Controllers\EventoSaludController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\ProduccionController;
@@ -24,6 +24,12 @@ use App\Http\Controllers\PartoController;
 use App\Http\Controllers\CriaController;
 use App\Http\Controllers\RacionController;
 use App\Http\Controllers\ProgramacionAlimentacionController;
+use App\Http\Controllers\PesajeController;
+use App\Http\Controllers\TratamientoController;
+use App\Http\Controllers\VacunaController;
+use App\Http\Controllers\ConversionAlimenticiaController;
+use App\Http\Controllers\GenealogiasController;
+
 
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])
@@ -93,15 +99,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     | Módulo de Salud (SaludController)
     |----------------------------------------------------------------------
     */
-    Route::get('/health', [SaludController::class, 'calendar'])
-        ->name('health.custom');
+   // Vista principal del módulo de salud
+Route::get('/salud', [EventoSaludController::class, 'index'])->name('salud.index');
+// Redirige cualquier GET a /eventos-salud hacia el dashboard de salud
+Route::get('/eventos-salud', fn() => redirect()->route('salud.index'));
+// Catálogo de vacunas
+Route::resource('vacunas', VacunaController::class);
+Route::post('eventos-salud/{eventoSalud}/completar', [EventoSaludController::class, 'completar'])->name('eventos-salud.completar');
+Route::resource('eventos-salud', EventoSaludController::class);
+Route::post('eventos-salud/marcar-vencidos', [EventoSaludController::class, 'marcarVencidos'])
+     ->name('eventos-salud.marcar-vencidos');
+Route::patch('eventos-salud/{eventoSalud}/aplicar', [EventoSaludController::class, 'aplicar'])
+     ->name('eventos-salud.aplicar');
 
-    Route::post('/health/appointments', [SaludController::class, 'storeAppointment'])
-        ->name('health.appointments.store');
+// El resource sin index, porque el index es /salud
+Route::resource('eventos-salud', EventoSaludController::class)
+     ->except(['index']);
 
-    Route::patch('/health/appointments/{salud}/complete', [SaludController::class, 'complete'])
-        ->name('health.appointments.complete');
-
+// Tratamientos
+Route::post('tratamientos/marcar-vencidos', [TratamientoController::class, 'marcarVencidos'])
+     ->name('tratamientos.marcar-vencidos');
+Route::patch('tratamientos/{tratamiento}/completar', [TratamientoController::class, 'completar'])
+     ->name('tratamientos.completar');
+Route::resource('tratamientos', TratamientoController::class);
+    
     /*
     |----------------------------------------------------------------------
     | CRUD Animales (AnimalController)
@@ -163,7 +184,8 @@ Route::put('/alimentacion/inventario/{item}', [InventarioInsumoController::class
     Route::put('/alimentacion/inventario/{item}/reabastecer',[InventarioInsumoController::class, 'reabastecer'])->name('alimentacion.inventario.reabastecer');
     Route::patch('alimentacion/inventario/{item}/reactivar', [InventarioInsumoController::class, 'reactivar'])
     ->name('alimentacion.inventario.reactivar');
-    
+    Route::delete('/alimentacion/inventario/{item}', [InventarioInsumoController::class, 'destroy'])
+    ->name('alimentacion.inventario.destroy');
 Route::post('/raciones', [RacionController::class, 'store'])->name('raciones.store');
 Route::put('/raciones/{racion}', [RacionController::class, 'update'])->name('raciones.update');
 Route::delete('/raciones/{racion}', [RacionController::class, 'destroy'])->name('raciones.destroy');
@@ -172,6 +194,9 @@ Route::post('/raciones/verificar-disponibilidad', [RacionController::class, 'ver
     Route::patch('raciones/{racion}/reactivar', [RacionController::class, 'reactivar'])
     ->name('raciones.reactivar');
  
+     
+Route::get('/conversion-alimenticia', [ConversionAlimenticiaController::class, 'index'])
+->name('conversion.index');
 
     //Para programación de consumos
     Route::get('/programaciones-alimentacion', [ProgramacionAlimentacionController::class, 'index'])->name('programaciones-alimentacion.index');
@@ -179,7 +204,14 @@ Route::post('/programaciones-alimentacion', [ProgramacionAlimentacionController:
 Route::put('/programaciones-alimentacion/{programacionAlimentacion}', [ProgramacionAlimentacionController::class, 'update'])->name('programaciones-alimentacion.update');
 Route::delete('/programaciones-alimentacion/{programacionAlimentacion}', [ProgramacionAlimentacionController::class, 'destroy'])->name('programaciones-alimentacion.destroy');
 Route::patch('/programaciones-alimentacion/{programacionAlimentacion}/toggle-activa', [ProgramacionAlimentacionController::class, 'toggleActiva'])->name('programaciones-alimentacion.toggleActiva');
-    /*
+    
+
+//pesajes
+Route::get('/pesajes', [PesajeController::class, 'index'])->name('pesajes.index');
+Route::post('/pesajes', [PesajeController::class, 'store'])->name('pesajes.store');
+Route::put('/pesajes/{pesaje}', [PesajeController::class, 'update'])->name('pesajes.update');
+Route::delete('/pesajes/{pesaje}', [PesajeController::class, 'destroy'])->name('pesajes.destroy');
+/*
     |----------------------------------------------------------------------
     | Nuevos módulos: faenas, ventas, sacrificios
     |----------------------------------------------------------------------
@@ -240,7 +272,9 @@ Route::middleware(['auth'])->group(function () {
    
 });
 
-    /*
+//Genealogías
+Route::get('/genealogias/{animal}', [GenealogiasController::class, 'show'])
+    ->name('genealogias.show');    /*
     |----------------------------------------------------------------------
     | Perfil (Breeze)
     |----------------------------------------------------------------------

@@ -5,17 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\InventarioInsumo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Racion;
 
 class InventarioInsumoController extends Controller
 {
     public function store(Request $request)
-    {
-        $data    = $this->validateData($request);
-        $payload = $this->buildPayload($data);
-        InventarioInsumo::create($payload);
+{
+    $data = $this->validateData($request);
 
-        return back()->with('success', 'Insumo agregado correctamente.');
-    }
+    $payload = $this->buildPayload($data);
+
+    // Activo por defecto al crearse
+    $payload['activo'] = true;
+    $payload['desactivado_at'] = null;
+
+    InventarioInsumo::create($payload);
+
+    return back()->with('success', 'Insumo agregado correctamente.');
+}
 
     /**
      * Solo actualiza campos descriptivos (nombre, tipo, marca, unidad, nutrición, auto_rellenar).
@@ -46,13 +53,57 @@ class InventarioInsumoController extends Controller
 
         $item->update($data);
 
+        // Recalcular raciones activas que usen este insumo
+        $racionesAfectadas = Racion::where('activo', true)
+            ->whereHas('insumos', fn($q) => $q->where('inventario_insumo_id', $item->id))
+            ->with('insumos')
+            ->get();
+    
+        foreach ($racionesAfectadas as $racion) {
+            $totalCosto    = 0;
+            $totalCantidad = 0;
+            $campos        = ['MS', 'PB', 'EM', 'FDN'];
+            $totalesNut    = array_fill_keys($campos, 0);
+            $cantidadNut   = array_fill_keys($campos, 0);
+    
+            foreach ($racion->insumos as $insumo) {
+                $cantidad       = (float) $insumo->pivot->cantidad;
+                $totalCosto    += $cantidad * (float) ($insumo->costo_promedio ?? 0);
+                $totalCantidad += $cantidad;
+    
+                foreach ($campos as $campo) {
+                    if ($insumo->{$campo} !== null) {
+                        $totalesNut[$campo] += $cantidad * (float) $insumo->{$campo};
+                        $cantidadNut[$campo] += $cantidad;
+                    }
+                }
+            }
+    
+            $nuevosValores = [
+                'costo_total' => round($totalCosto, 2),
+                'precio_kg'   => $totalCantidad > 0 ? round($totalCosto / $totalCantidad, 2) : null,
+            ];
+    
+            // Solo recalcula nutrición si la ración tenía valores (no sobreescribir nulos intencionales)
+            foreach ($campos as $campo) {
+                if ($racion->{$campo} !== null && $cantidadNut[$campo] > 0) {
+                    $nuevosValores[$campo] = round($totalesNut[$campo] / $cantidadNut[$campo], 2);
+                }
+            }
+    
+            $racion->update($nuevosValores);
+        }
+    
+        $fueUsado = $racionesAfectadas->isNotEmpty();
+        $mensaje  = $fueUsado
+            ? "Insumo actualizado. Se recalcularon {$racionesAfectadas->count()} ración(es) activa(s). El historial anterior se conserva intacto."
+            : 'Insumo actualizado correctamente.';
+
         $fueUsado = DB::table('racion_insumo')
             ->where('inventario_insumo_id', $item->id)
             ->exists();
 
-        $mensaje = $fueUsado
-            ? 'Insumo actualizado. Los cambios aplican a consumos futuros; el historial anterior se conserva intacto.'
-            : 'Insumo actualizado correctamente.';
+        
 
         return back()->with('success', $mensaje);
     }
@@ -95,37 +146,69 @@ class InventarioInsumoController extends Controller
      * - Está en una ración ACTIVA → bloquear, pedir archivar la ración primero.
      */
     public function destroy(InventarioInsumo $item)
-    {
-        $enRacionActiva = DB::table('racion_insumo')
-            ->join('racions', 'racions.id', '=', 'racion_insumo.racion_id')
-            ->where('racion_insumo.inventario_insumo_id', $item->id)
-            ->where('racions.activo', true)
-            ->exists();
+{
+    $enRacionActiva = DB::table('racion_insumo')
+        ->join('racions', 'racions.id', '=', 'racion_insumo.racion_id')
+        ->where('racion_insumo.inventario_insumo_id', $item->id)
+        ->where('racions.activo', true)
+        ->exists();
 
-        if ($enRacionActiva) {
-            return back()->withErrors([
-                'insumo' => "No se puede desactivar \"{$item->nombre}\" porque está en raciones activas. Archiva primero esas raciones.",
-            ]);
-        }
+    $fueUsado = DB::table('racion_insumo')
+        ->where('inventario_insumo_id', $item->id)
+        ->exists();
 
-        $fueUsado = DB::table('racion_insumo')
-            ->where('inventario_insumo_id', $item->id)
-            ->exists();
-
-        if ($fueUsado) {
-            $item->update([
-                'activo'         => false,
-                'desactivado_at' => now(),
-            ]);
-
-            return back()->with('success', "Insumo \"{$item->nombre}\" desactivado. Su historial se conserva intacto.");
-        }
-
+    // Si nunca fue usado, se elimina físicamente
+    if (!$fueUsado) {
         $item->delete();
 
-        return back()->with('success', 'Insumo eliminado correctamente.');
+        return back()->with(
+            'success',
+            "Insumo \"{$item->nombre}\" eliminado correctamente porque no tenía historial de uso."
+        );
     }
 
+    // Si ya fue usado, nunca se elimina: solo se desactiva
+    $programacionesPausadas = DB::table('programacion_alimentacions')
+        ->where('activa', true)
+        ->whereIn('racion_id', function ($query) use ($item) {
+            $query->select('racion_id')
+                ->from('racion_insumo')
+                ->where('inventario_insumo_id', $item->id);
+        })
+        ->count();
+
+    $item->update([
+        'activo'         => false,
+        'desactivado_at' => now(),
+    ]);
+
+    // Pausar programaciones futuras/activas relacionadas
+    DB::table('programacion_alimentacions')
+        ->where('activa', true)
+        ->whereIn('racion_id', function ($query) use ($item) {
+            $query->select('racion_id')
+                ->from('racion_insumo')
+                ->where('inventario_insumo_id', $item->id);
+        })
+        ->update([
+            'activa'     => false,
+            'updated_at' => now(),
+        ]);
+
+    $mensaje = "Insumo \"{$item->nombre}\" desactivado. No se eliminó porque ya tiene historial de uso.";
+
+    if ($enRacionActiva) {
+        $mensaje .= " Estaba relacionado con una o más raciones activas.";
+    }
+
+    if ($programacionesPausadas > 0) {
+        $mensaje .= " Se pausaron {$programacionesPausadas} programación(es) de alimentación.";
+    }
+
+    $mensaje .= " El historial anterior se conserva intacto.";
+
+    return back()->with('success', $mensaje);
+}
     /**
      * PUT /alimentacion/inventario/{item}/reactivar
      */
@@ -182,25 +265,28 @@ class InventarioInsumoController extends Controller
     }
 
     private function buildPayload(array $data): array
-    {
-        $payload = $data;
+{
+    $payload = $data;
 
-        $payload['costo_promedio'] = (
-            isset($data['costo_total']) &&
-            $data['costo_total'] !== '' &&
-            (float) $data['existencias'] > 0
-        )
-            ? round((float) $data['costo_total'] / (float) $data['existencias'], 2)
-            : null;
+    $payload['costo_promedio'] = (
+        isset($data['costo_total']) &&
+        $data['costo_total'] !== '' &&
+        (float) $data['existencias'] > 0
+    )
+        ? round((float) $data['costo_total'] / (float) $data['existencias'], 2)
+        : null;
 
-        unset($payload['costo_total']);
+    unset($payload['costo_total']);
 
-        $payload['auto_rellenar'] = (bool) ($data['auto_rellenar'] ?? false);
+    $payload['auto_rellenar'] = (bool) ($data['auto_rellenar'] ?? false);
 
-        if (!$payload['auto_rellenar']) {
-            $payload['cantidad_rellenado'] = null;
-        }
-
-        return $payload;
+    if (!$payload['auto_rellenar']) {
+        $payload['cantidad_rellenado'] = null;
     }
+
+    $payload['activo'] = true;
+    $payload['desactivado_at'] = null;
+
+    return $payload;
+}
 }

@@ -265,6 +265,7 @@ export default function Raciones() {
     const ningunoTieneValores   = hayInsumosConCantidad && !nutritionSummary.anyHaveValues;
     const algunoSinValores      = hayInsumosConCantidad && nutritionSummary.anyHaveValues && nutritionSummary.sinValores > 0;
     const todosConValores       = nutritionSummary.allHaveValues;
+    const { flash = {} } = usePage().props;
 
     return (
         <div className="space-y-5">
@@ -501,7 +502,16 @@ export default function Raciones() {
                     </div>
                 </form>
             </div>
-
+            {flash.success && (
+    <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        {flash.success}
+    </div>
+)}
+{flash.error && (
+    <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        {flash.error}
+    </div>
+)}
             {/* Tabla */}
             <div className="overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm">
                 <div className="overflow-x-auto">

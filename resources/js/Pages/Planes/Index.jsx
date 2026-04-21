@@ -1,7 +1,5 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage, Link } from '@inertiajs/react'; // Asegúrate de importar Link
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-
-
 
 export default function PlanesIndex() {
     const { precioPremium } = usePage().props;
@@ -39,10 +37,11 @@ export default function PlanesIndex() {
                         </p>
                         <p className="text-xs text-gray-400">Pago único (ejemplo)</p>
 
+                        {/* Aquí cambiaremos la lógica */}
                         <Link
-                          href={route('pago.premium')}
+                          href={route('predicciones.index')} // Redirige a la página de Predicciones
                           className="mt-4 inline-block px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600">
-                          Ir a pagar Premium
+                          Ir a Predicciones
                         </Link>
                     </div>
                 </div>

@@ -67,30 +67,38 @@ class RacionController extends Controller
     }
 
     public function destroy(Racion $racion)
-    {
-        if ($racion->tieneConsumos()) {
-            $racion->update(['activo' => false, 'archivado_at' => now()]);
+{
+    if ($racion->tieneConsumos()) {
+        $programacionesPausadas = DB::table('programacion_alimentacions')
+            ->where('racion_id', $racion->id)
+            ->where('activa', true)
+            ->count();
 
-            DB::table('programacion_alimentacions')
-                ->where('racion_id', $racion->id)
-                ->where('activa', true)
-                ->update(['activa' => false, 'updated_at' => now()]);
+        $racion->update(['activo' => false, 'archivado_at' => now()]);
 
-            return back()->with('success', "Ración \"{$racion->nombre}\" archivada. Su historial se conserva intacto.");
+        DB::table('programacion_alimentacions')
+            ->where('racion_id', $racion->id)
+            ->where('activa', true)
+            ->update(['activa' => false, 'updated_at' => now()]);
+
+        $mensaje = "Ración \"{$racion->nombre}\" archivada. Su historial se conserva intacto.";
+        if ($programacionesPausadas > 0) {
+            $mensaje .= " Se pausaron {$programacionesPausadas} programación(es) de alimentación.";
         }
 
-        if ($racion->programaciones()->where('activa', true)->exists()) {
-            return back()->withErrors([
-                'racion' => "No se puede eliminar \"{$racion->nombre}\" porque tiene programaciones activas.",
-            ]);
-        }
-
-        $racion->insumos()->detach();
-        $racion->delete();
-
-        return back()->with('success', 'Ración eliminada correctamente.');
+        return back()->with('success', $mensaje);
     }
 
+    if ($racion->programaciones()->where('activa', true)->exists()) {
+        return back()->withErrors([
+            'racion' => "No se puede eliminar \"{$racion->nombre}\" porque tiene programaciones activas.",
+        ]);
+    }
+
+    $racion->insumos()->detach();
+    $racion->delete();
+    return back()->with('success', 'Ración eliminada correctamente.');
+}
     public function reactivar(Racion $racion)
     {
         $racion->update(['activo' => true, 'archivado_at' => null]);

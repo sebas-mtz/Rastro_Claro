@@ -18,7 +18,7 @@ function Health(props) {
     year,
     month,
     month_iso,
-    especies = [], // Asegúrate de que estas props se pasen desde el controlador
+    especies = [], 
     razasPorEspecie = {},
     estadosProductivos = {},
   } = props;

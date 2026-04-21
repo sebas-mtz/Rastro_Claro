@@ -8,6 +8,7 @@ import Conversion from './Tabs/Conversion';
 import Inventario from './Tabs/Inventario';
 import Sugerencias from './tabs/Sugerencias.jsx';
 import AlimentacionModal from './tabs/AlimentaciónModal';
+import ConversionAlimenticia from './tabs/ConversionAlimenticia';
 
 export default function Alimentacion() {
     const [tab, setTab] = useState('Alimentación');
@@ -54,7 +55,7 @@ export default function Alimentacion() {
                 {tab === 'Alimentación' && <AlimentacionModal />}
                     {tab === 'raciones' && <Raciones />}
                     {tab === 'inventario' && <Inventario />}
-                    {tab === 'conversion' && <Conversion />}
+                    {tab === 'conversion' && <ConversionAlimenticia />}
                     {tab === 'sugerencias' && <Sugerencias />}
                 </div>
             </div>

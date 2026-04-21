@@ -22,11 +22,14 @@ class Alimentacion extends Model
         'racion_id',
         'programacion_alimentacion_id',
         'generado_automaticamente',
+        'snapshot_composicion',
+        'snapshot_nutricion',
         'notas',
     ];
 
     protected $casts = [
-        'fecha' => 'date',
+        'snapshot_composicion' => 'array',  // ← para que Laravel serialize/deserialize JSON automáticamente
+        'snapshot_nutricion'   => 'array',
         'generado_automaticamente' => 'boolean',
     ];
 

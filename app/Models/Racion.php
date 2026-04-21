@@ -70,16 +70,18 @@ class Racion extends Model
             'unidad'         => $insumo->unidad,
             'costo_promedio' => $insumo->costo_promedio,
         ])->toArray();
+        return $snapshotComposicion;
     }
 
     // Genera el snapshot de nutrición para guardar en el momento del consumo
     public function generarSnapshotNutricion(): array
     {
         return [
-            'MS'  => $this->MS,
-            'PB'  => $this->PB,
-            'EM'  => $this->EM,
-            'FDN' => $this->FDN,
+             'MS'  => $this->MS ?? 0,  // Usar 0 si es nulo
+        'PB'  => $this->PB ?? 0,
+        'EM'  => $this->EM ?? 0,
+        'FDN' => $this->FDN ?? 0,
         ];
+    return $snapshotNutricion;
     }
 }

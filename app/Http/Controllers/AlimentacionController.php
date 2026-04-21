@@ -34,11 +34,19 @@ class AlimentacionController extends Controller
         $raciones = Racion::activo()->with('insumos')->get();
 
         // Solo insumos activos para el inventario de referencia
-        $inventario = InventarioInsumo::activo()->get([
+        $inventario = InventarioInsumo::orderBy('activo', 'desc')->orderBy('nombre')->get([
             'id', 'nombre', 'tipo', 'existencias', 'unidad',
             'costo_promedio', 'marca', 'MS', 'PB', 'EM', 'FDN',
-            'auto_rellenar', 'dias_rellenado', 'cantidad_rellenado',
+            'auto_rellenar', 'cantidad_rellenado',
+            'activo', 'desactivado_at',
         ]);
+        
+        // Agrega esto después:
+        $insumoIdsEnRacion = DB::table('racion_insumo')->pluck('inventario_insumo_id')->unique();
+        $inventario = $inventario->map(function ($item) use ($insumoIdsEnRacion) {
+            $item->en_racion = $insumoIdsEnRacion->contains($item->id);
+            return $item;
+        });
 
         $series  = [];
         $summary = [

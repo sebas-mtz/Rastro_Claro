@@ -23,7 +23,7 @@ class Animal extends Model
     }
 
     public function salud() {
-        return $this->hasMany(Salud::class);
+        return $this->hasMany(EventoSalud::class);
     }
 
     public function producciones() {
@@ -228,4 +228,8 @@ class Animal extends Model
             'estado_reproductivo' => $this->estado_reproductivo,
         ];
     }
+    public function pesajes()
+{
+    return $this->hasMany(Pesaje::class);
+}
 }

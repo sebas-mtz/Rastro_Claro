@@ -130,7 +130,7 @@ class ProgramacionAlimentacionController extends Controller
     public function toggleActiva(ProgramacionAlimentacion $programacionAlimentacion)
     {
         $programacionAlimentacion->update([
-            'activa' => !$programacionAlimentacion->activa,
+          'activa' => !$programacionAlimentacion->activa,
         ]);
 
         return back()->with('success', 'Estado de la programación actualizado.');

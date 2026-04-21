@@ -58,11 +58,13 @@ export default function Sidebar() {
 
           <li>
             <Link
-              href="/health"
-              className={'sl-item ' + (isActive('/health') ? 'active' : '')}
+              href={route('pesajes.index')}
+              className={
+                'sl-item ' + (isActive('/pesajes') ? 'active' : '')
+              }
             >
-              <span className="sl-ico">❤️</span>
-              <span>Salud</span>
+              <span className="sl-ico">⚖️ </span>
+              <span>Pesajes</span>
             </Link>
           </li>
 
@@ -75,6 +77,16 @@ export default function Sidebar() {
             >
               <span className="sl-ico">🍽️</span>
               <span>Alimentación</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/eventos-salud"
+              className={'sl-item ' + (isActive('/eventos-salud') ? 'active' : '')}
+            >
+              <span className="sl-ico">❤️</span>
+              <span>Salud</span>
             </Link>
           </li>
 

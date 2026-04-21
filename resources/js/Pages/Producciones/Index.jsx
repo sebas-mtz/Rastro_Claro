@@ -16,6 +16,7 @@ function ProduccionesIndex({
     datos = {},
     mejores = [],
     resumen = {},
+    tendencias = [],   // ← AGREGAR
     inventarioSubproductos = {},
 }) {
     const [tab, setTab] = useState("tendencias");
@@ -191,7 +192,7 @@ function ProduccionesIndex({
                 </div>
 
                 {/* CONTENIDO DE LAS TABS */}
-                {tab === "tendencias" && <Tendencias datos={datos} />}
+                {tab === "tendencias" && <Tendencias datos={tendencias} />}  
                 {tab === "comparativo" && <Comparativo mejores={mejores} />}
                 {tab === "reportes" && <Reportes resumen={resumen} />}
             </div>

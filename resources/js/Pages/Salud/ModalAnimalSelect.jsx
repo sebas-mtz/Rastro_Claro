@@ -1,26 +1,33 @@
 import { useState, useEffect } from 'react';
 
-function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies = [], razasPorEspecie = {}, estadosProductivos = {} }) {
-    const [searchTerm, setSearchTerm]                       = useState('');
-    const [selectedAnimal, setSelectedAnimal]               = useState(null);
-    const [filtroEspecie, setFiltroEspecie]                 = useState('');
-    const [filtroRaza, setFiltroRaza]                       = useState('');
+function ModalAnimalSelect({
+    isOpen,
+    onClose,
+    onSelect,
+    animals = [],
+    especies = [],
+    razasPorEspecie = {},
+    estadosProductivos = {},
+}) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedAnimal, setSelectedAnimal] = useState(null);
+    const [filtroEspecie, setFiltroEspecie] = useState('');
+    const [filtroRaza, setFiltroRaza] = useState('');
     const [filtroEstadoProductivo, setFiltroEstadoProductivo] = useState('');
-    const [filtroSexo, setFiltroSexo]                       = useState('');
-    const [razasDisponibles, setRazasDisponibles]           = useState([]);
-    const [estadosDisponibles, setEstadosDisponibles]       = useState([]);
+    const [filtroSexo, setFiltroSexo] = useState('');
+
+    const razasDisponibles = filtroEspecie
+        ? (razasPorEspecie[filtroEspecie] || [])
+        : [];
+
+    const estadosDisponibles = filtroEspecie
+        ? (estadosProductivos[filtroEspecie] || [])
+        : [];
 
     useEffect(() => {
-        if (filtroEspecie) {
-            setRazasDisponibles(razasPorEspecie[filtroEspecie] || []);
-            setEstadosDisponibles(estadosProductivos[filtroEspecie] || []);
-            setFiltroRaza('');
-            setFiltroEstadoProductivo('');
-        } else {
-            setRazasDisponibles([]);
-            setEstadosDisponibles([]);
-        }
-    }, [filtroEspecie, razasPorEspecie, estadosProductivos]);
+        setFiltroRaza('');
+        setFiltroEstadoProductivo('');
+    }, [filtroEspecie]);
 
     // Resetear al abrir/cerrar
     useEffect(() => {
@@ -41,14 +48,14 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
         const matchSearch = !q ||
             (a.arete?.toLowerCase() || '').includes(q) ||
             (a.alias?.toLowerCase() || '').includes(q) ||
-            (a.raza?.toLowerCase()  || '').includes(q) ||
+            (a.raza?.toLowerCase() || '').includes(q) ||
             (a.especie?.toLowerCase() || '').includes(q);
 
         return matchSearch
-            && (!filtroEspecie          || a.especie           === filtroEspecie)
-            && (!filtroRaza             || a.raza              === filtroRaza)
+            && (!filtroEspecie || a.especie === filtroEspecie)
+            && (!filtroRaza || a.raza === filtroRaza)
             && (!filtroEstadoProductivo || a.estado_productivo === filtroEstadoProductivo)
-            && (!filtroSexo             || a.sexo              === filtroSexo);
+            && (!filtroSexo || a.sexo === filtroSexo);
     });
 
     function handleConfirm() {
@@ -57,45 +64,43 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
         onClose();
     }
 
-    // Avatar color por especie
     const avatarColor = (especie) => {
         const map = {
-            'Bovino':  'bg-blue-100 text-blue-700',
+            'Bovino': 'bg-blue-100 text-blue-700',
             'Porcino': 'bg-pink-100 text-pink-700',
-            'Ovino':   'bg-amber-100 text-amber-700',
+            'Ovino': 'bg-amber-100 text-amber-700',
             'Caprino': 'bg-green-100 text-green-700',
-            'Equino':  'bg-purple-100 text-purple-700',
+            'Equino': 'bg-purple-100 text-purple-700',
         };
         return map[especie] ?? 'bg-gray-100 text-gray-600';
     };
 
     const estadoBadge = (estado) => {
         const map = {
-            'Lactante':  'bg-blue-50 text-blue-700',
-            'Gestante':  'bg-purple-50 text-purple-700',
-            'Seco':      'bg-gray-100 text-gray-600',
-            'Engorda':   'bg-amber-50 text-amber-700',
+            'Lactante': 'bg-blue-50 text-blue-700',
+            'Gestante': 'bg-purple-50 text-purple-700',
+            'Seco': 'bg-gray-100 text-gray-600',
+            'Engorda': 'bg-amber-50 text-amber-700',
         };
         return map[estado] ?? 'bg-gray-100 text-gray-600';
     };
 
     return (
-        // Overlay
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
             onClick={onClose}
         >
-            {/* Modal */}
             <div
                 className="bg-white rounded-xl shadow-xl w-full max-w-3xl flex flex-col overflow-hidden"
                 style={{ maxHeight: '85vh' }}
                 onClick={e => e.stopPropagation()}
             >
-                {/* ── Header ── */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                     <div>
                         <h2 className="text-base font-semibold text-gray-900">Seleccionar Animal</h2>
-                        <p className="text-xs text-gray-400 mt-0.5">{filteredAnimals.length} de {animals.length} animales</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {filteredAnimals.length} de {animals.length} animales
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -107,11 +112,20 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                     </button>
                 </div>
 
-                {/* ── Buscador ── */}
                 <div className="px-5 py-3 border-b border-gray-100">
                     <div className="relative">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                        <svg
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                            />
                         </svg>
                         <input
                             autoFocus
@@ -124,19 +138,18 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                     </div>
                 </div>
 
-                {/* ── Filtros rápidos ── */}
                 <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {/* Especie */}
                     <select
                         value={filtroEspecie}
                         onChange={e => setFiltroEspecie(e.target.value)}
                         className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="">Todas las especies</option>
-                        {especies.map(e => <option key={e} value={e}>{e}</option>)}
+                        {especies.map(e => (
+                            <option key={e} value={e}>{e}</option>
+                        ))}
                     </select>
 
-                    {/* Raza */}
                     <select
                         value={filtroRaza}
                         onChange={e => setFiltroRaza(e.target.value)}
@@ -144,10 +157,11 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                         className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <option value="">Todas las razas</option>
-                        {razasDisponibles.map(r => <option key={r} value={r}>{r}</option>)}
+                        {razasDisponibles.map(r => (
+                            <option key={r} value={r}>{r}</option>
+                        ))}
                     </select>
 
-                    {/* Estado productivo */}
                     <select
                         value={filtroEstadoProductivo}
                         onChange={e => setFiltroEstadoProductivo(e.target.value)}
@@ -155,10 +169,11 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                         className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                         <option value="">Estado productivo</option>
-                        {estadosDisponibles.map(e => <option key={e} value={e}>{e}</option>)}
+                        {estadosDisponibles.map(e => (
+                            <option key={e} value={e}>{e}</option>
+                        ))}
                     </select>
 
-                    {/* Sexo */}
                     <select
                         value={filtroSexo}
                         onChange={e => setFiltroSexo(e.target.value)}
@@ -170,12 +185,16 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                     </select>
                 </div>
 
-                {/* ── Lista de animales ── */}
                 <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1.5">
                     {filteredAnimals.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                             <svg className="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
                             </svg>
                             <p className="text-sm font-medium">Sin resultados</p>
                             <p className="text-xs mt-1">Prueba con otros filtros o términos de búsqueda</p>
@@ -195,12 +214,10 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                                             : 'bg-white border-gray-100 hover:border-gray-200 hover:bg-gray-50',
                                     ].join(' ')}
                                 >
-                                    {/* Avatar */}
                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${avatarColor(animal.especie)}`}>
                                         {animal.especie?.charAt(0) ?? '?'}
                                     </div>
 
-                                    {/* Info */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="text-sm font-medium text-gray-900">
@@ -233,7 +250,6 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                                         </div>
                                     </div>
 
-                                    {/* Check */}
                                     {isSelected && (
                                         <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -245,13 +261,18 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
                     )}
                 </div>
 
-                {/* ── Footer ── */}
                 <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
-                    {/* Animal seleccionado */}
                     <div className="text-xs text-gray-500">
-                        {selectedAnimal
-                            ? <span>Seleccionado: <strong className="text-gray-800">{selectedAnimal.arete ? `#${selectedAnimal.arete}` : selectedAnimal.alias}</strong></span>
-                            : <span>Ningún animal seleccionado</span>}
+                        {selectedAnimal ? (
+                            <span>
+                                Seleccionado:{' '}
+                                <strong className="text-gray-800">
+                                    {selectedAnimal.arete ? `#${selectedAnimal.arete}` : selectedAnimal.alias}
+                                </strong>
+                            </span>
+                        ) : (
+                            <span>Ningún animal seleccionado</span>
+                        )}
                     </div>
                     <div className="flex gap-2">
                         <button

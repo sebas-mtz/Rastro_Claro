@@ -19,6 +19,10 @@ return new class extends Migration
             $table->integer('refuerzo_dias')->nullable();
             $table->string('especie_objetivo')->nullable();
             $table->timestamps();
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             
         });
         
