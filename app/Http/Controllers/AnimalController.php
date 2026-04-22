@@ -117,6 +117,10 @@ class AnimalController extends Controller
             'especies' => $this->especies,
             'razasPorEspecie' => $this->razasPorEspecie,
             'estadosProductivos' => $this->estadosProductivos,
+            'pesajes' => fn($q) => $q->orderBy('fecha', 'asc'),
+ 
+    // Alimentaciones con su ración, las más recientes primero, limitadas a 10
+    'alimentaciones' => fn($q) => $q->with('racion')->latest('fecha')->take(10),
         ]);
     }
 
