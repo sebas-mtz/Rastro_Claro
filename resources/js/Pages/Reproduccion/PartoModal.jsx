@@ -2,18 +2,19 @@ import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { X, Plus, Trash2 } from "lucide-react";
 
-export default function PartoModal({ show, onClose, hembras = [], eventos = [] }) {
+export default function PartoModal({ show, onClose, hembras = [], eventos = [], animales = [] }) {
 
   const { data, setData, post, processing, errors, reset } = useForm({
-    hembra_id:            "",
+    hembra_id:              "",
     servicio_evento_id:     "",
-    fecha:                new Date().toISOString().split("T")[0],
-    tipo_parto:           "normal",
-    asistencia_requerida: false,
-    complicaciones:       false,
+    padre_id:               "", // ← nuevo — solo si no hay servicio vinculado
+    fecha:                  new Date().toISOString().split("T")[0],
+    tipo_parto:             "normal",
+    asistencia_requerida:   false,
+    complicaciones:         false,
     detalle_complicaciones: "",
-    costo:                "",
-    observaciones:        "",
+    costo:                  "",
+    observaciones:          "",
     crias: [
       { sexo: "macho", peso_nacimiento: "", condicion: "vivo", arete: "", arete_temporal: "" }
     ],
@@ -30,6 +31,14 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [] }
       new Date(p.fecha) > new Date(e.fecha)
     )
   );
+
+  // Machos disponibles para asignar como padre manual
+  const machos = animales.filter(a => a.sexo === "macho");
+
+  // Si hay servicio vinculado, el padre viene del servicio — no mostrar selector
+  const servicioSeleccionado = gestacionesActivas.find(g => g.id == data.servicio_evento_id);
+  const padreDesdeServicio = servicioSeleccionado?.servicio?.macho ?? null;
+  const mostrarSelectorPadre = !data.servicio_evento_id; // ← mostrar solo si no hay servicio
 
   const agregarCria = () => {
     setData("crias", [
@@ -48,14 +57,24 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [] }
     setData("crias", data.crias.filter((_, i) => i !== index));
   };
 
+  const handleServicioChange = (e) => {
+    const val = e.target.value;
+    setData(data => ({
+      ...data,
+      servicio_evento_id: val,
+      padre_id: "", // limpiar padre manual si vincula servicio
+    }));
+  };
+
   const close = () => { reset(); onClose(); };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     post(route("reproduccion.partos.store"), {
       forceFormData: true,
-      onSuccess: close});
-    };
+      onSuccess: close,
+    });
+  };
 
   if (!show) return null;
 
@@ -85,24 +104,65 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [] }
                 </option>
               ))}
             </select>
+            {errors.hembra_id && <p className="text-red-500 text-xs mt-1">{errors.hembra_id}</p>}
           </div>
 
           {/* GESTACIÓN VINCULADA */}
-          {gestacionesActivas.length > 0 && (
+          {data.hembra_id && (
             <div>
               <label className="text-sm font-medium">Gestación que originó el parto</label>
+              {gestacionesActivas.length > 0 ? (
+                <>
+                  <select
+                    value={data.servicio_evento_id}
+                    onChange={handleServicioChange}
+                    className="w-full border rounded-lg p-2 mt-1 text-sm"
+                  >
+                    <option value="">Sin vincular (parto sin servicio registrado)</option>
+                    {gestacionesActivas.map(g => (
+                      <option key={g.id} value={g.id}>
+                        Diagnóstico {g.fecha} — Parto probable: {g.diagnostico?.fecha_probable_parto ?? "—"}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Mostrar qué padre trae el servicio seleccionado */}
+                  {padreDesdeServicio && (
+                    <p className="text-xs text-green-700 bg-green-50 rounded-lg px-3 py-2 mt-2">
+                      Padre asignado desde la monta:{" "}
+                      <span className="font-semibold">
+                        {padreDesdeServicio.alias ?? padreDesdeServicio.arete}
+                      </span>
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-gray-400 mt-1">
+                  No hay gestaciones activas registradas para esta hembra.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* PADRE MANUAL — solo si no hay servicio vinculado */}
+          {data.hembra_id && mostrarSelectorPadre && (
+            <div>
+              <label className="text-sm font-medium">Padre (opcional)</label>
               <select
-                value={data.servicio_evento_id}
-                onChange={e => setData("service_event_id", e.target.value)}
+                value={data.padre_id}
+                onChange={e => setData("padre_id", e.target.value)}
                 className="w-full border rounded-lg p-2 mt-1 text-sm"
               >
-                <option value="">Sin vincular</option>
-                {gestacionesActivas.map(g => (
-                  <option key={g.id} value={g.id}>
-                    Diagnóstico {g.fecha} — Parto probable: {g.diagnostico?.fecha_probable_parto}
+                <option value="">Desconocido / no registrado</option>
+                {machos.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.alias ? `${m.alias} (${m.arete})` : m.arete} — {m.especie}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-gray-400 mt-1">
+                Si registras el servicio/monta previo, el padre se asigna automáticamente.
+              </p>
             </div>
           )}
 
@@ -117,6 +177,7 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [] }
                 onChange={e => setData("fecha", e.target.value)}
                 className="w-full border rounded-lg p-2 mt-1 text-sm"
               />
+              {errors.fecha && <p className="text-red-500 text-xs mt-1">{errors.fecha}</p>}
             </div>
 
             {/* TIPO */}

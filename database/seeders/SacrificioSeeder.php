@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class SacrificioSeeder extends Seeder
 {
     public function run(): void
-    {
+    {/*
         // Obtener animales disponibles (arete >= 100 y que no estén faenados o sacrificados)
         $animales = Animal::where('arete', '>=', 100)
             ->whereNotIn('id', function($query) {
@@ -129,5 +129,6 @@ class SacrificioSeeder extends Seeder
         }
 
         $this->command->info('5 sacrificios creados exitosamente');
+        */
     }
 }

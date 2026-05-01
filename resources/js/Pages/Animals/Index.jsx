@@ -92,7 +92,6 @@ export default function Index({
       header={<h2 className="font-semibold text-xl text-gray-800">Gestión de Animales</h2>}
     >
       <Head title="Gestión de Animales" />
-
       <div className="py-8 px-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">

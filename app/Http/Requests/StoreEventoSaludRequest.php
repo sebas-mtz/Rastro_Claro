@@ -19,7 +19,7 @@ class StoreEventoSaludRequest extends FormRequest
             'tipo'             => ['required', 'in:consulta,vacunacion,revision,emergencia'],
             'fecha_programada' => ['required', 'date'],
             'fecha_aplicacion' => ['nullable', 'date'],
-            'diagnostico'      => ['required', 'string', 'max:255'],
+'diagnostico' => ['nullable', 'string', 'max:255'],
             'tratamiento'      => ['nullable', 'string', 'max:255'],
             'vacuna_id'        => ['nullable', 'required_if:tipo,vacunacion', 'exists:vacunas,id'],
             'dosis'            => ['nullable', 'string', 'max:100'],

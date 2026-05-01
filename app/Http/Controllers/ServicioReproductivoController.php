@@ -6,13 +6,14 @@ use App\Models\Animal;
 use App\Models\EventoReproductivo;
 use App\Models\ServicioReproductivo;
 use Illuminate\Http\RedirectResponse;
+use App\Services\EstadoProductivoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ServicioReproductivoController extends Controller
 {
     // POST /reproduccion/servicios
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, EstadoProductivoService $estadoService): RedirectResponse
     {
         $datos = $request->validate([
             'hembra_id'       => 'required|exists:animals,id',
@@ -76,7 +77,8 @@ class ServicioReproductivoController extends Controller
                 'tecnico_externo' => $datos['tecnico_externo'] ?? null,
                 'numero_servicio' => $datos['numero_servicio'] ?? 1,
             ]);
-
+            $hembra = Animal::findOrFail($datos['hembra_id']);
+            $estadoService->transicionPorEvento($hembra, 'servicio');
             DB::commit();
 
             return redirect()->route('reproduccion.index')

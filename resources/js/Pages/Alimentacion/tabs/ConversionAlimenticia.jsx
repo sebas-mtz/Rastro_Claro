@@ -2,11 +2,11 @@ import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function ConversionAlimenticia() {
-    const { porAnimal = [], porLote = [], fechaInicio, fechaFin, flash = {} } = usePage().props;
+    const { porAnimal = [], porLote = [], fechaInicio='', fechaFin='', flash = {} } = usePage().props;
 
     const [tab, setTab]                   = useState('animal'); // 'animal' | 'lote'
     const [loteAbierto, setLoteAbierto]   = useState(null);
-    const [fechas, setFechas]             = useState({ inicio: fechaInicio, fin: fechaFin });
+    const [fechas, setFechas]             = useState({ inicio: fechaInicio|| '', fin: fechaFin|| '' });
 
     // ─── Filtrar fechas ───────────────────────────────────────────────────────
     const handleFiltrar = (e) => {
@@ -69,7 +69,7 @@ export default function ConversionAlimenticia() {
                     <input
                         type="date"
                         className="rounded-md border border-gray-300 text-sm focus:border-blue-300 focus:ring-blue-200"
-                        value={fechas.inicio}
+                        value={fechas.inicio|| ''}
                         onChange={e => setFechas(f => ({ ...f, inicio: e.target.value }))}
                     />
                 </div>
@@ -78,7 +78,7 @@ export default function ConversionAlimenticia() {
                     <input
                         type="date"
                         className="rounded-md border border-gray-300 text-sm focus:border-blue-300 focus:ring-blue-200"
-                        value={fechas.fin}
+                        value={fechas.fin|| ''}
                         onChange={e => setFechas(f => ({ ...f, fin: e.target.value }))}
                     />
                 </div>

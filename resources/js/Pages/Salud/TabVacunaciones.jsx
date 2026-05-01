@@ -13,8 +13,8 @@ const estadoIcon = {
     aplicada:  '✓',
 };
 
-export default function TabVacunaciones({ pending = [], done = [], onMarkDone }) {
-    const [catalogoOpen, setCatalogoOpen] = useState(false);
+export default function TabVacunaciones({ vacunas = [], pending = [], done = [], onMarkDone }) {    const [catalogoOpen, setCatalogoOpen] = useState(false);
+    console.log('VACUNAS:', vacunas);
 
     function handleMarkDone(id) {
         if (!confirm('¿Marcar esta vacunación como aplicada hoy?')) return;
@@ -54,7 +54,70 @@ export default function TabVacunaciones({ pending = [], done = [], onMarkDone })
                     </div>
                 </div>
             )}
+            {/* Catálogo de vacunas registradas */}
+<div style={{ marginBottom: '1.5rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div>
+            <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+                Catálogo de vacunas
+            </h3>
+            <small style={{ color: '#6b7280' }}>
+                Vacunas registradas en el sistema
+            </small>
+        </div>
+    </div>
 
+    {vacunas.length === 0 ? (
+        <div
+            className="small-text"
+            style={{
+                textAlign: 'center',
+                padding: '1.5rem',
+                color: '#9ca3af',
+                border: '1px dashed #d1d5db',
+                borderRadius: '0.75rem',
+                backgroundColor: '#f9fafb',
+            }}
+        >
+            No hay vacunas registradas en el catálogo.
+        </div>
+    ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+            {vacunas.map((vacuna) => (
+                <div
+                    key={vacuna.id}
+                    style={{
+                        border: '1px solid #e5e7eb',
+                        borderLeft: '4px solid #2563eb',
+                        borderRadius: '0.75rem',
+                        padding: '1rem',
+                        backgroundColor: '#ffffff',
+                    }}
+                >
+                    <div style={{ fontWeight: '600', color: '#1f2937', marginBottom: '0.35rem' }}>
+                        {vacuna.nombre}
+                    </div>
+
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                        Patógeno: {vacuna.patogeno || 'No especificado'}
+                    </div>
+
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                        Pauta: {vacuna.pauta || 'No especificada'}
+                    </div>
+
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                        Refuerzo: {vacuna.refuerzo_dias ? `${vacuna.refuerzo_dias} días` : 'No especificado'}
+                    </div>
+
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                        Especie: {vacuna.especie_objetivo || 'No especificada'}
+                    </div>
+                </div>
+            ))}
+        </div>
+    )}
+</div>
             <div className="list">
                 {total === 0 && (
                     <div className="small-text" style={{ textAlign: 'center', padding: '2rem 0', color: '#9ca3af' }}>

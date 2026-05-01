@@ -17,6 +17,12 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             LoteSeeder::class,
             AnimalSeeder::class,
+            ReproduccionSeeder::class,
+            PesajeSeeder::class,
+            VacunaSeeder::class,
+            EventoSaludSeeder::class,
+            TratamientoSeeder::class,
+            AlimentacionSeeder::class,
             ProduccionSeeder::class,
             FaenaSeeder::class,      // ✅ Nuevo
             SacrificioSeeder::class, // ✅ Nuevo

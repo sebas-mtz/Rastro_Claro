@@ -2,137 +2,184 @@
 
 namespace Database\Seeders;
 
-
 use Illuminate\Database\Seeder;
-use App\Models\Lote;
 use App\Models\Animal;
 use App\Models\Produccion;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class ProduccionSeeder extends Seeder
 {
-    public function run()
-
-
-
+    public function run(): void
     {
-        $hoy = Carbon::now();
-        $ayer = $hoy->subDay();
+        /*
+         * Seeder pensado para ejecutarse DESPUÉS de:
+         * 1. AnimalSeeder
+         * 2. ReproduccionSeeder, si lo usas
+         *
+         * Solo genera producción para OVINOS.
+         * - Lana: puede generarse en machos y hembras adultas.
+         * - Leche: SOLO hembras ovinas seleccionadas como lactancia.
+         * - Nunca genera leche para machos.
+         */
 
-        $lotesData = [
-            ['nombre' => 'Lote Vacas', 'especie' => 'Bovino', 'raza' => 'Holstein', 'areteStart' => 11, 'producciones' => ['leche'], 'estados' => ["Lactante","Gestante","En crecimiento"], 'irregularidad' => 20],
-            ['nombre' => 'Lote Borregas', 'especie' => 'Ovino', 'raza' => 'Merino', 'areteStart' => 21, 'producciones' => ['lana'], 'estados' => ["Gestante","En crecimiento","Reproductor"], 'irregularidad' => 15],
-            ['nombre' => 'Lote Gallinas', 'especie' => 'Aves de corral (gallinas y pollitos)', 'raza' => 'Leghorn', 'areteStart' => 31, 'producciones' => ['huevo'], 'estados' => ["Postura","En crecimiento","En descanso"], 'irregularidad' => 25],
-            ['nombre' => 'Lote Cabras', 'especie' => 'Caprino', 'raza' => 'Saanen', 'areteStart' => 38, 'producciones' => ['leche'], 'estados' => ["Lactante","Gestante","En crecimiento"], 'irregularidad' => 15],
-            // Los cerdos se eliminan porque no tienen producciones diarias
+        $hoy = Carbon::now();
+
+        // Hembras elegidas para simular que actualmente están en lactancia.
+        // Todas deben existir en AnimalSeeder y ser sexo F.
+        $ovejasEnLactancia = [
+            'B21-004', // Oliva
+            'B21-005', // Mirra
+            'B22-001', // Dulce
+            'B22-002', // Valeria
+            'B22-004', // Mirto
+            'B22-005', // Nimfa
+            'B22-006', // Naiara
+            'B22-007', // Miriam
         ];
 
-        $sexos = ['M','F'];
+        $animales = Animal::query()
+            ->where('especie', 'Ovino')
+            ->get();
 
-        foreach ($lotesData as $loteInfo) {
-            $lote = Lote::create([
-                'nombre' => $loteInfo['nombre'],
-                'corral_potrero' => $loteInfo['nombre'] . ' Corral',
-                'descripcion' => 'Lote de ' . $loteInfo['especie'] . ' raza ' . $loteInfo['raza'],
-                'responsable_id' => 1,
-            ]);
+        if ($animales->isEmpty()) {
+            $this->command?->warn('No hay animales ovinos para generar producción. Ejecuta primero AnimalSeeder.');
+            return;
+        }
 
-            $arete = $loteInfo['areteStart'];
+        // Evita duplicados si vuelves a correr el seeder.
+        Produccion::query()
+            ->whereIn('animal_id', $animales->pluck('id'))
+            ->delete();
 
-            for ($i = 0; $i < 7; $i++) {
-                $estado = $loteInfo['estados'][$i % count($loteInfo['estados'])];
+        // Actualiza únicamente las hembras seleccionadas como lactancia.
+        // La condición sexo = F evita que un macho quede como lactancia por error.
+        Animal::query()
+            ->where('especie', 'Ovino')
+            ->where('sexo', 'F')
+            ->whereIn('arete', $ovejasEnLactancia)
+            ->update(['estado_productivo' => 'lactancia']);
 
-                $animal = Animal::create([
-                    'arete' => $arete++,
-                    'peso' => rand(20,200),
-                    'fecha_nac' => Carbon::now()->subYears(rand(1,6))->subMonths(rand(0,12)),
-                    'especie' => $loteInfo['especie'],
-                    'raza' => $loteInfo['raza'],
-                    'sexo' => $sexos[array_rand($sexos)],
-                    'estado_productivo' => $estado,
-                    'lote_id' => $lote->id,
-                ]);
+        // Recargamos animales después de actualizar estados.
+        $animales = Animal::query()
+            ->where('especie', 'Ovino')
+            ->get();
 
-                // Definir tendencia: 0=estable, 1=sube, 2=baja
-                $tendencia = rand(0,2);
+        foreach ($animales as $animal) {
+            // 1) Producción de leche: SOLO hembras ovinas en lactancia.
+            if ($this->puedeProducirLeche($animal, $ovejasEnLactancia)) {
+                $this->crearProduccionLeche($animal, $hoy);
+            }
 
-                for ($d = 7; $d >= 1; $d--) {
-                    $fechaProduccion = Carbon::now()->subDays($d);
-
-                    // Irregularidades por especie
-                    if(rand(1,100) <= $loteInfo['irregularidad']){
-                        continue; // día sin producción
-                    }
-
-                    foreach ($loteInfo['producciones'] as $tipo) {
-                        switch($tipo){
-                            case 'leche': 
-                                $min=5; $max=15; $unidad='litros'; 
-                                break;
-                            case 'lana': 
-                                $min=1; $max=3; $unidad='kg'; 
-                                break;
-                            case 'huevo': 
-                                $min=3; $max=12; $unidad='unidades'; 
-                                break;
-                            default: 
-                                $min=1; $max=10; $unidad='unidades';
-                        }
-
-                        // Ajuste por estado productivo
-                        switch($estado){
-                            case 'En crecimiento': 
-                                $factor = rand(0,50)/100; 
-                                break;
-                            case 'Gestante': 
-                                $factor = rand(50,80)/100; 
-                                break;
-                            case 'Lactante':
-                            case 'Postura': 
-                                $factor = rand(80,100)/100; 
-                                break;
-                            case 'Vaca seca':
-                            case 'Reproductor':
-                            case 'En descanso':
-                            case 'En entrenamiento': 
-                                $factor = rand(0,20)/100; 
-                                break;
-                            default: 
-                                $factor = 1;
-                        }
-
-                        $valorBase = rand($min*100,$max*100)/100 * $factor;
-
-                        // Aplicar tendencia
-                        switch($tendencia){
-                            case 1: 
-                                $valor = $valorBase * (1 + 0.05 * (7-$d)); 
-                                break; // sube
-                            case 2: 
-                                $valor = $valorBase * (1 - 0.05 * (7-$d)); 
-                                break; // baja
-                            default: 
-                                $valor = $valorBase; // estable
-                        }
-
-                        $valor = round($valor,2);
-
-                        if($valor > 0){
-                            Produccion::create([
-                                'animal_id' => $animal->id,
-                                'fecha' => $fechaProduccion,
-                                'tipo' => $tipo,
-                                'valor' => $valor,
-                                'unidad' => $unidad,
-                            ]);
-                        }
-                    }
-                }
+            // 2) Producción de lana: ovinos adultos o de reemplazo con edad suficiente.
+            if ($this->puedeProducirLana($animal)) {
+                $this->crearProduccionLana($animal, $hoy);
             }
         }
 
-        $this->command->info('Producciones diarias creadas: Leche, Huevo, Lana');
-        $this->command->info('Productos de faena (carne, grasa, cuero, plumas, canal) se manejarán posteriormente');
+        $this->command?->info('Producción ovina creada correctamente: leche solo para hembras en lactancia y lana para ovinos permitidos.');
+    }
+
+    private function puedeProducirLeche(Animal $animal, array $ovejasEnLactancia): bool
+    {
+        return $animal->especie === 'Ovino'
+            && $animal->sexo === 'F'
+            && in_array($animal->arete, $ovejasEnLactancia, true)
+            && $animal->estado_productivo === 'lactancia';
+    }
+
+    private function puedeProducirLana(Animal $animal): bool
+    {
+        if ($animal->especie !== 'Ovino') {
+            return false;
+        }
+
+        // Crías muy jóvenes todavía no se consideran para esquila productiva.
+        if ($animal->estado_productivo === 'En crecimiento') {
+            return false;
+        }
+
+        // Estados donde todavía puede tener producción de lana.
+        return in_array($animal->estado_productivo, [
+            'Reproductor',
+            'reemplazo',
+            'mantenimiento',
+            'vacia',
+            'empadre',
+            'gestante',
+            'lactancia',
+        ], true);
+    }
+
+    private function crearProduccionLeche(Animal $animal, Carbon $hoy): void
+    {
+        // Producción diaria simulada de los últimos 30 días.
+        // En ovinos de leche, se maneja en litros por día.
+        $base = $this->randomFloat(0.7, 2.4);
+        $tendencia = random_int(-1, 1); // -1 baja, 0 estable, 1 sube
+
+        for ($d = 29; $d >= 0; $d--) {
+            // Pequeña probabilidad de día sin registro/ordeña.
+            if (random_int(1, 100) <= 8) {
+                continue;
+            }
+
+            $factorDia = 1 + ($tendencia * 0.006 * (29 - $d));
+            $variacion = $this->randomFloat(0.88, 1.12);
+            $valor = round(max(0.2, $base * $factorDia * $variacion), 2);
+
+            Produccion::create([
+                'animal_id' => $animal->id,
+                'fecha'     => $hoy->copy()->subDays($d)->toDateString(),
+                'tipo'      => 'leche',
+                'valor'     => $valor,
+                'unidad'    => 'litros',
+            ]);
+        }
+    }
+
+    private function crearProduccionLana(Animal $animal, Carbon $hoy): void
+    {
+        // La lana no debería registrarse como producción diaria intensa.
+        // Se simulan 3 esquilas/recortes recientes para reportes históricos.
+        $fechas = [
+            $hoy->copy()->subMonths(8),
+            $hoy->copy()->subMonths(4),
+            $hoy->copy()->subDays(20),
+        ];
+
+        foreach ($fechas as $fecha) {
+            $valor = $this->valorLanaSegunAnimal($animal);
+
+            Produccion::create([
+                'animal_id' => $animal->id,
+                'fecha'     => $fecha->toDateString(),
+                'tipo'      => 'lana',
+                'valor'     => $valor,
+                'unidad'    => 'kg',
+            ]);
+        }
+    }
+
+    private function valorLanaSegunAnimal(Animal $animal): float
+    {
+        $peso = (float) ($animal->peso ?? 40);
+
+        // Machos adultos suelen dar más volumen por tamaño corporal.
+        if ($animal->sexo === 'M' && $animal->estado_productivo === 'Reproductor') {
+            return $this->randomFloat(2.4, 4.2);
+        }
+
+        // Reemplazos/jóvenes seleccionados producen menos.
+        if ($animal->estado_productivo === 'reemplazo' || $peso < 42) {
+            return $this->randomFloat(0.8, 1.8);
+        }
+
+        // Hembras adultas.
+        return $this->randomFloat(1.5, 3.2);
+    }
+
+    private function randomFloat(float $min, float $max): float
+    {
+        return round($min + mt_rand() / mt_getrandmax() * ($max - $min), 2);
     }
 }

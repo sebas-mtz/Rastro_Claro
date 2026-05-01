@@ -111,6 +111,8 @@ Route::post('eventos-salud/marcar-vencidos', [EventoSaludController::class, 'mar
      ->name('eventos-salud.marcar-vencidos');
 Route::patch('eventos-salud/{eventoSalud}/aplicar', [EventoSaludController::class, 'aplicar'])
      ->name('eventos-salud.aplicar');
+     Route::patch('eventos-salud/{eventoSalud}/completar', [EventoSaludController::class, 'completar'])
+     ->name('eventos-salud.completar');
 
 // El resource sin index, porque el index es /salud
 Route::resource('eventos-salud', EventoSaludController::class)

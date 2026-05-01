@@ -38,7 +38,7 @@ class EventoReproductivoController extends Controller
                 'id'         => $a->id,
                 'alias'      => $a->alias,
                 'arete'      => $a->arete,
-                'sexo' => in_array(strtolower($a->sexo), ['f', 'female', 'hembra']) ? 'hembra' : 'macho',
+                'sexo' => in_array(strtolower($a->sexo), ['f', 'female', 'hembra','m','macho']) ? 'hembra' : 'macho',
                 'especie'    => $a->especie,
                 'lote_id'    => $a->lote_id,
                 'lote_nombre'=> $a->lote?->nombre,

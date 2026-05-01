@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
 use App\Models\EventoReproductivo;
 use App\Models\ServicioReproductivo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -15,7 +15,7 @@ class Animal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id'
+        'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id','madre_id', 'padre_id'
     ];
 
     public function lote() {
@@ -228,6 +228,27 @@ class Animal extends Model
             'estado_reproductivo' => $this->estado_reproductivo,
         ];
     }
+    // app/Models/Animal.php
+
+public function madre(): BelongsTo
+{
+    return $this->belongsTo(Animal::class, 'madre_id');
+}
+
+public function padre(): BelongsTo
+{
+    return $this->belongsTo(Animal::class, 'padre_id');
+}
+
+public function crias(): HasMany
+{
+    return $this->hasMany(Animal::class, 'madre_id');
+}
+
+public function criasComopadre(): HasMany
+{
+    return $this->hasMany(Animal::class, 'padre_id');
+}
     public function pesajes()
 {
     return $this->hasMany(Pesaje::class);

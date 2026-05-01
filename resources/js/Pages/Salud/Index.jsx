@@ -353,11 +353,12 @@ function Salud({
                         <div className="p-5">
                             {tab === 'vacunas' && (
                                 <TabVacunaciones
-                                    pending={pending}
-                                    done={done}
-                                    onMarkDone={markDone}
-                                />
-                            )}
+                                vacunas={vacunas}
+                                pending={pending}
+                                done={done}
+                                onMarkDone={markDone}
+                            />
+                        )}
 
                             {tab === 'eventos' && <TabEventos eventos={eventos} />}
 

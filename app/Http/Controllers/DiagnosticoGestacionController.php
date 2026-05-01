@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DiagnosticoGestacion;
 use App\Models\EventoReproductivo;
+use App\Models\Animal;
+use App\Services\EstadoProductivoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class DiagnosticoGestacionController extends Controller
 {
     // POST /reproduccion/diagnosticos
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, EstadoProductivoService $estadoService): RedirectResponse
     {
         $datos = $request->validate([
             'hembra_id'                => 'required|exists:animals,id',
@@ -71,7 +73,8 @@ class DiagnosticoGestacionController extends Controller
                 'veterinario_id'           => $datos['veterinario_id'] ?? null,
                 'veterinario_externo'      => $datos['veterinario_externo'] ?? null,
             ]);
-
+            $hembra = Animal::findOrFail($datos['hembra_id']);
+            $estadoService->transicionPorEvento($hembra, 'diagnostico', $datos['resultado']);
             DB::commit();
 
             return redirect()->route('reproduccion.index')

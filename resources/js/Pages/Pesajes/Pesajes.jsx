@@ -102,7 +102,7 @@ function Pesajes() {
         if (valor < 0) return "border-red-200 bg-red-50 text-red-700";
         return "border-gray-200 bg-gray-50 text-gray-600";
     };
-
+    const rangoFechasInvalido = gFechaInicio && gFechaFin && gFechaInicio > gFechaFin;
     // ── Memos pestaña Animales ────────────────────────────────────────────────
     const animalSeleccionado = useMemo(
         () => animales.find((a) => String(a.id) === String(data.animal_id)) ?? null,
@@ -187,7 +187,12 @@ function Pesajes() {
 
     const clearForm = () => {
         reset();
-        setData("fecha", new Date().toISOString().split("T")[0]);
+        setData({
+            animal_id: "",
+            fecha: new Date().toISOString().split("T")[0],
+            peso: "",
+            notas: "",
+        });
     };
 
     const handleCreate = (e) => {
@@ -221,37 +226,37 @@ function Pesajes() {
     return (
         <div className="py-8 px-6 max-w-7xl mx-auto">
             {/* ENCABEZADO */}
-            <div className="flex flex-col gap-5 pb-2 md:flex-row md:items-start md:justify-between">
-                <div>
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
                     <h2 className="text-2xl font-bold text-gray-800">Pesajes</h2>
                     <p className="mt-1 text-gray-600">
                         Registro y seguimiento del peso de tus animales a lo largo del tiempo.
                     </p>
                 </div>
     
-                <div className="flex flex-wrap gap-3 space-y-6 mt-5">
-                    <button
-                        type="button"
-                        onClick={() => setTab("animales")}
-                        className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
-                    >
-                        <Scale size={18} className="text-blue-600" />
-                        Animales
-                    </button>
-    
-                    <button
-                        type="button"
-                        onClick={() => setTab("ganancia")}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
-                    >
-                        <TrendingUp size={18} />
-                        Ganancia por período
-                    </button>
+                <div className="flex flex-wrap gap-3 mt-5">
+      <button
+        type="button"
+        onClick={() => setTab("animales")}
+        className="h-10 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 rounded-lg flex items-center gap-2 transition"
+    >
+        <Scale size={18} className="text-blue-600" />
+        Animales
+    </button>
+
+    <button
+        type="button"
+        onClick={() => setTab("ganancia")}
+        className="h-10 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 rounded-lg flex items-center gap-2 transition"
+    >
+        <TrendingUp size={18} />
+        Ganancia por período
+    </button>
                 </div>
             </div>
     
             {/* TABS */}
-            <div className="flex gap-6 border-b pt-1 pb-4 text-gray-600 overflow-x-auto">
+            <div className="flex gap-6 border-b mt-2 pt-2 pb-4 text-gray-600 overflow-x-auto">
            {[
                 { key: "animales", label: "Animales", Icon: Scale },
                 { key: "ganancia", label: "Ganancia por período", Icon: TrendingUp },
@@ -713,7 +718,12 @@ function Pesajes() {
                         )}
                     </div>
                 </div>
-
+{/* ALERTA RANGO INVÁLIDO */}
+{rangoFechasInvalido && (
+    <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+        La fecha de inicio no puede ser mayor que la fecha fin.
+    </div>
+)}
                 {/* TARJETAS RESUMEN */}
                 {ganancias.length > 0 && (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

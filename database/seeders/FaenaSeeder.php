@@ -12,6 +12,7 @@ class FaenaSeeder extends Seeder
 {
     public function run(): void
     {
+        /*
         // Obtener animales disponibles (arete >= 100 y que no estén faenados o sacrificados)
         $animales = Animal::where('arete', '>=', 100)
             ->whereNotIn('id', function($query) {
@@ -134,5 +135,6 @@ class FaenaSeeder extends Seeder
         }
 
         $this->command->info('5 faenas creadas exitosamente');
+        */
     }
 }

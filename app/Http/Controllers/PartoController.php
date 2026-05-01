@@ -6,20 +6,21 @@ use App\Models\Animal;
 use App\Models\Cria;
 use App\Models\EventoReproductivo;
 use App\Models\Parto;
+use App\Services\EstadoProductivoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PartoController extends Controller
 {
-    // POST /reproduccion/partos
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, EstadoProductivoService $estadoService): RedirectResponse
     {
-            $datos = $request->validate([
+        $datos = $request->validate([
             'hembra_id'              => 'required|exists:animals,id',
             'lote_id'                => 'nullable|exists:lotes,id',
             'fecha'                  => 'required|date|before_or_equal:today',
-            'servicio_evento_id'       => 'nullable|exists:evento_reproductivos,id',
+            'servicio_evento_id'     => 'nullable|exists:evento_reproductivos,id',
+            'padre_id'               => 'nullable|exists:animals,id', // ← nuevo
             'tipo_parto'             => 'required|in:normal,distocico,cesarea',
             'asistencia_requerida'   => 'boolean',
             'complicaciones'         => 'boolean',
@@ -37,12 +38,16 @@ class PartoController extends Controller
 
         $madre = Animal::findOrFail($datos['hembra_id']);
 
-        // Buscar el padre desde el servicio vinculado si existe
+        // ── Resolver el padre ─────────────────────────────────────────────
+        // Prioridad 1: macho del servicio vinculado
+        // Prioridad 2: padre asignado manualmente en el formulario
         $padreId = null;
         if (!empty($datos['servicio_evento_id'])) {
             $eventoServicio = EventoReproductivo::with('servicio')
                 ->find($datos['servicio_evento_id']);
             $padreId = $eventoServicio?->servicio?->macho_id;
+        } elseif (!empty($datos['padre_id'])) {
+            $padreId = $datos['padre_id'];
         }
 
         try {
@@ -52,7 +57,7 @@ class PartoController extends Controller
             $evento = EventoReproductivo::create([
                 'hembra_id'     => $datos['hembra_id'],
                 'lote_id'       => $datos['lote_id'] ?? $madre->lote_id,
-                'user_id' => null,
+                'user_id'       => null,
                 'tipo_evento'   => 'parto',
                 'fecha'         => $datos['fecha'],
                 'costo'         => $datos['costo'] ?? null,
@@ -61,8 +66,8 @@ class PartoController extends Controller
 
             // 2 — Detalle del parto
             $parto = Parto::create([
-                'evento_id'               => $evento->id,
-                'servicio_evento_id'       => $datos['servicio_evento_id'] ?? null,
+                'evento_id'              => $evento->id,
+                'servicio_evento_id'     => $datos['servicio_evento_id'] ?? null,
                 'tipo_parto'             => $datos['tipo_parto'],
                 'asistencia_requerida'   => $datos['asistencia_requerida'] ?? false,
                 'complicaciones'         => $datos['complicaciones'] ?? false,
@@ -74,17 +79,18 @@ class PartoController extends Controller
             foreach ($datos['crias'] as $criaDatos) {
                 $animalId = null;
 
-                // Si nació viva crear animal en el sistema
                 if ($criaDatos['condicion'] === 'vivo') {
                     $nuevoAnimal = Animal::create([
                         'especie'           => $madre->especie,
                         'raza'              => $madre->raza,
                         'arete'             => $criaDatos['arete'] ?? null,
-                        'sexo' => $criaDatos['sexo'] === 'macho' ? 'M' : 'F',
+                        'sexo'              => $criaDatos['sexo'] === 'macho' ? 'M' : 'F',
                         'fecha_nac'         => $datos['fecha'],
                         'peso'              => $criaDatos['peso_nacimiento'] ?? null,
-                        'estado_productivo' => 'activo',
+                        'estado_productivo' => EstadoProductivoService::estadoInicial(),
                         'lote_id'           => $madre->lote_id,
+                        'madre_id'          => $madre->id,
+                        'padre_id'          => $padreId, // ← viene del servicio o del formulario
                     ]);
                     $animalId = $nuevoAnimal->id;
                 }
@@ -100,6 +106,9 @@ class PartoController extends Controller
                 ]);
             }
 
+            // 4 — La madre pasa a lactancia automáticamente
+            $estadoService->transicionPorEvento($madre, 'parto');
+
             DB::commit();
 
             return redirect()->route('reproduccion.index')
@@ -107,7 +116,8 @@ class PartoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage()); 
+            return redirect()->back()
+                ->with('error', 'Error al registrar el parto: ' . $e->getMessage());
         }
     }
 }
