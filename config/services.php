@@ -1,38 +1,44 @@
 <?php
 
+// ============================================================
+// Agrega estas entradas a tu config/services.php existente
+// ============================================================
+
 return [
+
+    // ... tus otros servicios (mailgun, ses, etc.) ...
 
     /*
     |--------------------------------------------------------------------------
-    | Third Party Services
+    | Stripe
     |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
     */
-
-    'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+    'stripe' => [
+        'key'             => env('STRIPE_KEY'),
+        'secret'          => env('STRIPE_SECRET'),
+        'webhook_secret'  => env('STRIPE_WEBHOOK_SECRET'),
+        'currency'        => env('STRIPE_CURRENCY', 'mxn'),
+        'premium_price'   => env('PREMIUM_PRICE', 19900), // en centavos
     ],
 
-    'resend' => [
-        'key' => env('RESEND_KEY'),
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAI (usado por PrediccionController)
+    |--------------------------------------------------------------------------
+    */
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
     ],
 
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-    ],
-
-    'slack' => [
-        'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
-        ],
+    /*
+    |--------------------------------------------------------------------------
+    | Google (Socialite)
+    |--------------------------------------------------------------------------
+    */
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI'),
     ],
 
 ];

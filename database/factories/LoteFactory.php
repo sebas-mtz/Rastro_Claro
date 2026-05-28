@@ -17,7 +17,10 @@ class LoteFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombre'          => 'Lote ' . fake()->word(),
+            'corral_potrero'  => 'Corral-' . fake()->numberBetween(1, 20),
+            'descripcion'     => fake()->optional()->sentence(),
+            'responsable_id'  => null,
         ];
     }
 }

@@ -9,22 +9,50 @@ class Alimentacion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['animal_id','lote_id','fecha','racion_id','consumo_kg','costo','proveedor_id'];
+    protected $table = 'alimentacions';
 
-    public function animal() {
+    protected $fillable = [
+        'fecha',
+        'hora',
+        'tipo',
+        'cantidad',
+        'unidad',
+        'animal_id',
+        'lote_id',
+        'racion_id',
+        'programacion_alimentacion_id',
+        'generado_automaticamente',
+        'snapshot_composicion',
+        'snapshot_nutricion',
+        'notas',
+    ];
+
+    protected $casts = [
+        'snapshot_composicion' => 'array',  // ← para que Laravel serialize/deserialize JSON automáticamente
+        'snapshot_nutricion'   => 'array',
+        'generado_automaticamente' => 'boolean',
+    ];
+
+    public function animal()
+    {
         return $this->belongsTo(Animal::class);
     }
 
-    public function lote() {
+    public function lote()
+    {
         return $this->belongsTo(Lote::class);
     }
 
-    public function racion() {
+    public function racion()
+    {
         return $this->belongsTo(Racion::class);
     }
 
-    public function proveedor() {
-        return $this->belongsTo(User::class,'proveedor_id');
+    public function programacion()
+    {
+        return $this->belongsTo(
+            ProgramacionAlimentacion::class,
+            'programacion_alimentacion_id'
+        );
     }
 }
-

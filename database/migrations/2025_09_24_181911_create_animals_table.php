@@ -10,13 +10,23 @@ return new class extends Migration {
             $table->id();
             $table->string('especie');
             $table->string('raza')->nullable();
-            $table->string('arete')->unique();
+            $table->string('arete');
+            $table->string('alias')->nullable();
             $table->enum('sexo', ['M','F']);
             $table->date('fecha_nac')->nullable();
             $table->decimal('peso', 6, 2)->nullable();
             $table->decimal('BCS', 3, 1)->nullable();
             $table->string('estado_productivo')->nullable();
             $table->foreignId('lote_id')->nullable()->constrained('lotes')->onDelete('set null');
+            $table->foreignId('madre_id')
+          ->nullable()
+          ->constrained('animals')
+          ->nullOnDelete();
+
+    $table->foreignId('padre_id')
+          ->nullable()
+          ->constrained('animals')
+          ->nullOnDelete();
             $table->timestamps();
         });
     }

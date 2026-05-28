@@ -4,30 +4,58 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('alimentacions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('animal_id')->nullable()->constrained('animals')->onDelete('cascade');
-            $table->foreignId('lote_id')->nullable()->constrained('lotes')->onDelete('cascade');
+
+            // 📅 CUÁNDO
             $table->date('fecha');
-            $table->foreignId('racion_id')->nullable()->constrained('racions')->onDelete('set null');
-            $table->decimal('consumo_kg', 6, 2)->nullable();
-            $table->decimal('costo', 8, 2)->nullable();
-            $table->foreignId('proveedor_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->time('hora')->nullable(); // 🔥 importante para programación
+
+            // 📦 DATOS DE CONSUMO
+            $table->decimal('cantidad', 10, 2);
+            $table->string('unidad', 20);
+
+            // 🐄 DESTINO (solo uno)
+            $table->foreignId('animal_id')
+                ->nullable()
+                ->constrained('animals')
+                ->nullOnDelete();
+
+            $table->foreignId('lote_id')
+                ->nullable()
+                ->constrained('lotes')
+                ->nullOnDelete();
+
+            // 🍽️ RACIÓN
+            $table->foreignId('racion_id')
+                ->nullable()
+                ->constrained('racions')
+                ->nullOnDelete();
+
+            // 🔁 PROGRAMACIÓN (si fue automática)
+            $table->foreignId('programacion_alimentacion_id')
+                ->nullable()
+                ->constrained('programacion_alimentacions')
+                ->nullOnDelete();
+
+            $table->boolean('generado_automaticamente')
+                ->default(false);
+                $table->json('snapshot_composicion')->nullable();
+ 
+                // Guarda los valores nutrimentales calculados en el momento del consumo.
+                // Estructura: { MS, PB, EM, FDN }
+                $table->json('snapshot_nutricion')->nullable();
+            // 📝 EXTRA
+            $table->string('tipo')->nullable(); // puedes dejarlo opcional
+            $table->text('notas')->nullable();
+
             $table->timestamps();
         });
-        
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('alimentacions');

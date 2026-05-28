@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('animal_id')->constrained('animals')->onDelete('cascade');
             $table->date('fecha');
-            $table->enum('tipo', ['leche','lana','huevo','carne','grasa','peso','canal']);
+            $table->enum('tipo', ['leche','lana','huevo','carne','grasa','cuero','plumas', 'canal']);
             $table->decimal('valor', 10, 2)->nullable();
             $table->string('unidad')->nullable();
             $table->timestamps();
         });
-        
+
     }
 
     /**

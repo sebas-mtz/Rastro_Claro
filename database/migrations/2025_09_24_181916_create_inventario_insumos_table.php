@@ -17,7 +17,19 @@ return new class extends Migration
             $table->string('tipo');
             $table->decimal('existencias', 10, 2)->default(0);
             $table->string('unidad')->nullable();
+            $table->decimal('MS', 5, 2)->nullable();
+            $table->decimal('PB', 5, 2)->nullable();
+            $table->decimal('EM', 5, 2)->nullable();
+            $table->decimal('FDN', 5, 2)->nullable();
+            $table->string('minerales')->nullable();
+            $table->string('marca')->nullable();
             $table->decimal('costo_promedio', 8, 2)->nullable();
+            $table->boolean('auto_rellenar')->default(false);
+$table->integer('dias_rellenado')->nullable();
+$table->decimal('cantidad_rellenado', 10, 2)->nullable();
+$table->date('ultima_fecha_rellenado')->nullable();
+$table->boolean('activo')->default(true);
+$table->timestamp('desactivado_at')->nullable();
             $table->timestamps();
         });
         

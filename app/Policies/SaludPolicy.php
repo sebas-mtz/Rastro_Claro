@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Salud;
+use App\Models\EventoSalud;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -19,7 +19,7 @@ class SaludPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Salud $salud): bool
+    public function view(User $user, EventoSalud $salud): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class SaludPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Salud $salud): bool
+    public function update(User $user, EventoSalud $salud): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class SaludPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Salud $salud): bool
+    public function delete(User $user, EventoSalud $salud): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class SaludPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Salud $salud): bool
+    public function restore(User $user, EventoSalud $salud): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class SaludPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Salud $salud): bool
+    public function forceDelete(User $user, EventoSalud $salud): bool
     {
         return false;
     }
