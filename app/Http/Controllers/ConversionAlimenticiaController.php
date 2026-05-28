@@ -176,7 +176,7 @@ class ConversionAlimenticiaController extends Controller
         ->filter(fn($r) => $r['kg_total'] > 0)
         ->values();
 
-        return Inertia::render('/ConversionAlimenticia', [
+        return Inertia::render('Alimentacion/tabs/ConversionAlimenticia', [
             'porAnimal'   => $porAnimal,
             'porLote'     => $porLote,
             'fechaInicio' => $fechaInicio,

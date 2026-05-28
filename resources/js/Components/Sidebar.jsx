@@ -113,6 +113,17 @@ export default function Sidebar() {
             </Link>
           </li>
 
+          <li>
+            <Link
+              href={route('reportes.index')}
+              className={
+                'sl-item ' + (isActive('/Reportes') ? 'active' : '')
+              }
+            >
+              <span className="sl-ico"></span>
+              <span>Reportes</span>
+            </Link>
+          </li>
 
           {/* 🔐 Módulo PREMIUM: Predicciones */}
           <li>

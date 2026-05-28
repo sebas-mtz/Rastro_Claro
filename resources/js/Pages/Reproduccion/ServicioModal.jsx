@@ -20,10 +20,12 @@ export default function ServicioModal({ show, onClose, hembras = [], machos = []
   });
 
   const hembraSeleccionada = hembras.find(h => h.id === Number(data.hembra_id));
-  const machosFiltrados = hembraSeleccionada
-    ? machos.filter(m => m.especie === hembraSeleccionada.especie)
-    : machos;
 
+  const machosFiltrados = hembraSeleccionada
+  ? machos.filter(m => m.especie === hembraSeleccionada.especie && m.sexo === 'macho')
+  : machos;
+
+console.log("Machos filtrados:", machosFiltrados);  // Lo que se va a renderizar
   const esMontaNatural = data.tipo_servicio === "monta_natural";
   const esIA = ["inseminacion_artificial", "iatf"].includes(data.tipo_servicio);
 

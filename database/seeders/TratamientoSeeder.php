@@ -155,7 +155,7 @@ class TratamientoSeeder extends Seeder
 
             $fechaInicio = Carbon::parse($t['fecha_inicio']);
             $fechaFin    = $fechaInicio->copy()->addDays($t['duracion_dias']);
-            $estado      = $fechaFin->lessThanOrEqualTo($hoy) ? 'completado' : 'activo';
+            $estado      = 'activo';
 
             DB::table('tratamientos')->insert([
                 'animal_id'   => $animalId,

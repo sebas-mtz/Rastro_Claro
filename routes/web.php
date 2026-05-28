@@ -29,7 +29,7 @@ use App\Http\Controllers\TratamientoController;
 use App\Http\Controllers\VacunaController;
 use App\Http\Controllers\ConversionAlimenticiaController;
 use App\Http\Controllers\GenealogiasController;
-
+use App\Http\Controllers\ReportesController;
 
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])
@@ -291,6 +291,15 @@ Route::get('/genealogias/{animal}', [GenealogiasController::class, 'show'])
         // 🔮 Módulo de Predicciones (Premium)
     Route::get('/predicciones', [PrediccionController::class, 'index'])
         ->name('predicciones.index');
+});
+
+Route::prefix('reportes')->name('reportes.')->group(function () {
+  Route::get('/', [ReportesController::class, 'index'])->name('index');
+  Route::get('/exportar/pdf', [ReportesController::class, 'exportarPdf'])->name('pdf');
+  Route::get('/exportar/xml', [ReportesController::class, 'exportarXml'])->name('xml');
+
+  Route::get('/ficha/pdf', [ReportesController::class, 'exportarFichaPdf'])
+      ->name('ficha.pdf');
 });
 
 /*
