@@ -6,23 +6,24 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAnimalRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        // Permitir a cualquier usuario autenticado que llegue a este request
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'especie'           => ['required', 'string', 'max:255'],
+            'raza'              => ['nullable', 'string', 'max:255'],
+            'arete'             => ['required', 'string', 'max:255', 'unique:animals,arete'],
+            'sexo'              => ['required', 'in:M,F'],
+            'fecha_nac'         => ['nullable', 'date'],
+            'peso'              => ['nullable', 'numeric', 'min:0'],
+            'BCS'               => ['nullable', 'numeric', 'min:0', 'max:9'],
+            'estado_productivo' => ['nullable', 'string', 'max:255'],
+            'lote_id'           => ['nullable', 'exists:lotes,id'],
         ];
     }
 }

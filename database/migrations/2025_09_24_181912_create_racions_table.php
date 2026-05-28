@@ -19,7 +19,10 @@ return new class extends Migration
             $table->decimal('EM', 5, 2)->nullable();
             $table->decimal('FDN', 5, 2)->nullable();
             $table->string('minerales')->nullable();
+            $table->decimal('costo_total', 10, 2)->nullable();
             $table->decimal('precio_kg', 8, 2)->nullable();
+            $table->boolean('activo')->default(true);
+            $table->timestamp('archivado_at')->nullable();
             $table->timestamps();
         });
         
