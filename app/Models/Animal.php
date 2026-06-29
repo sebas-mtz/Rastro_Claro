@@ -15,7 +15,8 @@ class Animal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id','madre_id', 'padre_id'
+        'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id',
+        'madre_id', 'padre_id', 'padre_externo_id'
     ];
 
     public function lote() {
@@ -57,7 +58,7 @@ class Animal extends Model
                     ->orderBy('fecha', 'desc');
     }
  
-    // Servicios en los que este animal participó como toro
+    // Servicios en los que este animal participó como Semental
     public function serviciosComoMacho(): HasMany
     {
         return $this->hasMany(ServicioReproductivo::class, 'macho_id');
@@ -252,5 +253,14 @@ public function criasComopadre(): HasMany
     public function pesajes()
 {
     return $this->hasMany(Pesaje::class);
+}
+public function padreExterno(): BelongsTo
+{
+    return $this->belongsTo(DonadorExterno::class, 'padre_externo_id');
+}
+
+public function getPadreGenealogicoAttribute()
+{
+    return $this->padre ?? $this->padreExterno;
 }
 }

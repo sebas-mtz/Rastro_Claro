@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
 import { ArrowLeft, PawPrint, Edit, PlusCircle, Eye, Camera, Scale, Utensils, GitBranch } from "lucide-react";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -17,6 +17,17 @@ export default function ShowAnimal({
     razasPorEspecie,
     estadosProductivos,
 }) {
+    const { data, setData, post, processing } = useForm({
+        imagen: null,
+    });
+    
+    const guardar = (e) => {
+        e.preventDefault();
+    
+        post(route("animales.imagen", animal.id), {
+            forceFormData: true,
+        });
+    };
     const [selectedAnimal, setSelectedAnimal] = useState(null);
     const [isEditOpen, setIsEditOpen]         = useState(false);
     const [showAddProduccion, setShowAddProduccion] = useState(false);
@@ -99,19 +110,39 @@ export default function ShowAnimal({
                             </button>
                         </div>
                     </div>
-
                     <div className="grid md:grid-cols-2 gap-8">
-                        <div className="flex justify-center items-center">
-                            <div className="relative">
-                                <div className="w-48 h-48 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center hover:bg-gray-100 transition cursor-pointer">
-                                    <Camera className="w-12 h-12 text-gray-400 mb-2" />
-                                    <span className="text-sm text-gray-500 text-center px-4">Agregar imagen</span>
-                                </div>
-                                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                                    {animal.especie}
-                                </div>
-                            </div>
-                        </div>
+                    <form onSubmit={guardar}>
+                            <label className="relative w-48 h-48 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => setData("imagen", e.target.files[0])}
+                                />
+
+                                {data.imagen ? (
+                                    <img
+                                        src={URL.createObjectURL(data.imagen)}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="text-center">
+                                        <Camera className="w-12 h-12 text-gray-400 mx-auto" />
+                                        <span className="text-sm text-gray-500">Agregar imagen</span>
+                                    </div>
+                                )}
+                            </label>
+
+                            {data.imagen && (
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+                                >
+                                    Guardar imagen
+                                </button>
+                            )}
+                        </form>
 
                         <div className="space-y-3">
                             <Data label="Especie"             value={animal.especie} />

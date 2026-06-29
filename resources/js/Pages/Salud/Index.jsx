@@ -37,6 +37,7 @@ function Salud({
     events = {},
     alerts = {},
     animals = [],
+    lotes = [],
     vacunas = [],
     pending = [],
     done = [],
@@ -383,6 +384,7 @@ function Salud({
                 isOpen={citaModalOpen}
                 onClose={() => setCitaModalOpen(false)}
                 animals={animals}
+                lotes={lotes}
                 vacunas={vacunas}
             />
         </>

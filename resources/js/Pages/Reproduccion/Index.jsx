@@ -12,7 +12,7 @@ import DiagnosticoModal from "./DiagnosticoModal.jsx";
 import PartoModal from "./PartoModal";
 import CalendarioReproductivo from "./CalendarioReproductivo";
 
-function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [] }) {
+function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  pajillas = [] }) {
 
   const [tab, setTab] = useState("eventos");
 
@@ -211,13 +211,14 @@ function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [] }) {
       </div>
 
       {/* MODALES */}
-      <ServicioModal
-        show={modalServicio}
-        onClose={() => setModalServicio(false)}
-        hembras={hembras}
-        machos={machos}
-        lotes={lotes}
-      />
+   <ServicioModal
+  show={modalServicio}
+  onClose={() => setModalServicio(false)}
+  hembras={hembras}
+  machos={machos}
+  lotes={lotes}
+  pajillas={pajillas}
+/>
       <DiagnosticoModal
         show={modalDiagnostico}
         onClose={() => setModalDiagnostico(false)}

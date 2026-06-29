@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('eventos_salud', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('animal_id')->constrained('animals')->onDelete('cascade');
+            $table->foreignId('animal_id')->nullable()->constrained('animals')->onDelete('cascade');
+            $table->foreignId('lote_id')
+            ->nullable()
+            ->constrained('lotes')
+            ->nullOnDelete();
             $table->date('fecha_programada');
             $table->string('diagnostico');
             $table->string('tratamiento')->nullable();

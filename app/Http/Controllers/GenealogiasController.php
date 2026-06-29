@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Animal;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use App\Models\DonadorExterno;
 class GenealogiasController extends Controller
 {
     /**
@@ -54,13 +54,12 @@ class GenealogiasController extends Controller
 
             // 1) Leer madre_id / padre_id de los animales del nivel anterior
             $parentescos = Animal::whereIn('id', $idsActuales)
-                ->get(['id', 'madre_id', 'padre_id']);
-
+            ->get(['id', 'madre_id', 'padre_id', 'padre_externo_id']);
             $map            = [];
             $idsSiguientes  = [];
 
             foreach ($parentescos as $a) {
-                $map[$a->id] = ['madre_id' => $a->madre_id, 'padre_id' => $a->padre_id];
+                $map[$a->id] = ['madre_id' => $a->madre_id, 'padre_id' => $a->padre_id, 'padre_externo_id' => $a->padre_externo_id,];
                 if ($a->madre_id) $idsSiguientes[] = $a->madre_id;
                 if ($a->padre_id) $idsSiguientes[] = $a->padre_id;
             }
@@ -75,8 +74,31 @@ class GenealogiasController extends Controller
                 ->keyBy('id')
                 ->map(fn($a) => $this->formatAnimal($a))
                 ->toArray();
-
-            $niveles[$gen] = compact('map', 'datos');
+                $idsExternos = $parentescos
+                ->pluck('padre_externo_id')
+                ->filter()
+                ->unique()
+                ->values();
+            
+            $datosExternos = DonadorExterno::whereIn('id', $idsExternos)
+                ->get()
+                ->keyBy('id')
+                ->map(fn ($donador) => [
+                    'id' => $donador->id,
+                    'arete' => $donador->codigo,
+                    'alias' => $donador->nombre,
+                    'sexo' => 'M',
+                    'raza' => $donador->raza,
+                    'especie' => null,
+                    'fecha_nac' => null,
+                    'estado' => null,
+                    'madre_id' => null,
+                    'padre_id' => null,
+                    'padre_externo_id' => null,
+                    'tipo' => 'externo',
+                ])
+                ->toArray();
+            $niveles[$gen] = compact('map', 'datos', 'datosExternos');
 
             $idsActuales = $idsSiguientes;
         }
@@ -96,10 +118,11 @@ class GenealogiasController extends Controller
 
         $map   = $niveles[$genActual]['map']   ?? [];
         $datos = $niveles[$genActual]['datos']  ?? [];
-
+        $datosExternos = $niveles[$genActual]['datosExternos'] ?? [];
         $parentesco = $map[$animalId] ?? null;
         $madreId    = $parentesco['madre_id'] ?? null;
         $padreId    = $parentesco['padre_id'] ?? null;
+        $padreExternoId = $parentesco['padre_externo_id'] ?? null;
 
         $nodoMadre = null;
         $nodoPadre = null;
@@ -117,7 +140,15 @@ class GenealogiasController extends Controller
                 $this->armarArbolAncestros($padreId, $niveles, $genActual + 1, $maxGen)
             );
         }
-
+        elseif ($padreExternoId && isset($datosExternos[$padreExternoId])) {
+            $nodoPadre = array_merge(
+                $datosExternos[$padreExternoId],
+                [
+                    'padre' => null,
+                    'madre' => null,
+                ]
+            );
+        }
         return ['padre' => $nodoPadre, 'madre' => $nodoMadre];
     }
 
@@ -186,6 +217,8 @@ class GenealogiasController extends Controller
             'estado'    => $animal->estado_productivo,
             'madre_id'  => $animal->madre_id,
             'padre_id'  => $animal->padre_id,
+            'padre_externo_id' => $animal->padre_externo_id,
+'tipo' => 'interno',
         ];
     }
 }

@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('alimentacion:generar-programadas')->everyMinute();
+
+Schedule::command('tareas:enviar-recordatorios')
+    ->everyMinute()
+    ->withoutOverlapping();

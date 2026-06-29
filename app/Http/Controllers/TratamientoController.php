@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTratamientoRequest;
 use App\Models\Animal;
 use App\Models\EventoSalud;
+use App\Models\Lote;
 use App\Models\Tratamiento;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -16,11 +17,15 @@ class TratamientoController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Tratamiento::with(['animal', 'eventoSalud', 'user'])
+        $query = Tratamiento::with(['animal', 'lote', 'eventoSalud', 'user'])
             ->latest('fecha_inicio');
 
         if ($request->filled('animal_id')) {
             $query->where('animal_id', $request->animal_id);
+        }
+
+        if ($request->filled('lote_id')) {
+            $query->where('lote_id', $request->lote_id);
         }
 
         if ($request->filled('estado')) {
@@ -38,22 +43,28 @@ class TratamientoController extends Controller
 
         return Inertia::render('Tratamientos/Index', [
             'tratamientos' => $tratamientos,
-            'filtros'      => $request->only(['animal_id', 'estado']),
+            'filtros'      => $request->only(['animal_id', 'lote_id', 'estado']),
         ]);
     }
 
     public function create(Request $request): Response
     {
         return Inertia::render('Tratamientos/Create', [
-            'animal_id'      => $request->integer('animal_id') ?: null,
-            'salud_id'       => $request->integer('salud_id') ?: null,
-            'animales'       => Animal::orderBy('nombre')->get(['id', 'nombre', 'numero_arete']),
-            // Eventos de salud del animal para vincular el tratamiento a un diagnóstico
-            'eventos_salud'  => $request->filled('animal_id')
-                ? EventoSalud::where('animal_id', $request->animal_id)
+            'animal_id'     => $request->integer('animal_id') ?: null,
+            'lote_id'       => $request->integer('lote_id') ?: null,
+            'salud_id'      => $request->integer('salud_id') ?: null,
+            'animales'      => Animal::orderBy('nombre')->get(['id', 'nombre', 'numero_arete']),
+            'lotes'         => Lote::orderBy('nombre')->get(['id', 'nombre']),
+            // Eventos de salud del animal o lote para vincular el tratamiento a un diagnóstico
+            'eventos_salud' => match (true) {
+                $request->filled('animal_id') => EventoSalud::where('animal_id', $request->animal_id)
                     ->orderByDesc('fecha_programada')
-                    ->get(['id', 'diagnostico', 'fecha_programada'])
-                : [],
+                    ->get(['id', 'diagnostico', 'fecha_programada']),
+                $request->filled('lote_id') => EventoSalud::where('lote_id', $request->lote_id)
+                    ->orderByDesc('fecha_programada')
+                    ->get(['id', 'diagnostico', 'fecha_programada']),
+                default => [],
+            },
         ]);
     }
 
@@ -71,7 +82,7 @@ class TratamientoController extends Controller
 
     public function show(Tratamiento $tratamiento): Response
     {
-        $tratamiento->load(['animal', 'eventoSalud', 'user']);
+        $tratamiento->load(['animal', 'lote', 'eventoSalud', 'user']);
         $tratamiento->dias_restantes = $tratamiento->diasRestantes();
         $tratamiento->esta_vencido   = $tratamiento->estaVencido();
 
@@ -83,9 +94,13 @@ class TratamientoController extends Controller
     public function edit(Tratamiento $tratamiento): Response
     {
         return Inertia::render('Tratamientos/Edit', [
-            'tratamiento'  => $tratamiento->load(['eventoSalud']),
-            'animales'     => Animal::orderBy('nombre')->get(['id', 'nombre', 'numero_arete']),
-            'eventos_salud' => EventoSalud::where('animal_id', $tratamiento->animal_id)
+            'tratamiento'   => $tratamiento->load(['eventoSalud']),
+            'animales'      => Animal::orderBy('nombre')->get(['id', 'nombre', 'numero_arete']),
+            'lotes'         => Lote::orderBy('nombre')->get(['id', 'nombre']),
+            'eventos_salud' => EventoSalud::where(function ($q) use ($tratamiento) {
+                    $q->where('animal_id', $tratamiento->animal_id)
+                      ->orWhere('lote_id', $tratamiento->lote_id);
+                })
                 ->orderByDesc('fecha_programada')
                 ->get(['id', 'diagnostico', 'fecha_programada']),
         ]);

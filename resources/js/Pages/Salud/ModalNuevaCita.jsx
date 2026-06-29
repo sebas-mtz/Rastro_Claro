@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import ModalAnimalSelect from './ModalAnimalSelect';
-
+import ModalLoteSelect from './ModalLoteSelect';
 /**
  * Modal completo para registrar un EventoSalud.
  * Muestra campos dinámicos según el tipo seleccionado.
@@ -12,12 +12,14 @@ import ModalAnimalSelect from './ModalAnimalSelect';
  *  - animals  : Animal[]
  *  - vacunas  : Vacuna[]  ← catálogo de vacunas del sistema
  */
-export default function ModalNuevaCita({ isOpen, onClose, animals = [], vacunas = [] }) {
+export default function ModalNuevaCita({ isOpen, onClose, animals = [],   lotes = [],    vacunas = [] }) {
     const [animalModalOpen, setAnimalModalOpen] = useState(false);
+    const [loteModalOpen, setLoteModalOpen] = useState(false);
     const panelRef = useRef(null);
 
     const { data, setData, post, processing, reset, errors } = useForm({
         animal_id:        '',
+        lote_id: '',
         tipo:             'vacunacion',
         fecha_programada: '',
         fecha_aplicacion: '',
@@ -71,6 +73,14 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [], vacunas 
     }
 
     const selectedAnimal = animals.find(a => a.id === data.animal_id);
+    const selectedLote = lotes.find(l => l.id === data.lote_id);
+
+const loteLabel = selectedLote
+    ? [
+        selectedLote.nombre ?? '',
+        selectedLote.corral_potrero ? `(${selectedLote.corral_potrero})` : '',
+      ].filter(Boolean).join(' ')
+    : '';
     const animalLabel = selectedAnimal
         ? [
             selectedAnimal.arete   ? `#${selectedAnimal.arete}` : '',
@@ -215,29 +225,77 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [], vacunas 
 
                     <hr style={css.divider} />
 
-                    {/* ── Animal ───────────────────────────────── */}
-                    <fieldset style={css.fieldset}>
-                        <span style={css.sectionTitle}>Animal</span>
+                 {/* ── Destino: Animal o Lote ───────────────── */}
+                        <fieldset style={css.fieldset}>
+                            <span style={css.sectionTitle}>Destino</span>
 
-                        <label style={css.label}>
-                            Animal *
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                <input
-                                    type="text" readOnly
-                                    placeholder="Ningún animal seleccionado"
-                                    value={animalLabel}
-                                    style={{ ...css.input, flex: 1, backgroundColor: '#f9fafb', cursor: 'default' }}
-                                />
-                                <button type="button" className="btn primary"
-                                    style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
-                                    onClick={() => setAnimalModalOpen(true)}>
-                                    Seleccionar
-                                </button>
-                            </div>
-                            {errors.animal_id && <span style={css.error}>{errors.animal_id}</span>}
-                        </label>
-                    </fieldset>
+                            <label style={css.label}>
+                                Animal
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        placeholder="Ningún animal seleccionado"
+                                        value={animalLabel}
+                                        style={{
+                                            ...css.input,
+                                            flex: 1,
+                                            backgroundColor: '#f9fafb',
+                                            cursor: 'default',
+                                        }}
+                                    />
 
+                                    <button
+                                        type="button"
+                                        className="btn primary"
+                                        style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                                        onClick={() => setAnimalModalOpen(true)}
+                                    >
+                                        Seleccionar
+                                    </button>
+                                </div>
+
+                                {errors.animal_id && (
+                                    <span style={css.error}>{errors.animal_id}</span>
+                                )}
+                            </label>
+
+                            <label style={css.label}>
+                                Lote
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        placeholder="Ningún lote seleccionado"
+                                        value={loteLabel}
+                                        style={{
+                                            ...css.input,
+                                            flex: 1,
+                                            backgroundColor: '#f9fafb',
+                                            cursor: 'default',
+                                        }}
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="btn primary"
+                                        style={{ whiteSpace: 'nowrap', flexShrink: 0 }}
+                                        onClick={() => setLoteModalOpen(true)}
+                                    >
+                                        Seleccionar
+                                    </button>
+                                </div>
+
+                                {errors.lote_id && (
+                                    <span style={css.error}>{errors.lote_id}</span>
+                                )}
+                            </label>
+
+                            <span style={css.labelHint}>
+                                Selecciona un animal o un lote, no ambos.
+                            </span>
+                        </fieldset>
+                    
                     <hr style={css.divider} />
 
                     {/* ══════════════════════════════════════════
@@ -388,12 +446,12 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [], vacunas 
 
                     {/* Errores sin campo específico */}
                     {Object.keys(errors).some(k =>
-                        !['animal_id','vacuna_id','dosis','lote_vacuna','diagnostico',
+                        !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna','diagnostico',
                           'tratamiento','fecha_programada','responsable','observaciones'].includes(k)
                     ) && (
                         <div style={css.error}>
                             {Object.entries(errors)
-                                .filter(([k]) => !['animal_id','vacuna_id','dosis','lote_vacuna',
+                                .filter(([k]) => !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna',
                                     'diagnostico','tratamiento','fecha_programada',
                                     'responsable','observaciones'].includes(k))
                                 .map(([, v]) => v).join(' · ')}
@@ -419,10 +477,27 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [], vacunas 
                 isOpen={animalModalOpen}
                 onClose={() => setAnimalModalOpen(false)}
                 onSelect={(animal) => {
-                    setData('animal_id', animal.id);
+                    setData(prev => ({
+                        ...prev,
+                        animal_id: animal.id,
+                        lote_id: '',
+                    }));
                     setAnimalModalOpen(false);
                 }}
                 animals={animals}
+            />
+            <ModalLoteSelect
+                isOpen={loteModalOpen}
+                onClose={() => setLoteModalOpen(false)}
+                onSelect={(lote) => {
+                    setData(prev => ({
+                        ...prev,
+                        lote_id: lote.id,
+                        animal_id: '',
+                    }));
+                    setLoteModalOpen(false);
+                }}
+                lotes={lotes}
             />
         </div>
     );

@@ -18,7 +18,9 @@ class Lote extends Model
     {
         return $this->morphMany(Venta::class, 'vendible');
     }
-
+    public function salud() {
+        return $this->hasMany(EventoSalud::class);
+    }
     public function responsable() {
         return $this->belongsTo(User::class,'responsable_id');
     } /** @use HasFactory<\Database\Factories\LoteFactory> */

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X} from "lucide-react";
 
-export default function ServicioModal({ show, onClose, hembras = [], machos = [], lotes = [] }) {
+export default function ServicioModal({ show, onClose, hembras = [], machos = [],   pajillas = [],  lotes = [] }) {
 
   const { data, setData, post, processing, errors, reset } = useForm({
     hembra_id:       "",
@@ -10,15 +10,24 @@ export default function ServicioModal({ show, onClose, hembras = [], machos = []
     fecha:           new Date().toISOString().split("T")[0],
     tipo_servicio:   "monta_natural",
     macho_id:        "",
-    pajilla_codigo:  "",
-    pajilla_raza:    "",
-    pajilla_origen:  "",
+    pajilla_id:  "",
     tecnico_externo: "",
     numero_servicio: 1,
     costo:           "",
     observaciones:   "",
   });
-
+  const cambiarTipoServicio = (e) => {
+    const tipo = e.target.value;
+  
+    setData((current) => ({
+      ...current,
+      tipo_servicio: tipo,
+      macho_id: tipo === "monta_natural" ? current.macho_id : "",
+      pajilla_id: ["inseminacion_artificial", "iatf"].includes(tipo)
+        ? current.pajilla_id
+        : "",
+    }));
+  };
   const hembraSeleccionada = hembras.find(h => h.id === Number(data.hembra_id));
 
   const machosFiltrados = hembraSeleccionada
@@ -63,7 +72,12 @@ console.log("Machos filtrados:", machosFiltrados);  // Lo que se va a renderizar
               <select
                  name="hembra_id"
                   value={data.hembra_id}
-                  onChange={e => setData("hembra_id", Number(e.target.value))}
+                  onChange={(e) =>
+                    setData(
+                      "hembra_id",
+                      e.target.value ? Number(e.target.value) : ""
+                    )
+                  }
                    className="w-full border rounded-lg p-2 mt-1 text-sm"
                   >
                 <option value="">Seleccionar hembra...</option>
@@ -92,7 +106,7 @@ console.log("Machos filtrados:", machosFiltrados);  // Lo que se va a renderizar
               <label className="text-sm font-medium">Tipo de servicio *</label>
               <select
                 value={data.tipo_servicio}
-                onChange={e => setData("tipo_servicio", e.target.value)}
+                onChange={cambiarTipoServicio}
                 className="w-full border rounded-lg p-2 mt-1 text-sm"
               >
                 <option value="monta_natural">Monta natural</option>
@@ -108,7 +122,12 @@ console.log("Machos filtrados:", machosFiltrados);  // Lo que se va a renderizar
                 <select
                   name="macho_id"
                   value={data.macho_id}
-                  onChange={e => setData("macho_id", Number(e.target.value))}
+                  onChange={(e) =>
+                    setData(
+                      "macho_id",
+                      e.target.value ? Number(e.target.value) : ""
+                    )
+                  }
                   className="w-full border rounded-lg p-2 mt-1 text-sm"
                 >
                   <option value="">Seleccionar macho...</option>
@@ -123,39 +142,71 @@ console.log("Machos filtrados:", machosFiltrados);  // Lo que se va a renderizar
             )}
 
             {/* PAJILLA (solo IA/IATF) */}
-            {esIA && (
+                        {esIA && (
               <>
-                <div>
-                  <label className="text-sm font-medium">Código pajilla *</label>
-                  <input
-                    value={data.pajilla_codigo}
-                    onChange={e => setData("pajilla_codigo", e.target.value)}
-                    placeholder="Ej: ANG-4801"
-                    className="w-full border rounded-lg p-2 mt-1 text-sm"
-                  />
-                  {errors.pajilla_codigo && <p className="text-xs text-red-500 mt-1">{errors.pajilla_codigo}</p>}
+                <div className="col-span-2">
+                  <label className="text-sm font-medium">
+                    Pajilla disponible *
+                  </label>
+
+                  <select
+                    value={data.pajilla_id}
+                    onChange={(e) =>
+                      setData(
+                        "pajilla_id",
+                        e.target.value ? Number(e.target.value) : ""
+                      )
+                    }                    className="w-full border rounded-lg p-2 mt-1 text-sm"
+                  >
+                    <option value="">Seleccionar pajilla...</option>
+
+                    {pajillas.map((pajilla) => (
+                      <option key={pajilla.id} value={pajilla.id}>
+                        {pajilla.codigo}
+                        {pajilla.donador?.nombre
+                          ? ` — ${pajilla.donador.nombre}`
+                          : ""}
+                        {pajilla.donador?.raza
+                          ? ` (${pajilla.donador.raza})`
+                          : ""}
+                        {pajilla.tipo_donador
+                          ? ` — ${
+                              pajilla.tipo_donador === "externo"
+                                ? "Externo"
+                                : "Interno"
+                            }`
+                          : ""}
+                      </option>
+                    ))}
+                  </select>
+
+                  {errors.pajilla_id && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.pajilla_id}
+                    </p>
+                  )}
+
+                  {pajillas.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      No hay pajillas disponibles en el módulo de genética.
+                    </p>
+                  )}
                 </div>
-                <div>
-                  <label className="text-sm font-medium">Raza pajilla</label>
-                  <input
-                    value={data.pajilla_raza}
-                    onChange={e => setData("pajilla_raza", e.target.value)}
-                    placeholder="Ej: Angus"
-                    className="w-full border rounded-lg p-2 mt-1 text-sm"
-                  />
-                </div>
-                <div>
+
+                <div className="col-span-2">
                   <label className="text-sm font-medium">Técnico</label>
                   <input
                     value={data.tecnico_externo}
-                    onChange={e => setData("tecnico_externo", e.target.value)}
+                    onChange={(e) =>
+                      setData("tecnico_externo", e.target.value)
+                    }
                     placeholder="Nombre del técnico"
                     className="w-full border rounded-lg p-2 mt-1 text-sm"
                   />
                 </div>
               </>
             )}
-
+            
             {/* NÚMERO DE SERVICIO */}
             <div>
               <label className="text-sm font-medium">Número de servicio</label>

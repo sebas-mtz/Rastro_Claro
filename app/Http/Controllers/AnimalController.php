@@ -6,7 +6,7 @@ use App\Models\Lote;
 use App\Services\EstadoProductivoService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use App\Models\DonadorExterno;
 class AnimalController extends Controller
 {
     private array $especies = [
@@ -37,6 +37,7 @@ class AnimalController extends Controller
             'especies'           => $this->especies,
             'razasPorEspecie'    => $this->razasPorEspecie,
 'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(), 
+'donadoresExternos' => DonadorExterno::orderBy('nombre')->get(),
         ]);
     }
 
@@ -53,8 +54,20 @@ class AnimalController extends Controller
             'BCS'               => 'nullable|numeric',
             'estado_productivo' => 'nullable|string',
             'lote_id'           => 'nullable|exists:lotes,id',
+            'madre_id' => 'nullable|exists:animals,id',
+'padre_id' => 'nullable|exists:animals,id',
+'padre_externo_id' => 'nullable|exists:donadores_externos,id',
         ]);
-
+        if (
+            !empty($validated['padre_id']) &&
+            !empty($validated['padre_externo_id'])
+        ) {
+            return back()
+                ->withErrors([
+                    'padre_id' => 'Selecciona un padre interno o un donador externo, no ambos.',
+                ])
+                ->withInput();
+        }
         if (Animal::where('raza', $request->raza)->where('arete', $request->arete)->exists()) {
             return back()->withErrors(['arete' => 'Ya existe un animal con este arete en esta misma raza.']);
         }
@@ -74,6 +87,7 @@ class AnimalController extends Controller
             'lote',
             'madre',
             'padre',
+            'padreExterno',
             'madre.madre',   // abuela materna
             'madre.padre',   // abuelo materno
             'padre.madre',   // abuela paterna
@@ -101,6 +115,12 @@ class AnimalController extends Controller
             'especies'           => $this->especies,
             'razasPorEspecie'    => $this->razasPorEspecie,
 'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(), 
+'posiblesPadres' => Animal::where('sexo', 'M')
+    ->where('id', '!=', $animal->id)
+    ->orderBy('arete')
+    ->get(),
+
+'donadoresExternos' => DonadorExterno::orderBy('nombre')->get(),
        ]);
     }
 
@@ -117,8 +137,31 @@ class AnimalController extends Controller
             'BCS'               => 'nullable|numeric',
             'estado_productivo' => 'nullable|string',
             'lote_id'           => 'nullable|exists:lotes,id',
+            'madre_id' => 'nullable|exists:animals,id',
+'padre_id' => 'nullable|exists:animals,id',
+'padre_externo_id' => 'nullable|exists:donadores_externos,id',
         ]);
-
+        if (
+            !empty($validated['padre_id']) &&
+            !empty($validated['padre_externo_id'])
+        ) {
+            return back()
+                ->withErrors([
+                    'padre_id' => 'Selecciona un padre interno o un donador externo, no ambos.',
+                ])
+                ->withInput();
+        }
+        
+        if (
+            !empty($validated['padre_id']) &&
+            (int) $validated['padre_id'] === $animal->id
+        ) {
+            return back()
+                ->withErrors([
+                    'padre_id' => 'El animal no puede ser su propio padre.',
+                ])
+                ->withInput();
+        }
         $repite = Animal::where('id', '!=', $animal->id)
             ->where('arete', $request->arete)
             ->where(fn($q) => $q

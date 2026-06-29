@@ -13,9 +13,7 @@ class ServicioReproductivo extends Model
         'evento_id',
         'macho_id',
         'tipo_servicio',
-        'pajilla_codigo',
-        'pajilla_raza',
-        'pajilla_origen',
+        'pajilla_id',
         'tecnico_id',
         'tecnico_externo',
         'numero_servicio',
@@ -24,8 +22,6 @@ class ServicioReproductivo extends Model
     protected $casts = [
         'numero_servicio' => 'integer',
     ];
-
-    // ─── Relaciones ───────────────────────────────────────────────────────
 
     public function evento(): BelongsTo
     {
@@ -37,39 +33,40 @@ class ServicioReproductivo extends Model
         return $this->belongsTo(Animal::class, 'macho_id');
     }
 
+    public function pajilla(): BelongsTo
+    {
+        return $this->belongsTo(Pajilla::class, 'pajilla_id');
+    }
+
     public function tecnico(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tecnico_id');
     }
 
-    // ─── Accessors ────────────────────────────────────────────────────────
-
-    // Devuelve el nombre del técnico sin importar si es usuario del sistema
-    // o técnico externo
     public function getNombreTecnicoAttribute(): ?string
     {
         if ($this->tecnico) {
             return $this->tecnico->name;
         }
+
         return $this->tecnico_externo;
     }
 
-    // Descripción legible del servicio para mostrar en la timeline
     public function getDescripcionAttribute(): string
     {
-        $tipo = match($this->tipo_servicio) {
-            'monta_natural'           => 'Monta natural',
+        $tipo = match ($this->tipo_servicio) {
+            'monta_natural' => 'Monta natural',
             'inseminacion_artificial' => 'Inseminación artificial',
-            'iatf'                    => 'IATF',
-            default                   => $this->tipo_servicio,
+            'iatf' => 'IATF',
+            default => $this->tipo_servicio,
         };
 
         if ($this->tipo_servicio === 'monta_natural' && $this->macho) {
-            return "{$tipo} — Toro: {$this->macho->nombre}";
+            return "{$tipo} — Semental: {$this->macho->nombre}";
         }
 
-        if ($this->pajilla_codigo) {
-            return "{$tipo} — Pajilla: {$this->pajilla_codigo}";
+        if ($this->pajilla) {
+            return "{$tipo} — Pajilla: {$this->pajilla->codigo}";
         }
 
         return $tipo;

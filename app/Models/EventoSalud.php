@@ -14,6 +14,7 @@ class EventoSalud extends Model
 
     protected $fillable = [
         'animal_id',
+        'lote_id',
         'tipo',
         'fecha_programada',
         'fecha_aplicacion',
@@ -49,7 +50,10 @@ class EventoSalud extends Model
     {
         return $this->belongsTo(Animal::class);
     }
-
+    public function lote(): BelongsTo
+    {
+        return $this->belongsTo(Lote::class);
+    }
     public function vacuna(): BelongsTo
     {
         return $this->belongsTo(Vacuna::class);
@@ -66,7 +70,10 @@ class EventoSalud extends Model
     }
 
     // ─── Scopes ───────────────────────────────────────────────────
-
+    public function scopeDeLote(Builder $query, int $loteId): Builder
+    {
+        return $query->where('lote_id', $loteId);
+    }
     public function scopePendientes(Builder $query): Builder
     {
         return $query->where('estado', self::ESTADO_PENDIENTE);

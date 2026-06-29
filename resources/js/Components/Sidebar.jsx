@@ -115,6 +115,30 @@ export default function Sidebar() {
 
           <li>
             <Link
+              href={route('genetica.index')}
+              className={
+                'sl-item ' + (isActive('/genetica') ? 'active' : '')
+              }
+            >
+              <span className="sl-ico"></span>
+              <span>Genetica</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={route('tareas.index')}
+              className={
+                'sl-item ' + (isActive('/Tareas') ? 'active' : '')
+              }
+            >
+              <span className="sl-ico"></span>
+              <span>Recordatorios</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
               href={route('reportes.index')}
               className={
                 'sl-item ' + (isActive('/Reportes') ? 'active' : '')

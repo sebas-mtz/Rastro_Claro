@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Animal;
 use App\Models\EventoReproductivo;
+use App\Models\Pajilla;
 use App\Models\ServicioReproductivo;
 use Illuminate\Http\RedirectResponse;
 use App\Services\EstadoProductivoService;
@@ -21,9 +22,7 @@ class ServicioReproductivoController extends Controller
             'fecha'           => 'required|date|before_or_equal:today',
             'tipo_servicio'   => 'required|in:monta_natural,inseminacion_artificial,iatf',
             'macho_id'        => 'nullable|exists:animals,id',
-            'pajilla_codigo'  => 'nullable|string|max:100',
-            'pajilla_raza'    => 'nullable|string|max:80',
-            'pajilla_origen'  => 'nullable|string|max:100',
+            'pajilla_id'      => 'nullable|exists:pajillas,id',
             'tecnico_id'      => 'nullable|exists:users,id',
             'tecnico_externo' => 'nullable|string|max:100',
             'numero_servicio' => 'nullable|integer|min:1|max:10',
@@ -39,17 +38,17 @@ class ServicioReproductivoController extends Controller
                 ->withInput();
         }
 
-        // Monta natural requiere toro
+        // Monta natural requiere semental
         if ($datos['tipo_servicio'] === 'monta_natural' && empty($datos['macho_id'])) {
             return redirect()->back()
-                ->withErrors(['macho_id' => 'La monta natural requiere seleccionar un toro'])
+                ->withErrors(['macho_id' => 'La monta natural requiere seleccionar un semental'])
                 ->withInput();
         }
 
-        // IA requiere código de pajilla
-        if (in_array($datos['tipo_servicio'], ['inseminacion_artificial', 'iatf']) && empty($datos['pajilla_codigo'])) {
+        // IA / IATF requiere pajilla
+        if (in_array($datos['tipo_servicio'], ['inseminacion_artificial', 'iatf']) && empty($datos['pajilla_id'])) {
             return redirect()->back()
-                ->withErrors(['pajilla_codigo' => 'La inseminación artificial requiere el código de pajilla'])
+                ->withErrors(['pajilla_id' => 'La inseminación artificial requiere seleccionar una pajilla'])
                 ->withInput();
         }
 
@@ -59,7 +58,7 @@ class ServicioReproductivoController extends Controller
             $evento = EventoReproductivo::create([
                 'hembra_id'     => $datos['hembra_id'],
                 'lote_id'       => $datos['lote_id'] ?? null,
-                'user_id' => null,
+                'user_id'       => null,
                 'tipo_evento'   => 'servicio',
                 'fecha'         => $datos['fecha'],
                 'costo'         => $datos['costo'] ?? null,
@@ -67,18 +66,17 @@ class ServicioReproductivoController extends Controller
             ]);
 
             ServicioReproductivo::create([
-                'evento_id'        => $evento->id,
+                'evento_id'       => $evento->id,
                 'macho_id'        => $datos['macho_id'] ?? null,
                 'tipo_servicio'   => $datos['tipo_servicio'],
-                'pajilla_codigo'  => $datos['pajilla_codigo'] ?? null,
-                'pajilla_raza'    => $datos['pajilla_raza'] ?? null,
-                'pajilla_origen'  => $datos['pajilla_origen'] ?? null,
+                'pajilla_id'      => $datos['pajilla_id'] ?? null,
                 'tecnico_id'      => $datos['tecnico_id'] ?? null,
                 'tecnico_externo' => $datos['tecnico_externo'] ?? null,
                 'numero_servicio' => $datos['numero_servicio'] ?? 1,
             ]);
-            $hembra = Animal::findOrFail($datos['hembra_id']);
+
             $estadoService->transicionPorEvento($hembra, 'servicio');
+
             DB::commit();
 
             return redirect()->route('reproduccion.index')

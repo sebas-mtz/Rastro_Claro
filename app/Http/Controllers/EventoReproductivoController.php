@@ -23,6 +23,9 @@ class EventoReproductivoController extends Controller
             'registradoPor:id,name',
             'servicio.macho:id,arete,alias',
             'servicio.tecnico:id,name',
+            'servicio.pajilla:id,codigo,estado,animal_id,donador_externo_id',
+            'servicio.pajilla.animal:id,arete,alias',
+            'servicio.pajilla.donadorExterno:id,nombre',
             'diagnostico',
             'parto.crias.animal:id,arete,alias',
         ])
@@ -35,13 +38,13 @@ class EventoReproductivoController extends Controller
             ->whereNotIn('estado_productivo', ['faeneado', 'vendido', 'sacrificado'])
             ->get()
             ->map(fn($a) => [
-                'id'         => $a->id,
-                'alias'      => $a->alias,
-                'arete'      => $a->arete,
-'sexo' => in_array(strtolower($a->sexo), ['f', 'female', 'hembra']) ? 'hembra' : 'macho',
-                'especie'    => $a->especie,
-                'lote_id'    => $a->lote_id,
-                'lote_nombre'=> $a->lote?->nombre,
+                'id'          => $a->id,
+                'alias'       => $a->alias,
+                'arete'       => $a->arete,
+                'sexo'        => in_array(strtolower($a->sexo), ['f', 'female', 'hembra']) ? 'hembra' : 'macho',
+                'especie'     => $a->especie,
+                'lote_id'     => $a->lote_id,
+                'lote_nombre' => $a->lote?->nombre,
             ]);
 
         $lotes = Lote::select('id', 'nombre')->get();
@@ -63,6 +66,9 @@ class EventoReproductivoController extends Controller
             'registradoPor:id,name',
             'servicio.macho:id,arete,alias',
             'servicio.tecnico:id,name',
+            'servicio.pajilla:id,codigo,estado,animal_id,donador_externo_id',
+            'servicio.pajilla.animal:id,arete,alias',
+            'servicio.pajilla.donadorExterno:id,nombre',
             'diagnostico',
             'parto.crias.animal:id,arete,alias',
         ]);
@@ -115,7 +121,7 @@ class EventoReproductivoController extends Controller
             ->map(fn($e) => [
                 'tipo'    => 'pendiente_diagnostico',
                 'nivel'   => 'warning',
-                'mensaje' => "Diagnóstico pendiente",
+                'mensaje' => 'Diagnóstico pendiente',
                 'animal'  => $e->hembra?->alias,
                 'fecha'   => $e->fecha->format('Y-m-d'),
             ]);
@@ -131,7 +137,7 @@ class EventoReproductivoController extends Controller
             ->map(fn($e) => [
                 'tipo'    => 'proxima_a_parir',
                 'nivel'   => 'danger',
-                'mensaje' => "Próxima a parir",
+                'mensaje' => 'Próxima a parir',
                 'animal'  => $e->hembra?->alias,
                 'fecha'   => $e->diagnostico->fecha_probable_parto->format('Y-m-d'),
             ]);
@@ -202,16 +208,24 @@ class EventoReproductivoController extends Controller
             ] : null,
         ];
 
-        $data['servicio'] = $evento->servicio ? [
-            'tipo_servicio'   => $evento->servicio->tipo_servicio,
-            'descripcion'     => $evento->servicio->descripcion,
-            'pajilla_codigo'  => $evento->servicio->pajilla_codigo,
-            'pajilla_raza'    => $evento->servicio->pajilla_raza,
-            'numero_servicio' => $evento->servicio->numero_servicio,
-            'tecnico'         => $evento->servicio->nombre_tecnico,
-            'macho'           => $evento->servicio->macho
-                ? ['id' => $evento->servicio->macho->id, 'arete' => $evento->servicio->macho->arete]
+        $servicio = $evento->servicio;
+
+        $data['servicio'] = $servicio ? [
+            'tipo_servicio'   => $servicio->tipo_servicio,
+            'descripcion'     => $servicio->descripcion,
+            'numero_servicio' => $servicio->numero_servicio,
+            'tecnico'         => $servicio->nombre_tecnico,
+            'macho'           => $servicio->macho
+                ? ['id' => $servicio->macho->id, 'arete' => $servicio->macho->arete]
                 : null,
+            'pajilla'         => $servicio->pajilla ? [
+                'id'     => $servicio->pajilla->id,
+                'codigo' => $servicio->pajilla->codigo,
+                'estado' => $servicio->pajilla->estado,
+                'donador' => $servicio->pajilla->animal
+                    ? $servicio->pajilla->animal->alias ?? $servicio->pajilla->animal->arete
+                    : ($servicio->pajilla->donadorExterno?->nombre ?? null),
+            ] : null,
         ] : null;
 
         $data['diagnostico'] = $evento->diagnostico ? [

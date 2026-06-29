@@ -100,12 +100,16 @@ class ReportesController extends Controller
             ->get();
 
         // ── Tratamientos ──
-        $tratamientos = Tratamiento::where('animal_id', $animal->id)
-            ->when($fi,                  fn($q) => $q->whereDate('fecha_inicio', '>=', $fi))
-            ->when($ff,                  fn($q) => $q->whereDate('fecha_inicio', '<=', $ff))
-            ->when($request->estado_trat,fn($q) => $q->where('estado', $request->estado_trat))
-            ->orderByDesc('fecha_inicio')
-            ->get();
+        $tratamientos = Tratamiento::with([
+            'eventoSalud:id,diagnostico,tipo',
+            'user:id,name',
+        ])
+        ->where('animal_id', $animal->id)
+        ->when($fi, fn($q) => $q->whereDate('fecha_inicio', '>=', $fi))
+        ->when($ff, fn($q) => $q->whereDate('fecha_inicio', '<=', $ff))
+        ->when($request->estado_trat, fn($q) => $q->where('estado', $request->estado_trat))
+        ->orderByDesc('fecha_inicio')
+        ->get();
 
         // ── Alimentación ──
         $alimentaciones = Alimentacion::with(['racion:id,nombre,MS,PB,EM,FDN'])
@@ -362,7 +366,7 @@ class ReportesController extends Controller
         $rows = Tratamiento::with([
                 'animal:id,arete,alias,especie,raza,sexo,lote_id',
                 'animal.lote:id,nombre',
-                'salud:id,diagnostico,tipo',
+                'eventoSalud:id,diagnostico,tipo',
             ])
             ->when($request->fecha_inicio, fn($q) => $q->whereDate('fecha_inicio', '>=', $request->fecha_inicio))
             ->when($request->fecha_fin,    fn($q) => $q->whereDate('fecha_inicio', '<=', $request->fecha_fin))
@@ -446,8 +450,10 @@ class ReportesController extends Controller
     {
         $rows = InventarioInsumo::query()
             ->when($request->tipo_insumo,  fn($q) => $q->where('tipo', $request->tipo_insumo))
-            ->when($request->activo_insumo !== null && $request->activo_insumo !== '',
-                fn($q) => $q->where('activo', (bool)$request->activo_insumo))
+            ->when($request->activo_insumo !== null && $request->activo_insumo !== '', function ($q) use ($request) {
+                $activo = filter_var($request->activo_insumo, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                return $q->where('activo', $activo);
+            })
             ->when($request->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $request->fecha_inicio))
             ->when($request->fecha_fin,    fn($q) => $q->whereDate('created_at', '<=', $request->fecha_fin))
             ->orderBy('tipo')->orderBy('nombre')

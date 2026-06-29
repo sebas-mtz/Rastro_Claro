@@ -6,6 +6,7 @@ use App\Http\Requests\StoreEventoSaludRequest;
 use App\Http\Requests\UpdateEventoSaludRequest;
 use App\Models\Animal;
 use App\Models\EventoSalud;
+use App\Models\Lote;
 use App\Models\Vacuna;
 use App\Models\Tratamiento;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ class EventoSaludController extends Controller
         $month    = $fecha->month;
 
         // Eventos del mes para pintar el calendario
-        $eventosMes = EventoSalud::with(['animal', 'vacuna'])
+        $eventosMes = EventoSalud::with(['animal', 'lote', 'vacuna'])
             ->whereYear('fecha_programada', $year)
             ->whereMonth('fecha_programada', $month)
             ->get();
@@ -59,9 +60,14 @@ class EventoSaludController extends Controller
             ->map(fn($e) => [
                 'id'     => $e->id,
                 'vacuna' => $e->vacuna?->nombre ?? 'Vacuna',
-                'animal' => trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
-                                 ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
-                            ?: "Animal #{$e->animal_id}",
+                'animal' => $e->animal_id
+                    ? (trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
+                             ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
+                       ?: "Animal #{$e->animal_id}")
+                    : null,
+                'lote'   => $e->lote_id
+                    ? ($e->lote?->nombre ?? "Lote #{$e->lote_id}")
+                    : null,
                 'fecha'  => $e->fecha_programada->format('d/m/Y'),
                 'estado' => $e->estado,
             ])->values();
@@ -71,26 +77,34 @@ class EventoSaludController extends Controller
             ->map(fn($e) => [
                 'id'     => $e->id,
                 'vacuna' => $e->vacuna?->nombre ?? 'Vacuna',
-                'animal' => trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
-                                 ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
-                            ?: "Animal #{$e->animal_id}",
+                'animal' => $e->animal_id
+                    ? (trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
+                             ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
+                       ?: "Animal #{$e->animal_id}")
+                    : null,
+                'lote'   => $e->lote_id
+                    ? ($e->lote?->nombre ?? "Lote #{$e->lote_id}")
+                    : null,
                 'fecha'  => $e->fecha_aplicacion?->format('d/m/Y')
                             ?? $e->fecha_programada->format('d/m/Y'),
             ])->values();
 
         // Tratamientos activos (todos los meses)
-        $treatments = Tratamiento::with('animal')
+        $treatments = Tratamiento::with(['animal', 'lote'])
             ->where('estado', 'activo')
             ->orderBy('fecha_inicio', 'desc')
             ->get()
             ->map(fn($t) => [
                 'id'             => $t->id,
                 'nombre'         => $t->nombre,
-                'animal'         => $t->animal
-                                    ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
-                                            ($t->animal->alias ? "- {$t->animal->alias}" : ''))
-                                       ?: "Animal #{$t->animal_id}")
-                                    : "Animal #{$t->animal_id}",
+                'animal'         => $t->animal_id
+                    ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
+                            ($t->animal->alias ? "- {$t->animal->alias}" : ''))
+                       ?: "Animal #{$t->animal_id}")
+                    : null,
+                'lote'           => $t->lote_id
+                    ? ($t->lote?->nombre ?? "Lote #{$t->lote_id}")
+                    : null,
                 'estado'         => $t->estado,
                 'dias_restantes' => $t->diasRestantes(),
                 'esta_vencido'   => $t->estaVencido(),
@@ -100,7 +114,7 @@ class EventoSaludController extends Controller
             ]);
 
         // Consultas, revisiones y emergencias pendientes/vencidas (todos los meses)
-        $eventos = EventoSalud::with('animal')
+        $eventos = EventoSalud::with(['animal', 'lote'])
             ->whereIn('tipo', ['consulta', 'revision', 'emergencia'])
             ->whereIn('estado', [EventoSalud::ESTADO_PENDIENTE, EventoSalud::ESTADO_VENCIDA])
             ->orderBy('fecha_programada')
@@ -110,15 +124,22 @@ class EventoSaludController extends Controller
                 'tipo'        => $e->tipo,
                 'estado'      => $e->estado,
                 'diagnostico' => $e->diagnostico,
-                'animal'      => trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
-                                      ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
-                                 ?: "Animal #{$e->animal_id}",
+                'animal'      => $e->animal_id
+                    ? (trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
+                            ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
+                       ?: "Animal #{$e->animal_id}")
+                    : null,
+                'lote'        => $e->lote_id
+                    ? ($e->lote?->nombre ?? "Lote #{$e->lote_id}")
+                    : null,
                 'fecha'       => $e->fecha_programada->format('d/m/Y'),
             ]);
 
         // Catálogos para formularios
         $animals = Animal::orderBy('alias')
             ->get(['id', 'alias', 'arete', 'especie', 'raza', 'sexo']);
+        $lotes   = Lote::orderBy('nombre')
+            ->get(['id', 'nombre']);
         $vacunas = Vacuna::orderBy('nombre')
             ->get(['id', 'nombre', 'refuerzo_dias', 'patogeno', 'pauta', 'especie_objetivo']);
 
@@ -128,8 +149,9 @@ class EventoSaludController extends Controller
             'pending'    => $pending,
             'done'       => $done,
             'treatments' => $treatments,
-            'eventos'    => $eventos,   // ← consultas/revisiones/emergencias
+            'eventos'    => $eventos,
             'animals'    => $animals,
+            'lotes'      => $lotes,
             'vacunas'    => $vacunas,
             'year'       => $year,
             'month'      => $month,
@@ -141,7 +163,9 @@ class EventoSaludController extends Controller
     {
         return Inertia::render('Salud/Create', [
             'animal_id' => $request->integer('animal_id') ?: null,
+            'lote_id'   => $request->integer('lote_id') ?: null,
             'animales'  => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
+            'lotes'     => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'   => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
             'tipos'     => [
                 EventoSalud::TIPO_CONSULTA,
@@ -157,7 +181,7 @@ class EventoSaludController extends Controller
         $data            = $request->validated();
         if ($data['tipo'] === EventoSalud::TIPO_VACUNACION && empty($data['diagnostico'])) {
             $vacuna = Vacuna::find($data['vacuna_id'] ?? null);
-        
+
             $data['diagnostico'] = 'Vacunación programada' . ($vacuna ? ': ' . $vacuna->nombre : '');
         }
         $data['user_id'] = $request->user()->id;
@@ -181,7 +205,7 @@ class EventoSaludController extends Controller
 
     public function show(EventoSalud $eventoSalud): Response
     {
-        $eventoSalud->load(['animal', 'vacuna', 'user', 'tratamientos.user']);
+        $eventoSalud->load(['animal', 'lote', 'vacuna', 'user', 'tratamientos.user']);
 
         return Inertia::render('Salud/Show', [
             'evento' => $eventoSalud,
@@ -193,6 +217,7 @@ class EventoSaludController extends Controller
         return Inertia::render('Salud/Edit', [
             'evento'   => $eventoSalud->load(['vacuna']),
             'animales' => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
+            'lotes'    => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'  => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
             'tipos'    => [
                 EventoSalud::TIPO_CONSULTA,
@@ -237,7 +262,10 @@ class EventoSaludController extends Controller
 
         // Programar refuerzo si no existe uno futuro pendiente
         if ($eventoSalud->tipo === EventoSalud::TIPO_VACUNACION && $eventoSalud->vacuna_id) {
-            $yaExisteRefuerzo = EventoSalud::where('animal_id', $eventoSalud->animal_id)
+            $yaExisteRefuerzo = EventoSalud::where(function ($q) use ($eventoSalud) {
+                    $q->where('animal_id', $eventoSalud->animal_id)
+                      ->orWhere('lote_id', $eventoSalud->lote_id);
+                })
                 ->where('vacuna_id', $eventoSalud->vacuna_id)
                 ->where('estado', EventoSalud::ESTADO_PENDIENTE)
                 ->where('fecha_programada', '>', $fechaAplicacion)
@@ -286,6 +314,7 @@ class EventoSaludController extends Controller
         if (!empty($validated['crear_tratamiento']) && !empty($validated['tratamiento_nombre'])) {
             Tratamiento::create([
                 'animal_id'    => $eventoSalud->animal_id,
+                'lote_id'      => $eventoSalud->lote_id,
                 'salud_id'     => $eventoSalud->id,
                 'nombre'       => $validated['tratamiento_nombre'],
                 'notas'        => $validated['tratamiento_notas'] ?? null,
@@ -325,6 +354,7 @@ class EventoSaludController extends Controller
 
         return EventoSalud::create([
             'animal_id'        => $evento->animal_id,
+            'lote_id'          => $evento->lote_id,
             'tipo'             => EventoSalud::TIPO_VACUNACION,
             'vacuna_id'        => $evento->vacuna_id,
             'fecha_programada' => $fechaRefuerzo,

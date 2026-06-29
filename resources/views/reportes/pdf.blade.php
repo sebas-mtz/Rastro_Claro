@@ -658,9 +658,20 @@
                 <td class="gray">{{ $ev->fecha }}</td>
                 <td>{{ $srv?->numero_servicio ?? '—' }}</td>
                 <td class="mono gray">
-                    @if($srv?->macho) {{ $srv->macho->arete }}
-                    @elseif($srv?->pajilla_codigo) 🧬 {{ $srv->pajilla_codigo }}{{ $srv->pajilla_raza ? ' ('.$srv->pajilla_raza.')' : '' }}
-                    @else —
+                <td class="mono gray">
+                    @if($srv?->macho)
+                        {{ $srv->macho->arete }}
+                    @elseif($srv?->pajilla)
+                        🧬 {{ $srv->pajilla->codigo }}
+                        @php
+                            $razaDonador = $srv->pajilla->animal?->raza
+                                ?? $srv->pajilla->donadorExterno?->raza;
+                        @endphp
+                        @if($razaDonador)
+                            ({{ $razaDonador }})
+                        @endif
+                    @else
+                        —
                     @endif
                 </td>
                 <td class="gray">{{ $srv?->tecnico?->name ?? $srv?->tecnico_externo ?? '—' }}</td>

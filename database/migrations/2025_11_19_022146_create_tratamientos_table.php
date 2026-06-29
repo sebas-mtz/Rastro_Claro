@@ -10,6 +10,10 @@ return new class extends Migration
         Schema::create('tratamientos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('animal_id')->constrained('animals')->cascadeOnDelete();
+            $table->foreignId('lote_id')
+            ->nullable()
+            ->constrained('lotes')
+            ->nullOnDelete();
             $table->string('nombre');                 // "Antibiótico mastitis"
             $table->date('fecha_inicio');
             $table->date('fecha_fin')->nullable();    // fecha prevista de fin

@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Models;
+use App\Models\Tarea;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
@@ -52,6 +54,15 @@ class User extends Authenticatable
         return $this->role === self::ROLE_USER || $this->role === null;
     }
 
+    public function tareasAsignadas()
+{
+    return $this->hasMany(Tarea::class, 'asignado_a');
+}
+
+public function tareasCreadas()
+{
+    return $this->hasMany(Tarea::class, 'creado_por');
+}
     // ======== HELPERS DE PLAN ========
 
     public function isPremium(): bool

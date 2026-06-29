@@ -11,39 +11,41 @@ return new class extends Migration
         Schema::create('servicio_reproductivos', function (Blueprint $table) {
             $table->id();
 
-            // Evento padre — relación 1 a 1
+            // Evento reproductivo (1 a 1)
             $table->foreignId('evento_id')
                 ->unique()
                 ->constrained('evento_reproductivos')
                 ->cascadeOnDelete();
 
-            // Toro si es monta natural — FK a animals
+            // Tipo de servicio
+            $table->enum('tipo_servicio', [
+                'monta_natural',
+                'inseminacion_artificial',
+                'iatf',
+            ]);
+
+            // Solo para monta natural
             $table->foreignId('macho_id')
                 ->nullable()
                 ->constrained('animals')
                 ->nullOnDelete();
 
-            // Tipo de servicio
-            $table->enum('tipo_servicio', [
-                'monta_natural',
-                'inseminacion_artificial',
-                'iatf', // Inseminación a tiempo fijo (sincronización)
-            ]);
+            // Solo para IA e IATF
+            $table->foreignId('pajilla_id')
+                ->nullable()
+                ->constrained('pajillas')
+                ->nullOnDelete();
 
-            // Datos de pajilla — solo aplica si es IA o IATF
-            $table->string('pajilla_codigo', 100)->nullable();
-            $table->string('pajilla_raza', 80)->nullable();
-            $table->string('pajilla_origen', 100)->nullable(); // país o empresa
-
-            // Técnico que realizó la IA — puede ser usuario del sistema o nombre externo
+            // Técnico que realizó el servicio
             $table->foreignId('tecnico_id')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
-            $table->string('tecnico_externo', 100)->nullable(); // si no es usuario del sistema
 
-            // Número de servicio en el ciclo actual (1er intento, 2do, 3er...)
-            // Útil para calcular servicios por concepción
+            // Si el técnico no pertenece al sistema
+            $table->string('tecnico_externo', 100)->nullable();
+
+            // Número de servicio (1°, 2°, 3°...)
             $table->tinyInteger('numero_servicio')->default(1);
 
             $table->timestamps();

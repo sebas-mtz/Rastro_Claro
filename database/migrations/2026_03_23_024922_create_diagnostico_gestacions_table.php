@@ -18,7 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             // A qué servicio responde este diagnóstico
-            // Permite calcular tasa de concepción por toro, técnico, tipo de servicio
+            // Permite calcular tasa de concepción por Semental, técnico, tipo de servicio
             $table->foreignId('servicio_evento_id')
                 ->nullable()
                 ->constrained('evento_reproductivos')

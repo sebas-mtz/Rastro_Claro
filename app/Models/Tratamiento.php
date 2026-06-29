@@ -11,6 +11,7 @@ class Tratamiento extends Model
 {
     protected $fillable = [
         'animal_id',
+        'lote_id',
         'salud_id',
         'nombre',
         'fecha_inicio',
@@ -34,6 +35,10 @@ class Tratamiento extends Model
     public function animal(): BelongsTo
     {
         return $this->belongsTo(Animal::class);
+    }
+    public function lote(): BelongsTo
+    {
+        return $this->belongsTo(Lote::class);
     }
 
     public function eventoSalud(): BelongsTo
@@ -65,6 +70,11 @@ class Tratamiento extends Model
     {
         return $query->where('animal_id', $animalId);
     }
+    
+    public function scopeDeLote(Builder $query, int $loteId): Builder
+{
+    return $query->where('lote_id', $loteId);
+}
 
     // ─── Helpers ──────────────────────────────────────────────────
 

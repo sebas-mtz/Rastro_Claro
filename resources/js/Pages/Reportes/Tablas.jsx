@@ -1,4 +1,5 @@
 // resources/js/Pages/Reportes/Tablas.jsx
+import { Children, useEffect, useState } from "react";
 import { Beef, HeartPulse, Syringe, Pill, Scale, UtensilsCrossed, Package } from "lucide-react";
 
 // ─── Badge ────────────────────────────────────────────────────────────────────
@@ -119,31 +120,86 @@ export function StatCard({ icon: Icon, label, value, color = "blue", sub }) {
 
 // ─── Tabla base ───────────────────────────────────────────────────────────────
 function Tabla({ headers, children }) {
-    // children puede ser un array de <tr> o estar vacío
-    const isEmpty = !children
-        || (Array.isArray(children) && children.filter(Boolean).length === 0);
+    const LIMITE_INICIAL = 10;
+    const SEGUNDO_LIMITE = 20;
 
-    if (isEmpty) {
+    const [limite, setLimite] = useState(LIMITE_INICIAL);
+
+    // Convierte los <tr> recibidos en un arreglo seguro y elimina valores vacíos.
+    const filas = Children.toArray(children).filter(Boolean);
+
+    // La firma cambia cuando llegan otros registros después de aplicar filtros.
+    const firmaRegistros = filas
+        .map((fila, indice) => fila.key ?? indice)
+        .join("|");
+
+    // Cada vez que cambia el resultado del filtro, vuelve a mostrar solo 10.
+    useEffect(() => {
+        setLimite(LIMITE_INICIAL);
+    }, [firmaRegistros]);
+
+    if (filas.length === 0) {
         return (
             <p className="text-sm text-gray-400 py-6 text-center">
                 Sin resultados para los filtros seleccionados.
             </p>
         );
     }
+
+    const filasVisibles = filas.slice(0, limite);
+    const hayMas = limite < filas.length;
+
+    function mostrarMas() {
+        if (limite < SEGUNDO_LIMITE) {
+            setLimite(Math.min(SEGUNDO_LIMITE, filas.length));
+            return;
+        }
+
+        setLimite(filas.length);
+    }
+
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-                <thead>
-                    <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wide">
-                        {headers.map(h => (
-                            <th key={h} className="px-3 py-2 text-left font-semibold whitespace-nowrap">
-                                {h}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>{children}</tbody>
-            </table>
+        <div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                    <thead>
+                        <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wide">
+                            {headers.map(h => (
+                                <th key={h} className="px-3 py-2 text-left font-semibold whitespace-nowrap">
+                                    {h}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>{filasVisibles}</tbody>
+                </table>
+            </div>
+
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p className="text-xs text-gray-500">
+                    Mostrando{" "}
+                    <span className="font-semibold text-gray-700">
+                        {filasVisibles.length}
+                    </span>{" "}
+                    de{" "}
+                    <span className="font-semibold text-gray-700">
+                        {filas.length}
+                    </span>{" "}
+                    registros
+                </p>
+
+                {hayMas && (
+                    <button
+                        type="button"
+                        onClick={mostrarMas}
+                        className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2
+                                   text-sm font-semibold text-blue-700 transition
+                                   hover:bg-blue-100"
+                    >
+                        {limite < SEGUNDO_LIMITE ? "Ver más" : "Mostrar todo"}
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
@@ -370,7 +426,7 @@ export function TablaServicios({ registros }) {
                             {srv?.macho
                                 ? <span className="font-mono">{srv.macho.arete}</span>
                                 : srv?.pajilla_codigo
-                                ? <span className="text-gray-500">🧬 {srv.pajilla_codigo}{srv.pajilla_raza ? ` (${srv.pajilla_raza})` : ""}</span>
+                                ? <span className="text-gray-500">🧬 {srv.pajilla_codigo}{srv.pajilla.donador?.raza ? ` (${srv.pajilla.donador.raza})` : ""}</span>
                                 : "—"}
                         </td>
                         <td className="px-3 py-2 text-gray-500">
