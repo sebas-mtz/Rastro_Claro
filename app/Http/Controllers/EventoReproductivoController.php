@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\DonadorExterno;
+use App\Models\Pajilla;
 
 class EventoReproductivoController extends Controller
 {
@@ -46,13 +48,49 @@ class EventoReproductivoController extends Controller
                 'lote_id'     => $a->lote_id,
                 'lote_nombre' => $a->lote?->nombre,
             ]);
+            $donadoresExternos = DonadorExterno::select(
+                'id',
+                'codigo',
+                'nombre',
+                'raza'
+            )->orderBy('nombre')->get();
 
         $lotes = Lote::select('id', 'nombre')->get();
-
+        $pajillas = Pajilla::with([
+            'animal:id,arete,alias',
+            'donadorExterno:id,codigo,nombre',
+        ])
+            ->where('estado', 'disponible')
+            ->orderBy('codigo')
+            ->get()
+            ->map(fn ($pajilla) => [
+                'id' => $pajilla->id,
+                'codigo' => $pajilla->codigo,
+                'estado' => $pajilla->estado,
+                'tipo_donador' => $pajilla->donador_externo_id
+                    ? 'externo'
+                    : 'interno',
+                'donador' => $pajilla->animal
+                    ? [
+                        'id' => $pajilla->animal->id,
+                        'nombre' => $pajilla->animal->alias
+                            ?? $pajilla->animal->arete,
+                        'arete' => $pajilla->animal->arete,
+                    ]
+                    : ($pajilla->donadorExterno
+                        ? [
+                            'id' => $pajilla->donadorExterno->id,
+                            'codigo' => $pajilla->donadorExterno->codigo,
+                            'nombre' => $pajilla->donadorExterno->nombre,
+                        ]
+                        : null),
+            ]);
         return Inertia::render('Reproduccion/Index', [
             'eventos'  => $eventos,
             'animales' => $animales,
             'lotes'    => $lotes,
+            'pajillas' => $pajillas,
+            'donadoresExternos' => $donadoresExternos,
         ]);
     }
 

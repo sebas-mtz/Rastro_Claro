@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import ModalAnimalSelect from './ModalAnimalSelect';
 import ModalLoteSelect from './ModalLoteSelect';
+import ModalNuevaVacuna from './ModalNuevaVacuna';
 /**
  * Modal completo para registrar un EventoSalud.
  * Muestra campos dinámicos según el tipo seleccionado.
@@ -16,6 +17,7 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [],   lotes 
     const [animalModalOpen, setAnimalModalOpen] = useState(false);
     const [loteModalOpen, setLoteModalOpen] = useState(false);
     const panelRef = useRef(null);
+    const [vacunaModalOpen, setVacunaModalOpen] = useState(false);
 
     const { data, setData, post, processing, reset, errors } = useForm({
         animal_id:        '',
@@ -327,10 +329,13 @@ const loteLabel = selectedLote
                                 {errors.vacuna_id && <span style={css.error}>{errors.vacuna_id}</span>}
                                 <span style={{ ...css.labelHint, marginTop: '0.15rem' }}>
                                     ¿No está en la lista?{' '}
-                                    <a href={route('vacunas.create')} target="_blank"
-                                        style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}>
-                                        Registrar nueva vacuna ↗
-                                    </a>
+                                    <button
+                                        type="button"
+                                        onClick={() => setVacunaModalOpen(true)}
+                                        style={{color: '#2563eb',background: 'none', border: 'none',padding: 0,cursor: 'pointer',textDecoration: 'none',fontWeight: 600,
+                                        }}>
+                                        Registrar nueva vacuna
+                                    </button>
                                 </span>
                             </label>
 
@@ -499,6 +504,10 @@ const loteLabel = selectedLote
                 }}
                 lotes={lotes}
             />
+            <ModalNuevaVacuna
+    isOpen={vacunaModalOpen}
+    onClose={() => setVacunaModalOpen(false)}
+/>
         </div>
     );
 }

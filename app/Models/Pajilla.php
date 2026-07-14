@@ -46,4 +46,19 @@ class Pajilla extends Model
     {
         return $this->belongsTo(DonadorExterno::class);
     }
+    // app/Models/Pajilla.php
+// app/Models/Pajilla.php
+
+protected static function booted()
+{
+    static::saving(function (Pajilla $pajilla) {
+        if (
+            $pajilla->estado === 'disponible'
+            && $pajilla->fecha_vencimiento
+            && $pajilla->fecha_vencimiento <= today()->toDateString()
+        ) {
+            $pajilla->estado = 'vencida';
+        }
+    });
+}
 }

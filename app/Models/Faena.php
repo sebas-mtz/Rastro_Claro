@@ -23,7 +23,7 @@ class Faena extends Model
         'peso_visceras',
         'costo_total',
         'rendimiento',
-        'observaciones'
+        'observaciones',
     ];
 
     protected $casts = [

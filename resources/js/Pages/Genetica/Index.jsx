@@ -5,6 +5,7 @@ import TabTermos from './Tabtermos';
 import TabPajillas from './Tabpajillas';
 import ModalTermo from './Modaltermo';
 import ModalPajilla from './ModalPajilla';
+import ModalDonadorExterno from "./ModalDonadorExterno";
 import {
     FlaskConical,
     Droplets,
@@ -32,6 +33,7 @@ export default function Index({
     const [tab, setTab]                   = useState(initialTab);
     const [termoModalOpen, setTermoModalOpen] = useState(false);
     const [pajillaModalOpen, setPajillaModalOpen] = useState(false);
+    const [donadorModalOpen, setDonadorModalOpen] = useState(false);
     // Lista plana de termos activos para el select del modal de pajilla
     const termosList = Array.isArray(termos) ? termos : (termos?.data ?? []);
 
@@ -102,6 +104,14 @@ export default function Index({
                         >
                             <Droplets className="w-5 h-5" />
                             Nueva pajilla
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setDonadorModalOpen(true)}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                        >
+                            Nuevo donador externo
                         </button>
                     </div>
                 </div>
@@ -199,6 +209,11 @@ export default function Index({
     termos={termosList}
     animales={animales}
     donadoresExternos={donadoresExternos}
+    onAgregarDonadorExterno={() => {setPajillaModalOpen(false);setDonadorModalOpen(true);}}
+/>
+<ModalDonadorExterno
+    isOpen={donadorModalOpen}
+    onClose={() => {setDonadorModalOpen(false);setPajillaModalOpen(true);}}
 />
         </>
     );

@@ -40,6 +40,7 @@ export default function ModalPajilla({
     termos = [],
     animales = [],
     donadoresExternos = [],
+    onAgregarDonadorExterno,
 }) {
     const { errors } = usePage().props;
     const isEdit = !!pajilla;
@@ -273,21 +274,40 @@ export default function ModalPajilla({
                         )}
 
                         {form.origen === 'externo' && (
-                            <Field label="Donador externo *" error={errors?.donador_externo_id}>
-                                <select
-                                    className={inputCls(errors?.donador_externo_id)}
-                                    value={form.donador_externo_id}
-                                    onChange={set('donador_externo_id')}
+                            <div>
+                                <Field
+                                    label="Donador externo *"
+                                    error={errors?.donador_externo_id}
                                 >
-                                    <option value="">Seleccionar donador…</option>
+                                    <select
+                                        className={inputCls(errors?.donador_externo_id)}
+                                        value={form.donador_externo_id}
+                                        onChange={set('donador_externo_id')}
+                                    >
+                                        <option value="">Seleccionar donador…</option>
 
-                                    {donadoresExternos.map((donador) => (
-                                        <option key={donador.id} value={donador.id}>
-                                            {donador.codigo} — {donador.nombre}
-                                        </option>
-                                    ))}
-                                </select>
-                            </Field>
+                                        {donadoresExternos.map((donador) => (
+                                            <option key={donador.id} value={donador.id}>
+                                                {donador.codigo} — {donador.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </Field>
+
+                                <button
+                                    type="button"
+                                    onClick={onAgregarDonadorExterno}
+                                    className="mt-2 text-sm font-medium text-blue-600 transition hover:text-blue-700 hover:underline"
+                                >
+                                    Agregar donador externo
+                                </button>
+
+                                {donadoresExternos.length === 0 && (
+                                    <p className="mt-1 text-xs text-gray-400">
+                                        Todavía no hay donadores externos registrados.
+                                    </p>
+                                )}
+                            </div>
                         )}
 
                         {isEdit ? (

@@ -235,8 +235,30 @@ class ReproduccionSeeder extends Seeder
 
         // Resuelve el ID real de la pajilla; null en monta natural
         $pajillaId = isset($p['pajilla_codigo'])
-            ? ($pajillas[$p['pajilla_codigo']] ?? null)
-            : null;
+    ? ($pajillas[$p['pajilla_codigo']] ?? null)
+    : null;
+
+$padreExternoId = null;
+
+/*
+ * Si el servicio utiliza pajilla, obtener su donador.
+ * Puede ser un animal interno o un donador externo.
+ */
+if ($pajillaId) {
+    $pajilla = DB::table('pajillas')
+        ->select(
+            'animal_id',
+            'donador_externo_id'
+        )
+        ->where('id', $pajillaId)
+        ->first();
+
+    if (!empty($pajilla?->animal_id)) {
+        $padreId = $pajilla->animal_id;
+    } elseif (!empty($pajilla?->donador_externo_id)) {
+        $padreExternoId = $pajilla->donador_externo_id;
+    }
+}
 
         $partoFecha    = Carbon::parse($p['parto_fecha']);
         $servicioFecha = $partoFecha->copy()->subDays(self::GESTACION);
@@ -344,16 +366,33 @@ class ReproduccionSeeder extends Seeder
 
         /* ── 5. Crías ─────────────────────────────────────────────────── */
         foreach ($p['crias'] as $cria) {
+            $animalId = $animals[$cria['arete']] ?? null;
+        
+            /*
+             * AnimalSeeder creó previamente al animal.
+             * Aquí completamos su genealogía según el servicio reproductivo.
+             */
+            if ($animalId) {
+                DB::table('animals')
+                    ->where('id', $animalId)
+                    ->update([
+                        'madre_id' => $madreId,
+                        'padre_id' => $padreId,
+                        'padre_externo_id' => $padreExternoId,
+                        'updated_at' => now(),
+                    ]);
+            }
+        
             DB::table('crias')->insert([
-                'parto_id'        => $partoId,
-                'animal_id'       => $animals[$cria['arete']] ?? null,
-                'sexo'            => $cria['sexo'],
+                'parto_id' => $partoId,
+                'animal_id' => $animalId,
+                'sexo' => $cria['sexo'],
                 'peso_nacimiento' => $cria['peso'],
-                'condicion'       => 'vivo',
-                'arete_temporal'  => null,
-                'observaciones'   => $cria['obs'] ?? null,
-                'created_at'      => now(),
-                'updated_at'      => now(),
+                'condicion' => 'vivo',
+                'arete_temporal' => null,
+                'observaciones' => $cria['obs'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }

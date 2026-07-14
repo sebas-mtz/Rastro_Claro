@@ -19,6 +19,8 @@ class EventoSaludController extends Controller
 {
     public function index(Request $request): Response
     {
+        Tratamiento::sincronizarVencidos();
+    EventoSalud::sincronizarVencidos(); // ver punto 5
         $mesParam = $request->get('month', now()->format('Y-m'));
         $fecha    = Carbon::createFromFormat('Y-m', $mesParam)->startOfMonth();
         $year     = $fecha->year;
@@ -91,27 +93,26 @@ class EventoSaludController extends Controller
 
         // Tratamientos activos (todos los meses)
         $treatments = Tratamiento::with(['animal', 'lote'])
-            ->where('estado', 'activo')
-            ->orderBy('fecha_inicio', 'desc')
-            ->get()
-            ->map(fn($t) => [
-                'id'             => $t->id,
-                'nombre'         => $t->nombre,
-                'animal'         => $t->animal_id
-                    ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
-                            ($t->animal->alias ? "- {$t->animal->alias}" : ''))
-                       ?: "Animal #{$t->animal_id}")
-                    : null,
-                'lote'           => $t->lote_id
-                    ? ($t->lote?->nombre ?? "Lote #{$t->lote_id}")
-                    : null,
-                'estado'         => $t->estado,
-                'dias_restantes' => $t->diasRestantes(),
-                'esta_vencido'   => $t->estaVencido(),
-                'rango'          => $t->fecha_inicio->format('d/m/Y') .
-                                    ($t->fecha_fin ? ' → ' . $t->fecha_fin->format('d/m/Y') : ' → en curso'),
-                'notas'          => $t->notas,
-            ]);
+    ->whereIn('estado', [Tratamiento::ESTADO_ACTIVO, Tratamiento::ESTADO_VENCIDO])
+    ->orderBy('fecha_inicio', 'desc')
+    ->get()
+    ->map(fn($t) => [
+        'id'             => $t->id,
+        'nombre'         => $t->nombre,
+        'animal'         => $t->animal_id
+            ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
+                    ($t->animal->alias ? "- {$t->animal->alias}" : ''))
+               ?: "Animal #{$t->animal_id}")
+            : null,
+        'lote'           => $t->lote_id
+            ? ($t->lote?->nombre ?? "Lote #{$t->lote_id}")
+            : null,
+        'estado'         => $t->estado,
+        'dias_restantes' => $t->diasRestantes(),
+        'rango'          => $t->fecha_inicio->format('d/m/Y') .
+                            ($t->fecha_fin ? ' → ' . $t->fecha_fin->format('d/m/Y') : ' → en curso'),
+        'notas'          => $t->notas,
+    ]);
 
         // Consultas, revisiones y emergencias pendientes/vencidas (todos los meses)
         $eventos = EventoSalud::with(['animal', 'lote'])
@@ -333,13 +334,11 @@ class EventoSaludController extends Controller
      * POST /eventos-salud/marcar-vencidos
      */
     public function marcarVencidos(): RedirectResponse
-    {
-        $cantidad = EventoSalud::where('estado', EventoSalud::ESTADO_PENDIENTE)
-            ->where('fecha_programada', '<', Carbon::today())
-            ->update(['estado' => EventoSalud::ESTADO_VENCIDA]);
+{
+    $cantidad = EventoSalud::sincronizarVencidos();
 
-        return back()->with('success', "$cantidad evento(s) marcados como vencidos.");
-    }
+    return back()->with('success', "$cantidad evento(s) marcados como vencidos.");
+}
 
     // ─── Helper privado ───────────────────────────────────────────────────────
 

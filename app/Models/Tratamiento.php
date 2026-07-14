@@ -28,7 +28,25 @@ class Tratamiento extends Model
     ];
 
     const ESTADO_ACTIVO     = 'activo';
+    const ESTADO_VENCIDO    = 'vencido';
     const ESTADO_COMPLETADO = 'completado';
+
+    // ─── Eventos del modelo ───────────────────────────────────────
+
+    protected static function booted()
+    {
+        // Autocorrige al crear/editar: si sigue "activo" pero fecha_fin
+        // ya pasó, se guarda directamente como "vencido".
+        static::saving(function (Tratamiento $t) {
+            if (
+                $t->estado === self::ESTADO_ACTIVO
+                && $t->fecha_fin
+                && Carbon::parse($t->fecha_fin)->lte(Carbon::today())
+            ) {
+                $t->estado = self::ESTADO_VENCIDO;
+            }
+        });
+    }
 
     // ─── Relaciones ───────────────────────────────────────────────
 
@@ -36,6 +54,7 @@ class Tratamiento extends Model
     {
         return $this->belongsTo(Animal::class);
     }
+
     public function lote(): BelongsTo
     {
         return $this->belongsTo(Lote::class);
@@ -60,21 +79,23 @@ class Tratamiento extends Model
 
     public function scopeVencidos(Builder $query): Builder
     {
-        // Tratamientos activos cuya fecha_fin ya pasó
-        return $query->where('estado', self::ESTADO_ACTIVO)
-                     ->whereNotNull('fecha_fin')
-                     ->where('fecha_fin', '<', Carbon::today());
+        return $query->where('estado', self::ESTADO_VENCIDO);
+    }
+
+    public function scopeCompletados(Builder $query): Builder
+    {
+        return $query->where('estado', self::ESTADO_COMPLETADO);
     }
 
     public function scopeDeAnimal(Builder $query, int $animalId): Builder
     {
         return $query->where('animal_id', $animalId);
     }
-    
+
     public function scopeDeLote(Builder $query, int $loteId): Builder
-{
-    return $query->where('lote_id', $loteId);
-}
+    {
+        return $query->where('lote_id', $loteId);
+    }
 
     // ─── Helpers ──────────────────────────────────────────────────
 
@@ -90,10 +111,16 @@ class Tratamiento extends Model
         return max(0, Carbon::today()->diffInDays($this->fecha_fin, false));
     }
 
-    public function estaVencido(): bool
+    /**
+     * Marca como vencidos todos los tratamientos activos cuya fecha_fin
+     * ya pasó. Se llama en cada punto de lectura (index, reportes) porque
+     * en local no hay scheduler/cron corriendo constantemente.
+     */
+    public static function sincronizarVencidos(): int
     {
-        return $this->estado === self::ESTADO_ACTIVO
-            && $this->fecha_fin
-            && $this->fecha_fin->isPast();
+        return static::where('estado', self::ESTADO_ACTIVO)
+            ->whereNotNull('fecha_fin')
+            ->whereDate('fecha_fin', '<', Carbon::today())
+            ->update(['estado' => self::ESTADO_VENCIDO]);
     }
 }

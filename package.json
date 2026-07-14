@@ -26,6 +26,6 @@
         "chart.js": "^4.5.1",
         "lucide-react": "^0.548.0",
         "react-hot-toast": "^2.6.0",
-        "recharts": "^3.5.1"
+        "recharts": "^3.9.0"
     }
 }

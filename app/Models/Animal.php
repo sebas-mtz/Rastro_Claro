@@ -16,7 +16,7 @@ class Animal extends Model
 
     protected $fillable = [
         'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id',
-        'madre_id', 'padre_id', 'padre_externo_id'
+        'madre_id', 'padre_id', 'padre_externo_id', 'imagen'
     ];
 
     public function lote() {

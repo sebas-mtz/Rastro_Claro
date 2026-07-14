@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { X, Plus, Trash2 } from "lucide-react";
 
-export default function PartoModal({ show, onClose, hembras = [], eventos = [], animales = [] }) {
+export default function PartoModal({ show, onClose, hembras = [], eventos = [], animales = [],   donadoresExternos = [],
+}) {
 
   const { data, setData, post, processing, errors, reset } = useForm({
     hembra_id:              "",
     servicio_evento_id:     "",
     padre_id:               "", // ← nuevo — solo si no hay servicio vinculado
+    padre_externo_id: "",
     fecha:                  new Date().toISOString().split("T")[0],
     tipo_parto:             "normal",
     asistencia_requerida:   false,
@@ -33,8 +35,23 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
   );
 
   // Machos disponibles para asignar como padre manual
-  const machos = animales.filter(a => a.sexo === "macho");
-
+  const hembraSeleccionada = hembras.find(
+    (hembra) => String(hembra.id) === String(data.hembra_id)
+  );
+  
+  const machos = animales.filter((animal) => {
+    const sexo = String(animal.sexo ?? "")
+      .trim()
+      .toLowerCase();
+  
+    const esMacho = ["m", "M", "macho", "male"].includes(sexo);
+  
+    const mismaEspecie =
+      !hembraSeleccionada?.especie ||
+      animal.especie === hembraSeleccionada.especie;
+  
+    return esMacho && mismaEspecie;
+  });
   // Si hay servicio vinculado, el padre viene del servicio — no mostrar selector
   const servicioSeleccionado = gestacionesActivas.find(g => g.id == data.servicio_evento_id);
   const padreDesdeServicio = servicioSeleccionado?.servicio?.macho ?? null;
@@ -57,12 +74,26 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
     setData("crias", data.crias.filter((_, i) => i !== index));
   };
 
+  const handleHembraChange = (e) => {
+    const hembraId = e.target.value;
+  
+    setData((actual) => ({
+      ...actual,
+      hembra_id: hembraId,
+      servicio_evento_id: "",
+      padre_id: "",
+      padre_externo_id: "",
+    }));
+  };
+
   const handleServicioChange = (e) => {
-    const val = e.target.value;
-    setData(data => ({
-      ...data,
-      servicio_evento_id: val,
-      padre_id: "", // limpiar padre manual si vincula servicio
+    const valor = e.target.value;
+  
+    setData((actual) => ({
+      ...actual,
+      servicio_evento_id: valor,
+      padre_id: "",
+      padre_externo_id: "",
     }));
   };
 
@@ -94,7 +125,7 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
             <label className="text-sm font-medium">Hembra *</label>
             <select
               value={data.hembra_id}
-              onChange={e => setData("hembra_id", e.target.value)}
+              onChange={handleHembraChange}
               className="w-full border rounded-lg p-2 mt-1 text-sm"
             >
               <option value="">Seleccionar hembra...</option>
@@ -145,26 +176,106 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
           )}
 
           {/* PADRE MANUAL — solo si no hay servicio vinculado */}
-          {data.hembra_id && mostrarSelectorPadre && (
-            <div>
-              <label className="text-sm font-medium">Padre (opcional)</label>
-              <select
-                value={data.padre_id}
-                onChange={e => setData("padre_id", e.target.value)}
-                className="w-full border rounded-lg p-2 mt-1 text-sm"
-              >
-                <option value="">Desconocido / no registrado</option>
-                {machos.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.alias ? `${m.alias} (${m.arete})` : m.arete} — {m.especie}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-400 mt-1">
-                Si registras el servicio/monta previo, el padre se asigna automáticamente.
-              </p>
-            </div>
-          )}
+          {/* PADRE MANUAL — solamente cuando no hay servicio vinculado */}
+{data.hembra_id && mostrarSelectorPadre && (
+  <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4">
+    <h4 className="text-sm font-semibold text-gray-700">
+      Padre de las crías
+    </h4>
+
+    <p className="mb-4 mt-1 text-xs text-gray-500">
+      Selecciona un padre interno o un donador externo. No pueden seleccionarse ambos.
+    </p>
+
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* PADRE INTERNO */}
+      <div>
+        <label className="text-sm font-medium">
+          Padre interno
+        </label>
+
+        <select value={data.padre_id} onChange={(e) => {
+            const valor = e.target.value;
+
+            setData((actual) => ({
+              ...actual, padre_id: valor,padre_externo_id: valor ? "" : actual.padre_externo_id,
+            }));
+          }}
+          className="mt-1 w-full rounded-lg border p-2 text-sm"
+        >
+          <option value="">Sin padre interno</option>
+
+          {machos.map((macho) => (
+            <option key={macho.id} value={macho.id}>
+              {macho.alias? `${macho.alias} (${macho.arete ?? "Sin arete"})` : macho.arete ?? `Animal #${macho.id}`}
+              {macho.especie ? ` — ${macho.especie}` : ""}
+            </option>
+          ))}
+        </select>
+
+        {machos.length === 0 && (
+          <p className="mt-1 text-xs text-amber-600">
+            No hay machos internos de la misma especie.
+          </p>
+        )}
+
+        {errors.padre_id && (
+          <p className="mt-1 text-xs text-red-500"> {errors.padre_id}
+          </p>
+        )}
+      </div>
+
+      {/* PADRE EXTERNO */}
+      <div>
+        <label className="text-sm font-medium">
+          Donador externo
+        </label>
+
+        <select
+          value={data.padre_externo_id}
+          onChange={(e) => {
+            const valor = e.target.value;
+
+            setData((actual) => ({
+              ...actual,
+              padre_externo_id: valor,
+              padre_id: valor ? "" : actual.padre_id,
+            }));
+          }}
+          className="mt-1 w-full rounded-lg border p-2 text-sm"
+        >
+          <option value="">Sin donador externo</option>
+
+          {donadoresExternos.map((donador) => (
+            <option key={donador.id} value={donador.id}>
+              {donador.codigo
+                ? `${donador.codigo} — `
+                : ""}
+              {donador.nombre}
+              {donador.raza ? ` (${donador.raza})` : ""}
+            </option>
+          ))}
+        </select>
+
+        {donadoresExternos.length === 0 && (
+          <p className="mt-1 text-xs text-amber-600">
+            No hay donadores externos registrados.
+          </p>
+        )}
+
+        {errors.padre_externo_id && (
+          <p className="mt-1 text-xs text-red-500">
+            {errors.padre_externo_id}
+          </p>
+        )}
+      </div>
+    </div>
+
+    <p className="mt-3 text-xs text-gray-400">
+      Si vinculas una gestación o servicio, el padre debe obtenerse automáticamente desde ese servicio.
+    </p>
+  </div>
+)}
 
           <div className="grid grid-cols-2 gap-4">
 

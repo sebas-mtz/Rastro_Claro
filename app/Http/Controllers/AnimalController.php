@@ -184,4 +184,47 @@ class AnimalController extends Controller
         $animal->delete();
         return back()->with('success', 'Animal eliminado.');
     }
+
+    public function imagen(Request $request, Animal $animal)
+{
+    $request->validate([
+        'imagen' => 'required|image|max:5120', // máx 5MB
+    ]);
+
+    // Borra la imagen anterior si existe
+    if ($animal->imagen) {
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($animal->imagen);
+    }
+
+    $path = $request->file('imagen')->store('animales', 'public');
+
+    $animal->update(['imagen' => $path]);
+
+    return back()->with('success', 'Imagen actualizada.');
+}
+
+public function guardarImagen(Request $request, Animal $animal)
+{
+    $request->validate([
+        'imagen' => 'required|image|max:5120',
+    ]);
+
+    $ruta = $request->file('imagen')->store('animales', 'public');
+
+    $animal->update([
+        'imagen' => $ruta,
+    ]);
+
+    return back();
+}
+
+public function eliminarImagen(Animal $animal)
+{
+    if ($animal->imagen) {
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($animal->imagen);
+        $animal->update(['imagen' => null]);
+    }
+
+    return back()->with('success', 'Imagen eliminada.');
+}
 }

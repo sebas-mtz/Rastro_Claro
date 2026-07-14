@@ -28,6 +28,7 @@ return new class extends Migration {
           ->constrained('animals')
           ->nullOnDelete();
             $table->timestamps();
+            $table->string('imagen')->nullable();
         });
     }
 

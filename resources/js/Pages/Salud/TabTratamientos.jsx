@@ -10,8 +10,8 @@ export default function TabTratamientos({ treatments = [], animals = [] }) {
         router.patch(route('tratamientos.completar', id), {}, { preserveScroll: true });
     }
 
-    const vencidos = treatments.filter(t => t.esta_vencido);
-    const activos  = treatments.filter(t => !t.esta_vencido);
+    const vencidos = treatments.filter(t => t.estado === 'vencido');
+    const activos  = treatments.filter(t => t.estado === 'activo');
 
     return (
         <>
@@ -43,37 +43,39 @@ export default function TabTratamientos({ treatments = [], animals = [] }) {
                     </div>
                 )}
 
-                {[...vencidos, ...activos].map(t => (
-                    <div key={t.id} className="list-item" style={{
-                        borderLeft: t.esta_vencido ? '3px solid #ef4444' : '3px solid transparent',
-                        paddingLeft: '0.75rem',
-                    }}>
-                        <div>
-                            <div className="li-title">{t.nombre}</div>
-                            <div className="li-sub">{t.animal}</div>
-                            <div className="li-sub">{t.rango}</div>
-                            {t.notas && <div className="li-sub" style={{ fontStyle: 'italic' }}>{t.notas}</div>}
-                        </div>
-                        <div className="li-right">
-                            {t.dias_restantes !== null && (
-                                <span style={{
-                                    fontSize: '0.7rem', fontWeight: 600,
-                                    color: t.esta_vencido ? '#ef4444' : t.dias_restantes <= 3 ? '#f59e0b' : '#22c55e',
-                                }}>
-                                    {t.esta_vencido ? 'Vencido'
-                                        : t.dias_restantes === 0 ? 'Último día'
-                                        : `${t.dias_restantes}d restantes`}
+                {[...vencidos, ...activos].map(t => {
+                    const esVencido = t.estado === 'vencido';
+
+                    return (
+                        <div key={t.id} className="list-item" style={{
+                            borderLeft: esVencido ? '3px solid #ef4444' : '3px solid transparent',
+                            paddingLeft: '0.75rem',
+                        }}>
+                            <div>
+                                <div className="li-title">{t.nombre}</div>
+                                <div className="li-sub">{t.animal}</div>
+                                <div className="li-sub">{t.rango}</div>
+                                {t.notas && <div className="li-sub" style={{ fontStyle: 'italic' }}>{t.notas}</div>}
+                            </div>
+                            <div className="li-right">
+                                {t.dias_restantes !== null && !esVencido && (
+                                    <span style={{
+                                        fontSize: '0.7rem', fontWeight: 600,
+                                        color: t.dias_restantes <= 3 ? '#f59e0b' : '#22c55e',
+                                    }}>
+                                        {t.dias_restantes === 0 ? 'Último día' : `${t.dias_restantes}d restantes`}
+                                    </span>
+                                )}
+                                <span className={`badge ${esVencido ? 'red' : 'yellow'}`}>
+                                    {esVencido ? 'Vencido' : 'Activo'}
                                 </span>
-                            )}
-                            <span className={`badge ${t.esta_vencido ? 'red' : 'yellow'}`}>
-                                {t.esta_vencido ? 'Vencido' : 'Activo'}
-                            </span>
-                            <button type="button" className="btn" onClick={() => completar(t.id)}>
-                                Completar
-                            </button>
+                                <button type="button" className="btn" onClick={() => completar(t.id)}>
+                                    Completar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <ModalNuevoTratamiento

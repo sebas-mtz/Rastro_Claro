@@ -102,6 +102,14 @@ class EventoSalud extends Model
                          Carbon::today()->addDays($dias),
                      ]);
     }
+    // app/Models/EventoSalud.php
+
+public static function sincronizarVencidos(): int
+{
+    return static::where('estado', self::ESTADO_PENDIENTE)
+        ->whereDate('fecha_programada', '<', Carbon::today())
+        ->update(['estado' => self::ESTADO_VENCIDA]);
+}
 
     // ─── Helpers ──────────────────────────────────────────────────
 

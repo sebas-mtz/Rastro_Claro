@@ -74,7 +74,7 @@ class TermoController extends Controller
         Termo::create($data);
 
         return redirect()
-            ->route('termos.index')
+            ->route('genetica.index')
             ->with('success', 'Termo registrado correctamente.');
     }
 
@@ -116,7 +116,7 @@ class TermoController extends Controller
         $termo->update($data);
 
         return redirect()
-            ->route('termos.index')
+            ->route('genetica.index')
             ->with('success', 'Termo actualizado correctamente.');
     }
 
@@ -125,7 +125,7 @@ class TermoController extends Controller
         $termo->delete();
 
         return redirect()
-            ->route('termos.index')
+            ->route('genetica.index')
             ->with('success', 'Termo eliminado correctamente.');
     }
 }

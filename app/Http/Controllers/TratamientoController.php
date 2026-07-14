@@ -16,36 +16,36 @@ use Inertia\Response;
 class TratamientoController extends Controller
 {
     public function index(Request $request): Response
-    {
-        $query = Tratamiento::with(['animal', 'lote', 'eventoSalud', 'user'])
-            ->latest('fecha_inicio');
+{
+    Tratamiento::sincronizarVencidos();
 
-        if ($request->filled('animal_id')) {
-            $query->where('animal_id', $request->animal_id);
-        }
+    $query = Tratamiento::with(['animal', 'lote', 'eventoSalud', 'user'])
+        ->latest('fecha_inicio');
 
-        if ($request->filled('lote_id')) {
-            $query->where('lote_id', $request->lote_id);
-        }
-
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->estado);
-        }
-
-        $tratamientos = $query->paginate(50)->withQueryString();
-
-        // Enriquecer con datos calculados que React mostrará directamente
-        $tratamientos->getCollection()->transform(function ($t) {
-            $t->dias_restantes = $t->diasRestantes();
-            $t->esta_vencido   = $t->estaVencido();
-            return $t;
-        });
-
-        return Inertia::render('Tratamientos/Index', [
-            'tratamientos' => $tratamientos,
-            'filtros'      => $request->only(['animal_id', 'lote_id', 'estado']),
-        ]);
+    if ($request->filled('animal_id')) {
+        $query->where('animal_id', $request->animal_id);
     }
+
+    if ($request->filled('lote_id')) {
+        $query->where('lote_id', $request->lote_id);
+    }
+
+    if ($request->filled('estado')) {
+        $query->where('estado', $request->estado); // ahora acepta activo|vencido|completado
+    }
+
+    $tratamientos = $query->paginate(50)->withQueryString();
+
+    $tratamientos->getCollection()->transform(function ($t) {
+        $t->dias_restantes = $t->diasRestantes(); // se conserva para mostrar "3d restantes"
+        return $t;
+    });
+
+    return Inertia::render('Tratamientos/Index', [
+        'tratamientos' => $tratamientos,
+        'filtros'      => $request->only(['animal_id', 'lote_id', 'estado']),
+    ]);
+}
 
     public function create(Request $request): Response
     {
@@ -76,20 +76,22 @@ class TratamientoController extends Controller
 
         Tratamiento::create($data);
 
-        return redirect()->route('tratamientos.index')
-            ->with('success', 'Tratamiento registrado correctamente.');
+        return back()->with('success', 'Tratamiento registrado correctamente.');
     }
 
     public function show(Tratamiento $tratamiento): Response
-    {
-        $tratamiento->load(['animal', 'lote', 'eventoSalud', 'user']);
-        $tratamiento->dias_restantes = $tratamiento->diasRestantes();
-        $tratamiento->esta_vencido   = $tratamiento->estaVencido();
+{
+    // Por si este registro puntual no ha sido tocado desde que venció
+    Tratamiento::sincronizarVencidos();
+    $tratamiento->refresh(); // recarga por si acaba de cambiar de estado
 
-        return Inertia::render('Tratamientos/Show', [
-            'tratamiento' => $tratamiento,
-        ]);
-    }
+    $tratamiento->load(['animal', 'lote', 'eventoSalud', 'user']);
+    $tratamiento->dias_restantes = $tratamiento->diasRestantes();
+
+    return Inertia::render('Tratamientos/Show', [
+        'tratamiento' => $tratamiento,
+    ]);
+}
 
     public function edit(Tratamiento $tratamiento): Response
     {
@@ -112,7 +114,7 @@ class TratamientoController extends Controller
             'nombre'       => ['sometimes', 'string', 'max:255'],
             'fecha_inicio' => ['sometimes', 'date'],
             'fecha_fin'    => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
-            'estado'       => ['nullable', 'in:activo,completado'],
+            'estado' => ['nullable', 'in:activo,vencido,completado'],
             'notas'        => ['nullable', 'string'],
             'responsable'  => ['nullable', 'string', 'max:150'],
         ]);
@@ -151,12 +153,10 @@ class TratamientoController extends Controller
      * POST /tratamientos/marcar-vencidos
      */
     public function marcarVencidos(): RedirectResponse
-    {
-        $cantidad = Tratamiento::where('estado', Tratamiento::ESTADO_ACTIVO)
-            ->whereNotNull('fecha_fin')
-            ->where('fecha_fin', '<', Carbon::today())
-            ->update(['estado' => Tratamiento::ESTADO_COMPLETADO]);
+{
+    $cantidad = Tratamiento::sincronizarVencidos();
 
-        return back()->with('success', "$cantidad tratamiento(s) completados automáticamente.");
-    }
+    return back()->with('success', "$cantidad tratamiento(s) marcados como vencidos.");
+}
+    
 }

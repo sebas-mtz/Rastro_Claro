@@ -33,6 +33,9 @@ use App\Http\Controllers\GenealogiasController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\TermoController;
 use App\Http\Controllers\PajillaController;
+use App\Http\Controllers\DonadorExternoController;
+use App\Http\Controllers\EstadisticasSaludController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +114,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('tratamientos/{tratamiento}/completar', [TratamientoController::class, 'completar'])
         ->name('tratamientos.completar');
     Route::resource('tratamientos', TratamientoController::class);
+    Route::get('/salud/estadisticas', EstadisticasSaludController::class)
+    ->name('salud.estadisticas');
 
     /*
     |----------------------------------------------------------------------
@@ -295,6 +300,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     */
     Route::resource('termos', TermoController::class)->except(['index']);
     Route::resource('pajillas', PajillaController::class)->except(['index', 'create', 'edit', 'show']);
+    Route::post('/donadores-externos',[DonadorExternoController::class, 'store'])->name('donadores-externos.store');
     Route::get('/genetica', [TermoController::class, 'index'])
     ->name('genetica.index');
     /*
@@ -337,6 +343,15 @@ Route::prefix('reportes')->name('reportes.')->group(function () {
     Route::get('/ficha/pdf', [ReportesController::class, 'exportarFichaPdf'])->name('ficha.pdf');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Imagenes
+|--------------------------------------------------------------------------
+*/
+Route::post('/animales/{animal}/imagen', [AnimalController::class, 'imagen'])->name('animales.imagen');
+Route::delete('/animales/{animal}/imagen', [AnimalController::class, 'eliminarImagen'])->name('animales.imagen.eliminar');
+Route::post('/animales/{animal}/imagen', [AnimalController::class, 'guardarImagen'])
+    ->name('animales.imagen');
 /*
 |--------------------------------------------------------------------------
 | Auth scaffold (Breeze)

@@ -3,49 +3,9 @@ import { useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import ModalTarea from './ModalTarea';
 
-import {
-    AlarmClock,
-    CalendarClock,
-    CheckCircle2,
-    ChevronLeft,
-    ChevronRight,
-    CircleAlert,
-    Clock3,
-    Edit3,
-    Eye,
-    ListTodo,
-    MoreVertical,
-    PauseCircle,
-    PlayCircle,
-    Plus,
-    Search,
-    Trash2,
-    UserRound,
-    X,
-} from 'lucide-react';
+import { AlarmClock, CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, CircleAlert, Clock3, Edit3, Eye, ListTodo, MoreVertical, PauseCircle, PlayCircle, Plus, Search, Trash2, UserRound, X } from 'lucide-react';
 
-const FILTROS_ESTADO = [
-    {
-        key: '',
-        label: 'Todas',
-    },
-    {
-        key: 'pendiente',
-        label: 'Pendientes',
-    },
-    {
-        key: 'vencida',
-        label: 'Vencidas',
-    },
-    {
-        key: 'suspendida',
-        label: 'Suspendidas',
-    },
-    {
-        key: 'completada',
-        label: 'Completadas',
-    },
-];
+const FILTROS_ESTADO = [ { key: '', label: 'Todas', }, { key: 'pendiente', label: 'Pendientes', }, { key: 'vencida', label: 'Vencidas', }, { key: 'suspendida', label: 'Suspendidas', }, { key: 'completada', label: 'Completadas', }, ];
 
 const ESTADOS = {
     pendiente: {
@@ -96,38 +56,25 @@ function formatearFecha(fecha) {
     }).format(new Date(fecha));
 }
 
-function TarjetaResumen({
-    titulo,
-    cantidad,
-    descripcion,
-    icon: Icon,
-    className,
-    onClick,
-}) {
+function TarjetaResumen({ titulo, cantidad, descripcion, icon: Icon, className, onClick }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            className="group w-full rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-        >
+        <button type="button" onClick={onClick} className={`group w-full rounded-2xl border-l-4 bg-white p-4 text-left shadow transition hover:-translate-y-0.5 hover:shadow-md ${className}`} >
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <p className="text-sm font-medium text-slate-500">
+                    <p className="text-sm font-medium text-gray-700">
                         {titulo}
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold text-slate-900">
+                    <p className="mt-1 text-2xl font-bold text-gray-800">
                         {cantidad ?? 0}
                     </p>
 
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-sm text-gray-500">
                         {descripcion}
                     </p>
                 </div>
 
-                <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${className}`}
-                >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600" >
                     <Icon size={22} />
                 </div>
             </div>
@@ -140,24 +87,14 @@ function EstadoTarea({ tarea }) {
     const Icon = estado.icon;
 
     return (
-        <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${estado.className}`}
-        >
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${estado.className}`} >
             <Icon size={14} />
             {estado.label}
         </span>
     );
 }
 
-function MenuAcciones({
-    tarea,
-    onEditar,
-    onVer,
-    onCompletar,
-    onSuspender,
-    onReactivar,
-    onEliminar,
-}) {
+function MenuAcciones({ tarea, onEditar, onVer, onCompletar, onSuspender, onReactivar, onEliminar }) {
     const [abierto, setAbierto] = useState(false);
 
     const ejecutar = (callback) => {
@@ -167,40 +104,22 @@ function MenuAcciones({
 
     return (
         <div className="relative">
-            <button
-                type="button"
-                onClick={() => setAbierto((valor) => !valor)}
-                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                aria-label="Abrir acciones"
-            >
+            <button type="button" onClick={() => setAbierto((valor) => !valor)} className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Abrir acciones" >
                 <MoreVertical size={19} />
             </button>
 
             {abierto && (
                 <>
-                    <button
-                        type="button"
-                        aria-label="Cerrar menú"
-                        onClick={() => setAbierto(false)}
-                        className="fixed inset-0 z-20 cursor-default"
-                    />
+                    <button type="button" aria-label="Cerrar menú" onClick={() => setAbierto(false)} className="fixed inset-0 z-20 cursor-default" />
 
                     <div className="absolute right-0 z-30 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl">
-                        <button
-                            type="button"
-                            onClick={() => ejecutar(onVer)}
-                            className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50"
-                        >
+                        <button type="button" onClick={() => ejecutar(onVer)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50" >
                             <Eye size={17} />
                             Ver información
                         </button>
 
                         {tarea.estado !== 'completada' && (
-                            <button
-                                type="button"
-                                onClick={() => ejecutar(onEditar)}
-                                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50"
-                            >
+                            <button type="button" onClick={() => ejecutar(onEditar)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50" >
                                 <Edit3 size={17} />
                                 Editar tarea
                             </button>
@@ -208,20 +127,12 @@ function MenuAcciones({
 
                         {tarea.estado === 'pendiente' && (
                             <>
-                                <button
-                                    type="button"
-                                    onClick={() => ejecutar(onCompletar)}
-                                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-emerald-700 hover:bg-emerald-50"
-                                >
+                                <button type="button" onClick={() => ejecutar(onCompletar)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-emerald-700 hover:bg-emerald-50" >
                                     <CheckCircle2 size={17} />
                                     Completar
                                 </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => ejecutar(onSuspender)}
-                                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-amber-700 hover:bg-amber-50"
-                                >
+                                <button type="button" onClick={() => ejecutar(onSuspender)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-amber-700 hover:bg-amber-50" >
                                     <PauseCircle size={17} />
                                     Suspender
                                 </button>
@@ -229,11 +140,7 @@ function MenuAcciones({
                         )}
 
                         {tarea.estado === 'suspendida' && (
-                            <button
-                                type="button"
-                                onClick={() => ejecutar(onReactivar)}
-                                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-blue-700 hover:bg-blue-50"
-                            >
+                            <button type="button" onClick={() => ejecutar(onReactivar)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-blue-700 hover:bg-blue-50" >
                                 <PlayCircle size={17} />
                                 Reactivar
                             </button>
@@ -241,11 +148,7 @@ function MenuAcciones({
 
                         <div className="my-1 border-t border-slate-100" />
 
-                        <button
-                            type="button"
-                            onClick={() => ejecutar(onEliminar)}
-                            className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
-                        >
+                        <button type="button" onClick={() => ejecutar(onEliminar)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50" >
                             <Trash2 size={17} />
                             Eliminar
                         </button>
@@ -263,17 +166,12 @@ function DetalleTarea({ tarea, onClose }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <button
-                type="button"
-                onClick={onClose}
-                className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
-                aria-label="Cerrar detalle"
-            />
+            <button type="button" onClick={onClose} className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]" aria-label="Cerrar detalle" />
 
             <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
                 <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-green-600">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
                             Información de la tarea
                         </p>
 
@@ -282,11 +180,7 @@ function DetalleTarea({ tarea, onClose }) {
                         </h2>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
-                    >
+                    <button type="button" onClick={onClose} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" >
                         <X size={20} />
                     </button>
                 </div>
@@ -340,11 +234,7 @@ function DetalleTarea({ tarea, onClose }) {
                 </div>
 
                 <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-6 py-4">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
-                    >
+                    <button type="button" onClick={onClose} className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700" >
                         Cerrar
                     </button>
                 </div>
@@ -476,33 +366,27 @@ export default function Index({
         <AppLayout>
             <Head title="Tareas y recordatorios" />
 
-            <div className="min-h-screen bg-slate-50">
-                <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="bg-gray-50/50">
+                <div className="mx-auto max-w-7xl space-y-5 px-6 py-8">
                     {(flash.success || flash.error) && (
-                        <div
-                            className={`mb-5 rounded-xl border px-4 py-3 text-sm font-medium ${
-                                flash.success
-                                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                                    : 'border-red-200 bg-red-50 text-red-700'
-                            }`}
-                        >
+                        <div className={`mb-5 rounded-xl border px-4 py-3 text-sm font-medium ${ flash.success ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-700' }`} >
                             {flash.success || flash.error}
                         </div>
                     )}
 
-                    <section className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+                    <section className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div>
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                                     <AlarmClock size={25} />
                                 </div>
 
                                 <div>
-                                    <h1 className="text-2xl font-bold text-slate-900">
+                                    <h1 className="text-2xl font-bold text-gray-800">
                                         Tareas y recordatorios
                                     </h1>
 
-                                    <p className="mt-1 text-sm text-slate-500">
+                                    <p className="mt-1 text-sm text-gray-600">
                                         Asigna actividades y da seguimiento a los
                                         pendientes del rancho.
                                     </p>
@@ -510,111 +394,47 @@ export default function Index({
                             </div>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={abrirNuevaTarea}
-                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-100"
-                        >
+                        <button type="button" onClick={abrirNuevaTarea} className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100" >
                             <Plus size={19} />
                             Asignar tarea
                         </button>
                     </section>
 
-                    <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                        <TarjetaResumen
-                            titulo="Pendientes"
-                            cantidad={resumen.pendientes}
-                            descripcion="Tareas por realizar"
-                            icon={Clock3}
-                            className="bg-amber-100 text-amber-700"
-                            onClick={() => cambiarEstadoFiltro('pendiente')}
-                        />
+                    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        <TarjetaResumen titulo="Pendientes" cantidad={resumen.pendientes} descripcion="Tareas por realizar" icon={Clock3} className="border-amber-500" onClick={() => cambiarEstadoFiltro('pendiente')} />
 
-                        <TarjetaResumen
-                            titulo="Vencidas"
-                            cantidad={resumen.vencidas}
-                            descripcion="Requieren atención"
-                            icon={CircleAlert}
-                            className="bg-red-100 text-red-700"
-                            onClick={() => cambiarEstadoFiltro('vencida')}
-                        />
+                        <TarjetaResumen titulo="Vencidas" cantidad={resumen.vencidas} descripcion="Requieren atención" icon={CircleAlert} className="border-red-500" onClick={() => cambiarEstadoFiltro('vencida')} />
 
-                        <TarjetaResumen
-                            titulo="Suspendidas"
-                            cantidad={resumen.suspendidas}
-                            descripcion="Pausadas temporalmente"
-                            icon={PauseCircle}
-                            className="bg-slate-200 text-slate-700"
-                            onClick={() => cambiarEstadoFiltro('suspendida')}
-                        />
+                        <TarjetaResumen titulo="Suspendidas" cantidad={resumen.suspendidas} descripcion="Pausadas temporalmente" icon={PauseCircle} className="border-slate-400" onClick={() => cambiarEstadoFiltro('suspendida')} />
 
-                        <TarjetaResumen
-                            titulo="Completadas"
-                            cantidad={resumen.completadas}
-                            descripcion="Actividades finalizadas"
-                            icon={CheckCircle2}
-                            className="bg-emerald-100 text-emerald-700"
-                            onClick={() => cambiarEstadoFiltro('completada')}
-                        />
+                        <TarjetaResumen titulo="Completadas" cantidad={resumen.completadas} descripcion="Actividades finalizadas" icon={CheckCircle2} className="border-emerald-500" onClick={() => cambiarEstadoFiltro('completada')} />
                     </section>
 
-                    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                        <div className="border-b border-slate-200 p-5">
-                            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                    <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow">
+                        <div className="border-b border-gray-100 px-5 py-4">
+                            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex flex-wrap gap-2">
                                     {FILTROS_ESTADO.map((filtro) => (
-                                        <button
-                                            key={filtro.key}
-                                            type="button"
-                                            onClick={() =>
-                                                cambiarEstadoFiltro(filtro.key)
-                                            }
-                                            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                                                estado === filtro.key
-                                                    ? 'bg-green-600 text-white shadow-sm'
-                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                            }`}
-                                        >
+                                        <button key={filtro.key} type="button" onClick={() => cambiarEstadoFiltro(filtro.key) } className={`rounded-lg px-4 py-2 text-sm font-medium transition ${ estado === filtro.key ? 'border-b-2 border-blue-600 bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600' }`} >
                                             {filtro.label}
                                         </button>
                                     ))}
                                 </div>
 
-                                <form
-                                    onSubmit={buscarTareas}
-                                    className="flex w-full gap-2 xl:max-w-md"
-                                >
+                                <form onSubmit={buscarTareas} className="flex w-full gap-2 lg:max-w-sm" >
                                     <div className="relative flex-1">
-                                        <Search
-                                            size={18}
-                                            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                                        />
+                                        <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
 
-                                        <input
-                                            type="search"
-                                            value={buscar}
-                                            onChange={(event) =>
-                                                setBuscar(event.target.value)
-                                            }
-                                            placeholder="Buscar tarea..."
-                                            className="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-10 text-sm outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100"
-                                        />
+                                        <input type="search" value={buscar} onChange={(event) => setBuscar(event.target.value) } placeholder="Buscar tarea..." className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100" />
 
                                         {buscar && (
-                                            <button
-                                                type="button"
-                                                onClick={limpiarBusqueda}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                                            >
+                                            <button type="button" onClick={limpiarBusqueda} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700" >
                                                 <X size={17} />
                                             </button>
                                         )}
                                     </div>
 
-                                    <button
-                                        type="submit"
-                                        className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                                    >
+                                    <button type="submit" className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50" >
                                         Buscar
                                     </button>
                                 </form>
@@ -622,7 +442,7 @@ export default function Index({
                         </div>
 
                         {registros.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center px-5 py-20 text-center">
+                            <div className="flex flex-col items-center justify-center px-5 py-14 text-center">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
                                     <ListTodo size={30} />
                                 </div>
@@ -636,11 +456,7 @@ export default function Index({
                                     seleccionados.
                                 </p>
 
-                                <button
-                                    type="button"
-                                    onClick={abrirNuevaTarea}
-                                    className="mt-5 inline-flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700"
-                                >
+                                <button type="button" onClick={abrirNuevaTarea} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700" >
                                     <Plus size={18} />
                                     Crear primera tarea
                                 </button>
@@ -648,8 +464,8 @@ export default function Index({
                         ) : (
                             <>
                                 <div className="hidden overflow-x-auto lg:block">
-                                    <table className="min-w-full divide-y divide-slate-200">
-                                        <thead className="bg-slate-50">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
                                             <tr>
                                                 <th className="px-6 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                                                     Tarea
@@ -673,23 +489,12 @@ export default function Index({
                                             </tr>
                                         </thead>
 
-                                        <tbody className="divide-y divide-slate-100 bg-white">
+                                        <tbody className="divide-y divide-gray-100 bg-white">
                                             {registros.map((tarea) => (
-                                                <tr
-                                                    key={tarea.id}
-                                                    className="transition hover:bg-slate-50"
-                                                >
-                                                    <td className="max-w-sm px-6 py-4">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                setTareaDetalle(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            className="block text-left"
-                                                        >
-                                                            <p className="font-semibold text-slate-900 hover:text-green-700">
+                                                <tr key={tarea.id} className="transition hover:bg-blue-50/40" >
+                                                    <td className="max-w-sm px-5 py-3.5">
+                                                        <button type="button" onClick={() => setTareaDetalle( tarea, ) } className="block text-left" >
+                                                            <p className="font-semibold text-slate-900 hover:text-blue-700">
                                                                 {tarea.titulo}
                                                             </p>
 
@@ -700,9 +505,9 @@ export default function Index({
                                                         </button>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700">
+                                                    <td className="px-5 py-3.5">
+                                                        <div className="flex items-start gap-3">
+                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
                                                                 {tarea.asignado?.name
                                                                     ?.charAt(0)
                                                                     ?.toUpperCase() ||
@@ -727,12 +532,9 @@ export default function Index({
                                                         </div>
                                                     </td>
 
-                                                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                                                    <td className="whitespace-nowrap px-5 py-3.5 text-sm text-gray-600">
                                                         <div className="flex items-center gap-2">
-                                                            <CalendarClock
-                                                                size={17}
-                                                                className="text-slate-400"
-                                                            />
+                                                            <CalendarClock size={17} className="text-slate-400" />
 
                                                             {formatearFecha(
                                                                 tarea.fecha_recordatorio,
@@ -740,46 +542,12 @@ export default function Index({
                                                         </div>
                                                     </td>
 
-                                                    <td className="px-6 py-4">
-                                                        <EstadoTarea
-                                                            tarea={tarea}
-                                                        />
+                                                    <td className="px-5 py-3.5">
+                                                        <EstadoTarea tarea={tarea} />
                                                     </td>
 
-                                                    <td className="px-6 py-4 text-right">
-                                                        <MenuAcciones
-                                                            tarea={tarea}
-                                                            onVer={() =>
-                                                                setTareaDetalle(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            onEditar={() =>
-                                                                abrirEdicion(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            onCompletar={() =>
-                                                                completarTarea(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            onSuspender={() =>
-                                                                suspenderTarea(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            onReactivar={() =>
-                                                                reactivarTarea(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                            onEliminar={() =>
-                                                                eliminarTarea(
-                                                                    tarea,
-                                                                )
-                                                            }
-                                                        />
+                                                    <td className="px-5 py-3.5 text-right">
+                                                        <MenuAcciones tarea={tarea} onVer={() => setTareaDetalle( tarea, ) } onEditar={() => abrirEdicion( tarea, ) } onCompletar={() => completarTarea( tarea, ) } onSuspender={() => suspenderTarea( tarea, ) } onReactivar={() => reactivarTarea( tarea, ) } onEliminar={() => eliminarTarea( tarea, ) } />
                                                     </td>
                                                 </tr>
                                             ))}
@@ -787,20 +555,11 @@ export default function Index({
                                     </table>
                                 </div>
 
-                                <div className="divide-y divide-slate-200 lg:hidden">
+                                <div className="divide-y divide-gray-200 lg:hidden">
                                     {registros.map((tarea) => (
-                                        <article
-                                            key={tarea.id}
-                                            className="space-y-4 p-5"
-                                        >
+                                        <article key={tarea.id} className="space-y-3 p-4" >
                                             <div className="flex items-start justify-between gap-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setTareaDetalle(tarea)
-                                                    }
-                                                    className="min-w-0 text-left"
-                                                >
+                                                <button type="button" onClick={() => setTareaDetalle(tarea) } className="min-w-0 text-left" >
                                                     <h3 className="truncate font-bold text-slate-900">
                                                         {tarea.titulo}
                                                     </h3>
@@ -811,47 +570,21 @@ export default function Index({
                                                     </p>
                                                 </button>
 
-                                                <MenuAcciones
-                                                    tarea={tarea}
-                                                    onVer={() =>
-                                                        setTareaDetalle(tarea)
-                                                    }
-                                                    onEditar={() =>
-                                                        abrirEdicion(tarea)
-                                                    }
-                                                    onCompletar={() =>
-                                                        completarTarea(tarea)
-                                                    }
-                                                    onSuspender={() =>
-                                                        suspenderTarea(tarea)
-                                                    }
-                                                    onReactivar={() =>
-                                                        reactivarTarea(tarea)
-                                                    }
-                                                    onEliminar={() =>
-                                                        eliminarTarea(tarea)
-                                                    }
-                                                />
+                                                <MenuAcciones tarea={tarea} onVer={() => setTareaDetalle(tarea) } onEditar={() => abrirEdicion(tarea) } onCompletar={() => completarTarea(tarea) } onSuspender={() => suspenderTarea(tarea) } onReactivar={() => reactivarTarea(tarea) } onEliminar={() => eliminarTarea(tarea) } />
                                             </div>
 
                                             <EstadoTarea tarea={tarea} />
 
                                             <div className="grid gap-3 text-sm text-slate-600">
                                                 <div className="flex items-center gap-2">
-                                                    <UserRound
-                                                        size={17}
-                                                        className="text-slate-400"
-                                                    />
+                                                    <UserRound size={17} className="text-slate-400" />
 
                                                     {tarea.asignado?.name ||
                                                         'Sin asignar'}
                                                 </div>
 
                                                 <div className="flex items-center gap-2">
-                                                    <CalendarClock
-                                                        size={17}
-                                                        className="text-slate-400"
-                                                    />
+                                                    <CalendarClock size={17} className="text-slate-400" />
 
                                                     {formatearFecha(
                                                         tarea.fecha_recordatorio,
@@ -861,26 +594,12 @@ export default function Index({
 
                                             {tarea.estado === 'pendiente' && (
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            completarTarea(tarea)
-                                                        }
-                                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
-                                                    >
-                                                        <CheckCircle2
-                                                            size={17}
-                                                        />
+                                                    <button type="button" onClick={() => completarTarea(tarea) } className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100" >
+                                                        <CheckCircle2 size={17} />
                                                         Completar
                                                     </button>
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            suspenderTarea(tarea)
-                                                        }
-                                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-100"
-                                                    >
+                                                    <button type="button" onClick={() => suspenderTarea(tarea) } className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-50 px-3 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-100" >
                                                         <PauseCircle size={17} />
                                                         Suspender
                                                     </button>
@@ -888,13 +607,7 @@ export default function Index({
                                             )}
 
                                             {tarea.estado === 'suspendida' && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        reactivarTarea(tarea)
-                                                    }
-                                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
-                                                >
+                                                <button type="button" onClick={() => reactivarTarea(tarea) } className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100" >
                                                     <PlayCircle size={17} />
                                                     Reactivar tarea
                                                 </button>
@@ -904,7 +617,7 @@ export default function Index({
                                 </div>
 
                                 {tareas?.links?.length > 3 && (
-                                    <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200 px-5 py-4 sm:flex-row">
+                                    <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-200 px-5 py-3 sm:flex-row">
                                         <p className="text-sm text-slate-500">
                                             Mostrando{' '}
                                             <span className="font-semibold text-slate-700">
@@ -930,43 +643,13 @@ export default function Index({
                                                     tareas.links.length - 1;
 
                                                 return (
-                                                    <button
-                                                        key={`${link.label}-${index}`}
-                                                        type="button"
-                                                        disabled={!link.url}
-                                                        onClick={() => {
-                                                            if (!link.url) {
-                                                                return;
-                                                            }
-
-                                                            router.visit(
-                                                                link.url,
-                                                                {
-                                                                    preserveScroll: true,
-                                                                    preserveState: true,
-                                                                },
-                                                            );
-                                                        }}
-                                                        className={`flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-semibold transition ${
-                                                            link.active
-                                                                ? 'bg-green-600 text-white'
-                                                                : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                                        } disabled:cursor-not-allowed disabled:opacity-40`}
-                                                    >
+                                                    <button key={`${link.label}-${index}`} type="button" disabled={!link.url} onClick={() => { if (!link.url) { return; } router.visit( link.url, { preserveScroll: true, preserveState: true, }, ); }} className={`flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-semibold transition ${ link.active ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50' } disabled:cursor-not-allowed disabled:opacity-40`} >
                                                         {esAnterior ? (
-                                                            <ChevronLeft
-                                                                size={17}
-                                                            />
+                                                            <ChevronLeft size={17} />
                                                         ) : esSiguiente ? (
-                                                            <ChevronRight
-                                                                size={17}
-                                                            />
+                                                            <ChevronRight size={17} />
                                                         ) : (
-                                                            <span
-                                                                dangerouslySetInnerHTML={{
-                                                                    __html: link.label,
-                                                                }}
-                                                            />
+                                                            <span dangerouslySetInnerHTML={{ __html: link.label, }} />
                                                         )}
                                                     </button>
                                                 );
@@ -980,17 +663,9 @@ export default function Index({
                 </div>
             </div>
 
-            <ModalTarea
-                open={modalAbierto}
-                onClose={cerrarModal}
-                usuarios={usuarios}
-                tarea={tareaSeleccionada}
-            />
+            <ModalTarea open={modalAbierto} onClose={cerrarModal} usuarios={usuarios} tarea={tareaSeleccionada} />
 
-            <DetalleTarea
-                tarea={tareaDetalle}
-                onClose={() => setTareaDetalle(null)}
-            />
+            <DetalleTarea tarea={tareaDetalle} onClose={() => setTareaDetalle(null)} />
         </AppLayout>
     );
 }

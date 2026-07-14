@@ -1,6 +1,9 @@
-import React, { useState } from "react";
-import { Head, Link, useForm } from "@inertiajs/react";
-import { ArrowLeft, PawPrint, Edit, PlusCircle, Eye, Camera, Scale, Utensils, GitBranch } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Head, Link, useForm, router } from "@inertiajs/react";
+import {
+    ArrowLeft, PawPrint, Edit, PlusCircle, Eye, Camera,
+    Scale, Utensils, GitBranch, MoreVertical, Trash2,
+} from "lucide-react";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer,
@@ -17,17 +20,30 @@ export default function ShowAnimal({
     razasPorEspecie,
     estadosProductivos,
 }) {
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         imagen: null,
     });
-    
+
+    const fileInputRef = useRef(null);
+    const [menuOpen, setMenuOpen] = useState(false);
+
     const guardar = (e) => {
         e.preventDefault();
-    
+
         post(route("animales.imagen", animal.id), {
             forceFormData: true,
+            onSuccess: () => reset("imagen"),
         });
     };
+
+    const eliminarImagen = () => {
+        if (!confirm("¿Eliminar la imagen de este animal?")) return;
+
+        router.delete(route("animales.imagen.eliminar", animal.id), {
+            onSuccess: () => setMenuOpen(false),
+        });
+    };
+
     const [selectedAnimal, setSelectedAnimal] = useState(null);
     const [isEditOpen, setIsEditOpen]         = useState(false);
     const [showAddProduccion, setShowAddProduccion] = useState(false);
@@ -111,38 +127,89 @@ export default function ShowAnimal({
                         </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
-                    <form onSubmit={guardar}>
-                            <label className="relative w-48 h-48 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => setData("imagen", e.target.files[0])}
-                                />
 
-                                {data.imagen ? (
-                                    <img
-                                        src={URL.createObjectURL(data.imagen)}
-                                        className="w-full h-full object-cover"
+                        {/* ── Foto del animal ───────────────────────────────── */}
+                        <div className="relative w-48 h-48">
+                            <form onSubmit={guardar}>
+                                <label className="w-48 h-48 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden bg-gray-50">
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => e.target.files[0] && setData("imagen", e.target.files[0])}
                                     />
-                                ) : (
-                                    <div className="text-center">
-                                        <Camera className="w-12 h-12 text-gray-400 mx-auto" />
-                                        <span className="text-sm text-gray-500">Agregar imagen</span>
-                                    </div>
-                                )}
-                            </label>
 
-                            {data.imagen && (
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-                                >
-                                    Guardar imagen
-                                </button>
+                                    {data.imagen ? (
+                                        // Preview de la imagen recién seleccionada (aún no guardada)
+                                        <img
+                                            src={URL.createObjectURL(data.imagen)}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : animal.imagen ? (
+                                        // Imagen ya guardada en el servidor
+                                        <img
+                                            src={`/storage/${animal.imagen}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="text-center">
+                                            <Camera className="w-12 h-12 text-gray-400 mx-auto" />
+                                            <span className="text-sm text-gray-500">Agregar imagen</span>
+                                        </div>
+                                    )}
+                                </label>
+
+                                {data.imagen && (
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="mt-4 bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
+                                    >
+                                        {processing ? "Guardando..." : "Guardar imagen"}
+                                    </button>
+                                )}
+                            </form>
+
+                            {/* Menú de 3 puntos: solo si ya hay imagen guardada y no hay una nueva pendiente */}
+                            {animal.imagen && !data.imagen && (
+                                <div className="absolute top-0 right-0">
+                                    <button
+                                        type="button"
+                                        onClick={() => setMenuOpen((v) => !v)}
+                                        className="bg-white rounded-full p-1 shadow border border-gray-200 hover:bg-gray-50"
+                                    >
+                                        <MoreVertical className="w-5 h-5 text-gray-600" />
+                                    </button>
+
+                                    {menuOpen && (
+                                        <>
+                                            {/* Overlay para cerrar el menú al hacer click afuera */}
+                                            <div
+                                                className="fixed inset-0 z-10"
+                                                onClick={() => setMenuOpen(false)}
+                                            />
+                                            <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { fileInputRef.current?.click(); setMenuOpen(false); }}
+                                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                >
+                                                    <Edit className="w-4 h-4" /> Cambiar imagen
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={eliminarImagen}
+                                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Eliminar imagen
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             )}
-                        </form>
+                        </div>
 
                         <div className="space-y-3">
                             <Data label="Especie"             value={animal.especie} />

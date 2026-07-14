@@ -12,7 +12,7 @@ import DiagnosticoModal from "./DiagnosticoModal.jsx";
 import PartoModal from "./PartoModal";
 import CalendarioReproductivo from "./CalendarioReproductivo";
 
-function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  pajillas = [] }) {
+function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  pajillas = [], donadoresExternos = [],}) {
 
   const [tab, setTab] = useState("eventos");
 
@@ -230,6 +230,9 @@ function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  paj
         onClose={() => setModalParto(false)}
         hembras={hembras}
         eventos={eventos}
+        animales={animales}
+        donadoresExternos={donadoresExternos}
+
       />
     </>
   );
