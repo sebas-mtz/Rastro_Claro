@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import ModalPajilla from './ModalPajilla';
+import ModalPajilla from '@Pages/Genetica/ModalPajilla';
 
 const estadoBadge = {
     disponible: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
