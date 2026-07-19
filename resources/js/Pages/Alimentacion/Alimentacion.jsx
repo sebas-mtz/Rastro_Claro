@@ -10,7 +10,7 @@ import Inventario from './Tabs/Inventario';
 import Sugerencias from './tabs/Sugerencias.jsx';
 import AlimentacionModal from './tabs/AlimentaciónModal';
 import ConversionAlimenticia from './tabs/ConversionAlimenticia';
-
+// Forzando compilación en Render
 export default function Alimentacion() {
     const [tab, setTab] = useState('Alimentación');
 
