@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { UtensilsCrossed, Package, BarChart3, Sparkles, ClipboardList } from 'lucide-react';
 
 // Importar tabs
-import Raciones from '@Pages/Alimentacion/Raciones';
-import Inventario from '@Pages/Alimentacion/Inventario';
-import Sugerencias from '@Pages/Alimentacion/Sugerencias.jsx';
-import AlimentacionModal from '@Pages/Alimentacion/AlimentaciónModal';
+import Raciones from '@Pages/Alimentacion/tabs/Raciones';
+import Inventario from '@Pages/Alimentacion/tabs/Inventario';
+import Sugerencias from '@Pages/Alimentacion/tabs/Sugerencias.jsx';
+import AlimentacionModal from '@Pages/Alimentacion/tabs//AlimentaciónModal';
 import ConversionAlimenticia from '@Pages/Alimentacion/tabs/ConversionAlimenticia';
 
 // Forzando compilación en Render
