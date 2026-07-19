@@ -333,10 +333,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Reportes (sin middleware propio, ajusta si necesitas protegerlo)
+| Reportes protegidos
 |--------------------------------------------------------------------------
 */
-Route::prefix('reportes')->name('reportes.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('reportes')->name('reportes.')->group(function () {
     Route::get('/', [ReportesController::class, 'index'])->name('index');
     Route::get('/exportar/pdf', [ReportesController::class, 'exportarPdf'])->name('pdf');
     Route::get('/exportar/xml', [ReportesController::class, 'exportarXml'])->name('xml');
@@ -348,10 +348,10 @@ Route::prefix('reportes')->name('reportes.')->group(function () {
 | Imagenes
 |--------------------------------------------------------------------------
 */
-Route::post('/animales/{animal}/imagen', [AnimalController::class, 'imagen'])->name('animales.imagen');
-Route::delete('/animales/{animal}/imagen', [AnimalController::class, 'eliminarImagen'])->name('animales.imagen.eliminar');
-Route::post('/animales/{animal}/imagen', [AnimalController::class, 'guardarImagen'])
-    ->name('animales.imagen');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/animales/{animal}/imagen', [AnimalController::class, 'imagen'])->name('animales.imagen');
+    Route::delete('/animales/{animal}/imagen', [AnimalController::class, 'eliminarImagen'])->name('animales.imagen.eliminar');
+});
 /*
 |--------------------------------------------------------------------------
 | Auth scaffold (Breeze)

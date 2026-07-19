@@ -67,7 +67,7 @@ class EjecutarProgramacionesAlimentacion implements ShouldQueue
                     $snapshotComposicion = $racion->generarSnapshotComposicion();
                     $snapshotNutricion   = $racion->generarSnapshotNutricion();
 
-                    Alimentacion::create([
+                    $alimentacion = new Alimentacion([
                         'fecha'                    => $hoy->toDateString(),
                         'hora'                     => $prog->hora,
                         'racion_id'                => $prog->racion_id,
@@ -82,6 +82,8 @@ class EjecutarProgramacionesAlimentacion implements ShouldQueue
                         'snapshot_composicion'     => $snapshotComposicion,
                         'snapshot_nutricion'       => $snapshotNutricion,
                     ]);
+                    $alimentacion->setAttribute('owner_id', $prog->owner_id);
+                    $alimentacion->save();
 
                     // Descontar inventario
                     foreach ($racion->insumos as $insumo) {

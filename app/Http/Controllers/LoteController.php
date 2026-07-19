@@ -6,6 +6,7 @@ use App\Models\Lote;
 use App\Models\User;
 use App\Models\Animal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class LoteController extends Controller
@@ -14,7 +15,7 @@ class LoteController extends Controller
     public function index()
     {
         $lotes = Lote::with(['responsable', 'animales'])->get();
-        $usuarios = User::all();
+        $usuarios = User::whereKey(Auth::id())->get();
 
         $especies = ["Bovino","Porcino","Caprino","Ovino","Equino","Gallos","Aves de corral (gallinas y pollitos)"];
 
@@ -56,7 +57,7 @@ class LoteController extends Controller
             'nombre' => 'required|string|max:255',
             'corral_potrero' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:255',
-            'responsable_id' => 'required|exists:users,id',
+            'responsable_id' => 'nullable',
 
             // Campos del ganado
             'animal.especie' => 'required|string',
@@ -74,7 +75,7 @@ class LoteController extends Controller
             'nombre' => $validated['nombre'],
             'corral_potrero' => $validated['corral_potrero'],
             'descripcion' => $validated['descripcion'] ?? null,
-            'responsable_id' => $validated['responsable_id'],
+            'responsable_id' => Auth::id(),
         ]);
 
         // Crear animales en rango
@@ -114,7 +115,7 @@ class LoteController extends Controller
     // Editar lote
     public function edit(Lote $lote)
     {
-        $usuarios = User::all();
+        $usuarios = User::whereKey(Auth::id())->get();
 
         return Inertia::render('Lotes/Edit', [
             'lote' => $lote->load('responsable', 'animales'),
@@ -129,10 +130,13 @@ class LoteController extends Controller
             'nombre' => 'required|string|max:255',
             'corral_potrero' => 'nullable|string|max:255',
             'descripcion' => 'nullable|string|max:255',
-            'responsable_id' => 'nullable|exists:users,id',
+            'responsable_id' => 'nullable',
         ]);
 
-        $lote->update($request->all());
+        $lote->update([
+            ...$request->only('nombre', 'corral_potrero', 'descripcion'),
+            'responsable_id' => Auth::id(),
+        ]);
 
         return redirect()->route('lotes.index')->with('success', 'Lote actualizado correctamente');
     }

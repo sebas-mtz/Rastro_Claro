@@ -52,6 +52,7 @@ class TareaController extends Controller
             ->withQueryString();
 
         $usuarios = User::query()
+            ->whereKey($usuario->id)
             ->select('id', 'name', 'email')
             ->orderBy('name')
             ->get();
@@ -89,12 +90,13 @@ class TareaController extends Controller
         $datos = $request->validate([
             'titulo' => ['required', 'string', 'min:3', 'max:150'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
-            'asignado_a' => ['required', 'exists:users,id'],
+            'asignado_a' => ['nullable'],
             'fecha_recordatorio' => ['required', 'date', 'after:now'],
         ]);
 
         Tarea::create([
             ...$datos,
+            'asignado_a' => Auth::id(),
             'creado_por' => Auth::id(),
             'estado' => 'pendiente',
         ]);
@@ -107,12 +109,13 @@ class TareaController extends Controller
         $datos = $request->validate([
             'titulo' => ['required', 'string', 'min:3', 'max:150'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
-            'asignado_a' => ['required', 'exists:users,id'],
+            'asignado_a' => ['nullable'],
             'fecha_recordatorio' => ['required', 'date'],
         ]);
 
         $tarea->update([
             ...$datos,
+            'asignado_a' => Auth::id(),
 
             // Se permite volver a notificar si cambió la fecha.
             'notificada_en' => $tarea->fecha_recordatorio->toDateTimeString()

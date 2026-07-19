@@ -68,7 +68,7 @@ class GenerarAlimentacionesProgramadas extends Command
                     $snapshotComposicion = $racion->generarSnapshotComposicion();
                     $snapshotNutricion   = $racion->generarSnapshotNutricion();
 
-                    $alimentacion = Alimentacion::create([
+                    $alimentacion = new Alimentacion([
                         'fecha'                          => $hoy,
                         'hora'                           => $programacion->hora,
                         'tipo'                           => 'racion_programada',
@@ -83,6 +83,8 @@ class GenerarAlimentacionesProgramadas extends Command
                         'snapshot_composicion'           => $snapshotComposicion,
                         'snapshot_nutricion'             => $snapshotNutricion,
                     ]);
+                    $alimentacion->setAttribute('owner_id', $programacion->owner_id);
+                    $alimentacion->save();
 
                     $this->descontarInventarioPorRacion($racion, (float) $alimentacion->cantidad);
                 });

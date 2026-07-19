@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    findutils \
+    sed \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql gd bcmath
 
@@ -34,9 +36,13 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Instalar dependencias de PHP y compilar React
+# Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
-RUN npm install && npm run build
+
+# Instalar Node, corregir recursivamente mayúsculas en las vistas y compilar React
+RUN npm install && \
+    find resources/js/Pages -type f -name "*.jsx" -exec sh -c 'for f; do dir=$(dirname "$f"); base=$(basename "$f"); new_base=$(echo "$base" | sed "s/./\u&/"); if [ "$base" != "$new_base" ]; then mv "$f" "$dir/$new_base"; fi; done' _ {} + && \
+    npm run build
 
 # Configurar permisos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
