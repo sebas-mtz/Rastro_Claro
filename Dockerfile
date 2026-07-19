@@ -50,3 +50,11 @@ EXPOSE 80
 
 # Iniciar Apache en primer plano
 CMD ["apache2-foreground"]
+# Exponer el puerto por defecto
+EXPOSE 80
+
+# Copiar el script de inicio, darle permisos y ejecutarlo
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
