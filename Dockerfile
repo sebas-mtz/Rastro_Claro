@@ -40,9 +40,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 RUN composer install --no-dev --optimize-autoloader
 
 # Instalar Node, corregir recursivamente mayúsculas en las vistas y compilar React
-RUN npm install && \
-    find resources/js/Pages -type f -name "*.jsx" -exec sh -c 'for f; do dir=$(dirname "$f"); base=$(basename "$f"); new_base=$(echo "$base" | sed "s/./\u&/"); if [ "$base" != "$new_base" ]; then mv "$f" "$dir/$new_base"; fi; done' _ {} + && \
-    npm run build
+RUN npm install && npm run build
 
 # Configurar permisos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
