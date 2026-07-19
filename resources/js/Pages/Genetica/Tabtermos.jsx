@@ -2,7 +2,7 @@ import { Fragment,useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Pencil, Trash2, ChevronLeft, ChevronRight, ChevronDown,
     ChevronUp } from 'lucide-react';
-import ModalTermo from './Modaltermo';
+import ModalTermo from '@Pages/Genetica/Modaltermo';
 
 const estadoBadge = {
     activo:        'bg-emerald-100 text-emerald-700 border border-emerald-200',

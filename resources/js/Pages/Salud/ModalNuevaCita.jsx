@@ -1,8 +1,8 @@
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import ModalAnimalSelect from './ModalAnimalSelect';
-import ModalLoteSelect from './ModalLoteSelect';
-import ModalNuevaVacuna from './ModalNuevaVacuna';
+import ModalAnimalSelect from '@Pages/Salud/ModalAnimalSelect';
+import ModalLoteSelect from '@Pages/Salud/ModalLoteSelect';
+import ModalNuevaVacuna from '@Pages/Salud/ModalNuevaVacuna';
 /**
  * Modal completo para registrar un EventoSalud.
  * Muestra campos dinámicos según el tipo seleccionado.

@@ -1,12 +1,12 @@
 import { Head, router, usePage, Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
-import ModalNuevaCita from './ModalNuevaCita';
-import TabVacunaciones from './TabVacunaciones';
-import TabTratamientos from './TabTratamientos';
-import TabEventos from './TabEventos';
-import TabEstadisticas from './TabEstadisticas';
-import TabRecomendaciones from './TabRecomendaciones';
+import ModalNuevaCita from '@Pages/Salud/ModalNuevaCita';
+import TabVacunaciones from '@Pages/Salud/TabVacunaciones';
+import TabTratamientos from '@Pages/Salud/TabTratamientos';
+import TabEventos from '@Pages/Salud/TabEventos';
+import TabEstadisticas from '@Pages/Salud/TabEstadisticas';
+import TabRecomendaciones from '@Pages/Salud/TabRecomendaciones';
 import {
     CalendarDays,
     Syringe,

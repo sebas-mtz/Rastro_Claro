@@ -1,11 +1,11 @@
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
-import TabTermos from './Tabtermos';
-import TabPajillas from './Tabpajillas';
-import ModalTermo from './Modaltermo';
+import TabTermos from '@Pages/Genetica/Tabtermos';
+import TabPajillas from '@Pages/Genetica/Tabpajillas';
+import ModalTermo from '@Pages/Genetica/Modaltermo';
 import ModalPajilla from '@Pages/Genetica/ModalPajilla';
-import ModalDonadorExterno from "./ModalDonadorExterno";
+import ModalDonadorExterno from "@Pages/Genetica/ModalDonadorExterno";
 import {
     FlaskConical,
     Droplets,
