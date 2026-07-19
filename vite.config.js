@@ -10,4 +10,11 @@ export default defineConfig({
         }),
         react(),
     ],
+    build: {
+        rollupOptions: {
+            // Esto ayuda a que Rollup sea más flexible con los nombres de rutas
+            // e ignora advertencias severas de duplicados por mayúsculas
+            preserveEntrySignatures: 'exports-only',
+        }
+    }
 });
