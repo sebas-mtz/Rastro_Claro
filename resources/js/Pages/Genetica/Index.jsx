@@ -4,7 +4,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import TabTermos from '@Pages/Genetica/Tabtermos';
 import TabPajillas from '@Pages/Genetica/Tabpajillas';
 import ModalTermo from '@Pages/Genetica/Modaltermo';
-import ModalPajilla from '@Pages/Genetica/ModalPajilla';
+import ModalPajilla from '@Pages/Genetica/Modalpajilla';
 import ModalDonadorExterno from "@Pages/Genetica/ModalDonadorExterno";
 import {
     FlaskConical,
