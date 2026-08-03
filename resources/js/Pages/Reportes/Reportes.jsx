@@ -305,7 +305,7 @@ function Reportes({ catalogos = {}, datos = null, filtros: init = {}, ficha = nu
                         : (
                             <div className="bg-white rounded-2xl shadow-sm border border-dashed border-gray-200 p-14 text-center">
                                 <PawPrint className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                                <p className="text-gray-500 font-medium">Selecciona un animal y aplica los filtros</p>
+                                <p className="text-gray-500 font-medium">Selecciona un ejemplar y aplica los filtros</p>
                                 <p className="text-sm text-gray-400 mt-1">
                                     Puedes acotar por fechas, tipo de evento, vacuna, ración y más antes de generar la ficha.
                                 </p>

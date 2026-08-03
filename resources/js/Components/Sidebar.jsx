@@ -1,11 +1,45 @@
 import { Link, usePage, router } from '@inertiajs/react';
 
+/**
+ * Menú lateral.
+ *
+ * Cada entrada declara a qué módulo pertenece y solo se pinta si el backend
+ * autorizó ese módulo para quien tiene la sesión abierta (props.auth.user.modulos).
+ *
+ * Ocultar el enlace es cosmético: la ruta la protege el middleware
+ * VerificarPermisoModulo y responde 403 aunque se escriba la dirección a mano.
+ * Aquí solo se evita mostrar puertas que no abrirían.
+ *
+ * `modulo: null` marca las entradas que no dependen de permisos —el panel— y
+ * las que llevan su propia comprobación aparte.
+ */
 export default function Sidebar() {
   const { url, props } = usePage();
-  const user = props?.auth?.user; // usuario logueado
+  const user = props?.auth?.user;
 
-  // helper para marcar activo
   const isActive = (path) => url.startsWith(path);
+
+  const modulos = user?.modulos ?? [];
+  const puedeVer = (modulo) => modulo === null || modulos.includes(modulo);
+
+  const entradas = [
+    { modulo: null,            href: '/dashboard',                 activo: '/dashboard',           icono: '▦',   texto: 'home' },
+    { modulo: 'animales',      href: route('animales.index'),      activo: '/animales',            icono: '🐄',  texto: 'Animales' },
+    { modulo: 'lotes',         href: route('lotes.index'),         activo: '/lotes',               icono: '📦',  texto: 'Lotes' },
+    { modulo: 'pesajes',       href: route('pesajes.index'),       activo: '/pesajes',             icono: '⚖️',  texto: 'Pesajes' },
+    { modulo: 'alimentacion',  href: route('alimentacion.index'),  activo: '/alimentacion',        icono: '🍽️',  texto: 'Alimentación' },
+    { modulo: 'salud',         href: '/eventos-salud',             activo: '/eventos-salud',       icono: '❤️',  texto: 'Salud' },
+    { modulo: 'producciones',  href: route('producciones.index'),  activo: '/producciones',        icono: '🥚',  texto: 'Producciones' },
+    { modulo: 'salud',         href: route('calendario.index'),    activo: '/calendario-sanitario', icono: '🗓️', texto: 'Calendario' },
+    { modulo: 'reportes',      href: route('reportes.ovinos'),     activo: '/reportes-ovinos',     icono: '📊',  texto: 'Indicadores' },
+    { modulo: 'bajas',         href: route('bajas.index'),         activo: '/bajas',               icono: '📉',  texto: 'Bajas' },
+    { modulo: 'costos',        href: route('costos.index'),        activo: '/costos',              icono: '💵',  texto: 'Costos' },
+    { modulo: 'trabajadores',  href: route('trabajadores.index'),  activo: '/trabajadores',        icono: '👷',  texto: 'Trabajadores' },
+    { modulo: 'reproduccion',  href: route('reproduccion.index'),  activo: '/reproduccion',        icono: '',    texto: 'Reproduccion' },
+    { modulo: 'reproduccion',  href: route('genetica.index'),      activo: '/genetica',            icono: '',    texto: 'Genetica' },
+    { modulo: 'tareas',        href: route('tareas.index'),        activo: '/Tareas',              icono: '',    texto: 'Recordatorios' },
+    { modulo: 'reportes',      href: route('reportes.index'),      activo: '/Reportes',            icono: '',    texto: 'Reportes' },
+  ];
 
   return (
     <aside className="sidebar-light">
@@ -16,9 +50,15 @@ export default function Sidebar() {
         </div>
         <div className="sl-title">
           <div className="name">Rastro Facil</div>
-          {/* 👇 rol del usuario */}
-          <span className="ml-2 text-xs text-gray-400">
-            {user?.role === 'admin' ? 'Administrador' : 'Usuario'}
+          {/* Rol del usuario autenticado. La etiqueta la calcula el backend
+              (User::rolLegible), para no repetir aquí el mapa de roles. */}
+          <span
+            className={
+              'ml-2 text-xs ' +
+              (user?.es_super_admin ? 'text-amber-600 font-semibold' : 'text-gray-400')
+            }
+          >
+            {user?.rol_legible || 'Trabajador'}
           </span>
         </div>
       </div>
@@ -26,178 +66,32 @@ export default function Sidebar() {
       {/* Navegación */}
       <nav className="sl-nav">
         <ul>
-          <li>
-            <Link
-              href="/dashboard"
-              className={'sl-item ' + (isActive('/dashboard') ? 'active' : '')}
-            >
-              <span className="sl-ico">▦</span>
-              <span>home</span>
-            </Link>
-          </li>
+          {entradas.filter((e) => puedeVer(e.modulo)).map((e, i) => (
+            <li key={`${e.href}-${i}`}>
+              <Link
+                href={e.href}
+                className={'sl-item ' + (isActive(e.activo) ? 'active' : '')}
+              >
+                <span className="sl-ico">{e.icono}</span>
+                <span>{e.texto}</span>
+              </Link>
+            </li>
+          ))}
 
-          <li>
-            <Link
-              href={route('animales.index')}
-              className={'sl-item ' + (isActive('/animales') ? 'active' : '')}
-            >
-              <span className="sl-ico">🐄</span>
-              <span>Animales</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('lotes.index')}
-              className={'sl-item ' + (isActive('/lotes') ? 'active' : '')}
-            >
-              <span className="sl-ico">📦</span>
-              <span>Lotes</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('pesajes.index')}
-              className={
-                'sl-item ' + (isActive('/pesajes') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico">⚖️ </span>
-              <span>Pesajes</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('alimentacion.index')}
-              className={
-                'sl-item ' + (isActive('/alimentacion') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico">🍽️</span>
-              <span>Alimentación</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href="/eventos-salud"
-              className={'sl-item ' + (isActive('/eventos-salud') ? 'active' : '')}
-            >
-              <span className="sl-ico">❤️</span>
-              <span>Salud</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('producciones.index')}
-              className={
-                'sl-item ' + (isActive('/producciones') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico">🥚</span>
-              <span>Producciones</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              href={route('reproduccion.index')}
-              className={
-                'sl-item ' + (isActive('/reproduccion') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico"></span>
-              <span>Reproduccion</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('genetica.index')}
-              className={
-                'sl-item ' + (isActive('/genetica') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico"></span>
-              <span>Genetica</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('tareas.index')}
-              className={
-                'sl-item ' + (isActive('/Tareas') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico"></span>
-              <span>Recordatorios</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              href={route('reportes.index')}
-              className={
-                'sl-item ' + (isActive('/Reportes') ? 'active' : '')
-              }
-            >
-              <span className="sl-ico"></span>
-              <span>Reportes</span>
-            </Link>
-          </li>
-
-          {/* 🔐 Módulo PREMIUM: Predicciones */}
-          <li>
-            <Link
-              href={user?.plan === 'premium' ? route('predicciones.index') : '#'}
-              className={
-                'sl-item ' +
-                (user?.plan !== 'premium'
-                  ? ' text-gray-400 cursor-not-allowed'
-                  : isActive('/predicciones')
-                  ? ' active'
-                  : '')
-              }
-              onClick={(e) => {
-                if (user?.plan !== 'premium') {
-                  e.preventDefault();
-                  alert('Este módulo es parte del plan Premium.');
-                }
-              }}
-            >
-              <span className="sl-ico mr-2">👑</span>
-              <span>Predicciones</span>
-            </Link>
-          </li>
-          {user?.role === 'admin' && (
-          <li>
-            <Link
-              href={route('admin.usuarios.index')}
-              className={'sl-item ' + (isActive('/admin/usuarios') ? 'active' : '')}
-            >
-              <span className="sl-ico">👤</span>
-              <span>Usuarios</span>
-            </Link>
-          </li>
-          )}
-      {user?.plan !== 'premium' && (
+          {/* Solo el superadministrador administra cuentas. La ruta exige el
+              middleware super_admin y responde 403 aunque se escriba a mano. */}
+          {user?.es_super_admin && (
             <li>
               <Link
-                href={route('planes.index')}
-                className={
-                  'sl-item ' +
-                  (isActive('/planes') ? 'active' : '') +
-                  ' text-amber-600 font-semibold'
-                }
+                href={route('admin.usuarios.index')}
+                className={'sl-item ' + (isActive('/admin/usuarios') ? 'active' : '')}
               >
-                <span className="sl-ico">💳</span>
-                <span>Mejorar a Premium</span>
+                <span className="sl-ico">👤</span>
+                <span>Usuarios</span>
               </Link>
             </li>
           )}
+
         </ul>
       </nav>
 
@@ -208,9 +102,9 @@ export default function Sidebar() {
           <div className="u-email" title={user?.email || ''}>
             {user?.email ?? 'correo@example.com'}
           </div>
-          <div className="u-role">Administrador</div>
+          {/* Antes decía "Administrador" fijo, para cualquiera. */}
+          <div className="u-role">{user?.rol_legible ?? 'Trabajador'}</div>
         </div>
-      
 
         <form
           onSubmit={(e) => {
@@ -223,7 +117,7 @@ export default function Sidebar() {
           </button>
         </form>
       </div>
-      
+
     </aside>
   );
 }

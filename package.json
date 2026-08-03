@@ -25,7 +25,9 @@
     },
     "dependencies": {
         "chart.js": "^4.5.1",
+        "html5-qrcode": "^2.3.8",
         "lucide-react": "^0.548.0",
+        "qrcode.react": "^4.2.0",
         "react-hot-toast": "^2.6.0",
         "recharts": "^3.9.0"
     }

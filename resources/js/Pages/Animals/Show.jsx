@@ -1,5 +1,5 @@
 import React from "react";
-import { Edit, X } from "lucide-react";
+import { Edit, X, DollarSign } from "lucide-react";
 
 export default function ShowModal({ animal, onClose, onEdit }) {
     if (!animal) return null;
@@ -70,21 +70,30 @@ export default function ShowModal({ animal, onClose, onEdit }) {
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-200">
-                 <button
-                    onClick={onClose}
-                   className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-                >
-                Cerrar
-                  </button>
-                  <a
-                     href={route('animales.show', animal.id)}
-                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                <div className="flex flex-wrap justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
                     >
-                   <Edit className="w-4 h-4" />
-                   Ver Animal
-                </a>    
-                    </div>
+                        Cerrar
+                    </button>
+
+                    <a
+                        href={route('valuaciones.show', animal.id)}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center gap-2 transition"
+                    >
+                        <DollarSign className="w-4 h-4" />
+                        Ver valuación
+                    </a>
+
+                    <a
+                        href={route('animales.show', animal.id)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition"
+                    >
+                        <Edit className="w-4 h-4" />
+                        Ver Animal
+                    </a>
+                </div>
                     </div>
                 </div>
             );

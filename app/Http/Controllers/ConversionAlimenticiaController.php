@@ -37,8 +37,7 @@ class ConversionAlimenticiaController extends Controller
 
         foreach ($alimentaciones as $ali) {
             // Costo por kg de ración: primero desde precio_kg, luego desde snapshot
-            $costoKg = $ali->racion?->precio_kg
-                ?? $this->costoKgDesdeSnapshot($ali);
+            $costoKg = $ali->costoPorKg();
 
             $costo = ($costoKg ?? 0) * (float) $ali->cantidad;
 
@@ -197,25 +196,6 @@ class ConversionAlimenticiaController extends Controller
         return (float) $candidatos->sortByDesc('fecha')->first()->peso;
     }
 
-    /**
-     * Calcula el costo por kg de ración desde el snapshot_composicion.
-     * Útil cuando la ración fue eliminada y precio_kg no está disponible.
-     * Fórmula: Σ(cantidad_insumo_por_kg_racion × costo_promedio_insumo)
-     */
-    private function costoKgDesdeSnapshot(Alimentacion $ali): ?float
-    {
-        if (empty($ali->snapshot_composicion)) return null;
-
-        $costoTotal    = 0;
-        $cantidadTotal = 0;
-
-        foreach ($ali->snapshot_composicion as $insumo) {
-            $cantidad      = (float) ($insumo['cantidad']      ?? 0);
-            $costoPromedio = (float) ($insumo['costo_promedio'] ?? 0);
-            $costoTotal   += $cantidad * $costoPromedio;
-            $cantidadTotal += $cantidad;
-        }
-
-        return $cantidadTotal > 0 ? round($costoTotal / $cantidadTotal, 4) : null;
-    }
+    // El cálculo del costo por kg vive ahora en Alimentacion::costoPorKg(),
+    // para que este módulo y el de valuación usen exactamente la misma fórmula.
 }

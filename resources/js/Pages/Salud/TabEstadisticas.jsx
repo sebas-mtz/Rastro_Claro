@@ -282,7 +282,7 @@ export default function TabEstadisticas() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100">
                     <h2 className="text-base font-bold text-gray-900">Estadísticas</h2>
-                    <p className="text-xs text-gray-400 mt-0.5">Resumen de salud del hato</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Resumen de salud del rebaño</p>
                 </div>
                 <div className="flex items-center justify-center gap-3 py-20 text-sm text-gray-400">
                     <span className="text-xl">⏳</span>
@@ -327,7 +327,7 @@ export default function TabEstadisticas() {
                     <Activity size={18} className="text-green-600" />
                     Estadísticas
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">Resumen de salud del hato</p>
+                <p className="text-xs text-gray-400 mt-0.5">Resumen de salud del rebaño</p>
             </div>
 
             <div className="p-5 space-y-6">

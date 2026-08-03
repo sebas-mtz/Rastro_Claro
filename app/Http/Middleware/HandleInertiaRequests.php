@@ -29,7 +29,21 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => fn () => $request->user()
-                    ? $request->user()->only('id', 'name', 'email', 'role', 'plan', 'activo')
+                    ? array_merge(
+                        $request->user()->only('id', 'name', 'email', 'role', 'puesto', 'activo'),
+                        [
+                            'rol_legible' => $request->user()->rolLegible(),
+                            // Banderas para pintar la interfaz. La autorización
+                            // real la hacen el middleware y las policies: esto
+                            // solo evita mostrar botones que no funcionarían.
+                            'es_super_admin' => $request->user()->isSuperAdmin(),
+                            'puede_gestionar_usuarios' => $request->user()->canManageUsers(),
+                            'es_dueno' => $request->user()->esDuenoDeCuenta(),
+                            // Permisos por módulo, para armar el menú.
+                            'permisos' => $request->user()->permisos(),
+                            'modulos' => $request->user()->modulosVisibles(),
+                        ]
+                    )
                     : null,
             ],
             'flash' => [

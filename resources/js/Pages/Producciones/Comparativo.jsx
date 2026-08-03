@@ -47,7 +47,7 @@ export default function Comparativo({ mejores = [] }) {
         <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow p-6">
                 <h3 className="text-lg font-semibold">Mejores Productores</h3>
-                <p className="text-sm text-gray-500 mb-3">Mejor rendimiento del hato</p>
+                <p className="text-sm text-gray-500 mb-3">Mejor rendimiento del rebaño</p>
 
                 <div className="divide-y">
                     {mejores.length > 0 ? (

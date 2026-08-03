@@ -31,7 +31,6 @@ function ProduccionesIndex({
         { tipo: "carne", nombre: "Carne Disponible", icon: "🍖", unidad: "kg", color: "bg-red-500" },
         { tipo: "cuero", nombre: "Cuero Disponible", icon: "🐄", unidad: "kg", color: "bg-amber-500" },
         { tipo: "grasa", nombre: "Grasa Disponible", icon: "🟡", unidad: "kg", color: "bg-yellow-500" },
-        { tipo: "plumas", nombre: "Plumas Disponibles", icon: "🪶", unidad: "kg", color: "bg-gray-500" },
         { tipo: "hueso", nombre: "Hueso Disponible", icon: "🦴", unidad: "kg", color: "bg-stone-500" },
         { tipo: "visceras", nombre: "Vísceras Disponibles", icon: "🧠", unidad: "kg", color: "bg-purple-500" },
     ];

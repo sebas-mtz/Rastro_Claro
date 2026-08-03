@@ -173,7 +173,7 @@ export default function ModalDonadorExterno({
                                 onChange={(event) =>
                                     setData("raza", event.target.value)
                                 }
-                                placeholder="Ej. Angus"
+                                placeholder="Ej. Dorper"
                                 className={inputClass(errors.raza)}
                                 maxLength={100}
                             />

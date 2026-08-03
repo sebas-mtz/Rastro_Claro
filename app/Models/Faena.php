@@ -18,7 +18,6 @@ class Faena extends Model
         'peso_carne', 
         'peso_cuero',
         'peso_grasa',
-        'peso_plumas', // ✅ PLUMAS
         'peso_hueso',
         'peso_visceras',
         'costo_total',
@@ -32,7 +31,6 @@ class Faena extends Model
         'peso_carne' => 'decimal:2',
         'peso_cuero' => 'decimal:2',
         'peso_grasa' => 'decimal:2',
-        'peso_plumas' => 'decimal:2',
         'peso_hueso' => 'decimal:2',
         'peso_visceras' => 'decimal:2',
         'rendimiento' => 'decimal:2',
@@ -96,9 +94,6 @@ class Faena extends Model
         }
         if ($this->peso_grasa > 0) {
             $subproductos[] = ['producto' => 'Grasa', 'cantidad' => $this->peso_grasa, 'unidad' => 'kg'];
-        }
-        if ($this->peso_plumas > 0) {
-            $subproductos[] = ['producto' => 'Plumas', 'cantidad' => $this->peso_plumas, 'unidad' => 'kg'];
         }
         if ($this->peso_hueso > 0) {
             $subproductos[] = ['producto' => 'Hueso', 'cantidad' => $this->peso_hueso, 'unidad' => 'kg'];

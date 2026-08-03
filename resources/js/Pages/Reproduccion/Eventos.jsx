@@ -100,7 +100,7 @@ export default function Eventos({ animales = [], eventos = [], onNuevo }) {
     <div className="bg-white rounded-xl border border-gray-200">
       <div className="p-5 border-b">
         <h2 className="text-lg font-semibold">Servicios reproductivos</h2>
-        <p className="text-sm text-gray-500">Montas e inseminaciones del hato</p>
+        <p className="text-sm text-gray-500">Montas e inseminaciones del rebaño</p>
       </div>
 
       <div className="p-5 space-y-3">

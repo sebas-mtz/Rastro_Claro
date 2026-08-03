@@ -58,7 +58,6 @@ export default function SacrificiosIndex({ auth, sacrificios, estadisticas, anim
             cuero: 0,
             grasa: 0,
             visceras: 0,
-            plumas: 0
         }
     };
 
@@ -255,12 +254,7 @@ export default function SacrificiosIndex({ auth, sacrificios, estadisticas, anim
                                                             Vísceras
                                                         </span>
                                                     )}
-                                                    {sacrificio.plumas && (
-                                                        <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
-                                                            Plumas
-                                                        </span>
-                                                    )}
-                                                    {!sacrificio.cuero && !sacrificio.grasa && !sacrificio.visceras && !sacrificio.plumas && (
+                                                    {!sacrificio.cuero && !sacrificio.grasa && !sacrificio.visceras && (
                                                         <span className="text-gray-400 text-xs">Sin subproductos</span>
                                                     )}
                                                 </div>
@@ -333,7 +327,6 @@ export default function SacrificiosIndex({ auth, sacrificios, estadisticas, anim
                                 Cuero: {stats.subproductos_totales?.cuero || 0} • 
                                 Grasa: {stats.subproductos_totales?.grasa || 0} • 
                                 Vísceras: {stats.subproductos_totales?.visceras || 0}
-                                {stats.subproductos_totales?.plumas > 0 && ` • Plumas: ${stats.subproductos_totales.plumas}`}
                             </div>
                         </div>
                         <div className="bg-white p-4 rounded-lg shadow border">

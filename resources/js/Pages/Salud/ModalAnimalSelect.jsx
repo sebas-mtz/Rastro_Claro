@@ -6,7 +6,7 @@ function ModalAnimalSelect({
     onSelect,
     animals = [],
     especies = [],
-    razasPorEspecie = {},
+    razas = [],
     estadosProductivos = {},
 }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -16,13 +16,11 @@ function ModalAnimalSelect({
     const [filtroEstadoProductivo, setFiltroEstadoProductivo] = useState('');
     const [filtroSexo, setFiltroSexo] = useState('');
 
-    const razasDisponibles = filtroEspecie
-        ? (razasPorEspecie[filtroEspecie] || [])
-        : [];
+    // Sistema exclusivamente ovino: las razas vienen del catálogo y los
+    // estados productivos son siempre los de Ovino.
+    const razasDisponibles = razas.map((r) => r.nombre ?? r);
 
-    const estadosDisponibles = filtroEspecie
-        ? (estadosProductivos[filtroEspecie] || [])
-        : [];
+    const estadosDisponibles = estadosProductivos.Ovino || [];
 
     useEffect(() => {
         setFiltroRaza('');
@@ -66,11 +64,7 @@ function ModalAnimalSelect({
 
     const avatarColor = (especie) => {
         const map = {
-            'Bovino': 'bg-blue-100 text-blue-700',
-            'Porcino': 'bg-pink-100 text-pink-700',
-            'Ovino': 'bg-amber-100 text-amber-700',
-            'Caprino': 'bg-green-100 text-green-700',
-            'Equino': 'bg-purple-100 text-purple-700',
+            'Ovino': 'bg-emerald-100 text-emerald-700',
         };
         return map[especie] ?? 'bg-gray-100 text-gray-600';
     };

@@ -13,17 +13,31 @@ class Parto extends Model
     protected $fillable = [
         'evento_id',
         'servicio_evento_id',
+        'hora',
         'tipo_parto',
+        'asistido',
         'asistencia_requerida',
         'complicaciones',
         'detalle_complicaciones',
         'numero_crias',
+        'crias_vivas',
+        'crias_muertas',
+        'abortos',
+        'costo_atencion',
+        'veterinario_id',
+        'responsable_id',
+        'observaciones',
     ];
 
     protected $casts = [
+        'asistido'             => 'boolean',
         'asistencia_requerida' => 'boolean',
         'complicaciones'       => 'boolean',
         'numero_crias'         => 'integer',
+        'crias_vivas'          => 'integer',
+        'crias_muertas'        => 'integer',
+        'abortos'              => 'integer',
+        'costo_atencion'       => 'decimal:2',
     ];
 
     // ─── Relaciones ───────────────────────────────────────────────────────
@@ -57,6 +71,25 @@ class Parto extends Model
     public function getFechaAttribute()
     {
         return $this->evento?->fecha;
+    }
+
+    public function veterinario(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'veterinario_id');
+    }
+
+    public function responsable(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
+
+    /**
+     * Prolificidad del parto: crías nacidas vivas. Es el insumo del promedio
+     * de crías por parto que se reporta a nivel rebaño.
+     */
+    public function getProlificidadAttribute(): int
+    {
+        return (int) ($this->crias_vivas ?? $this->crias->where('condicion', 'vivo')->count());
     }
 
     public function getTipoPorHumanoAttribute(): string

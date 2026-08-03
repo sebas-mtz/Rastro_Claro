@@ -8,30 +8,15 @@ import AppLayout from "@/Layouts/AppLayout";
 
 
 
-const especies = ["Bovino","Porcino","Caprino","Ovino","Equino","Aves de corral (gallinas y pollitos)","Gallos"];
-const razasPorEspecie = {
-  Bovino: ["Holstein", "Angus", "Hereford", "Simmental", "Otra"],
-  Porcino: ["Yorkshire", "Landrace", "Duroc", "Pietrain", "Otra"],
-  Caprino: ["Saanen", "Boer", "Alpina", "Toggenburg", "Otra"],
-  Ovino: ["Dorper", "Merino", "Suffolk", "Katahdin", "Otra"],
-  Equino: ["Cuarto de Milla", "Pura Sangre", "Árabe", "Criollo", "Otra"],
-  "Aves de corral (gallinas y pollitos)": ["Leghorn", "Rhode Island", "Plymouth Rock", "Otra"],
-  Gallos : [ "Gallos de pelea (Asil)", "Gallos Kelso","Gallos Hatch", "Gallos Sweater", "Gallos Shamo", 
-    "Gallos Cuban Brown", "Gallos Navajeros (LATAM)","Otra"],
-};
+// Sistema exclusivamente ovino: la especie no se elige y las razas
+// llegan desde el catálogo configurable que envía el controlador.
+const especies = ["Ovino"];
 
 const estadosProductivos = {
-  Bovino: ["Vaca seca", "Lactante", "Gestante", "En crecimiento", "Reproductor"],
-  Caprino: ["Gestante", "En crecimiento", "Lactante", "Reproductor"],
-  Ovino: ["Gestante", "En crecimiento", "Reproductor"],
-  Porcino: ["Gestante", "En crecimiento", "Reproductor"],
-  Equino: ["En entrenamiento", "Reproductor", "En descanso"],
-  "Aves de corral": ["Postura", "En descanso", "En crecimiento"],
-  Gallos: ["Reproductor", "En crecimiento", "En descanso", "De pelea / exhibición", 
-    "En entrenamiento"]
+  Ovino: ["En crecimiento", "Reproductor", "Reemplazo", "Mantenimiento", "Engorda", "Desecho"],
 };
 
-export default function Index({ auth, lotes, usuarios = [] }) {
+export default function Index({ auth, lotes, usuarios = [], razas = [], tiposLote = {} }) {
     const [showModal, setShowModal] = useState(false);
     const [isShowOpen, setIsShowOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -145,7 +130,8 @@ export default function Index({ auth, lotes, usuarios = [] }) {
                 lote={selectedLote || {}}
                 usuarios={usuarios}
                 especies={especies}
-                razasPorEspecie={razasPorEspecie}
+                razas={razas}
+                tiposLote={tiposLote}
                 estadosProductivos={estadosProductivos}
             />
 

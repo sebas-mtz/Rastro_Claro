@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { X, Save } from "lucide-react";
 
-export default function LoteModal({ show, onClose, lote = {}, usuarios = [], especies, razasPorEspecie, estadosProductivos }) {
+export default function LoteModal({ show, onClose, lote = {}, usuarios = [], especies = [], razas = [], tiposLote = {}, estadosProductivos = {} }) {
   const [animalData, setAnimalData] = useState({
-    especie: "",
+    raza_id: "",
     raza: "",
     arete_inicio: "",
     arete_fin: "",
@@ -20,7 +20,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
     descripcion: "",
     responsable_id: "",
     animal: {
-      especie: "",
+      raza_id: "",
       raza: "",
       arete_inicio: "",
       arete_fin: "",
@@ -42,7 +42,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
           descripcion: lote.descripcion || "",
           responsable_id: lote.responsable_id || "",
           animal: {
-            especie: "",
+            raza_id: "",
             raza: "",
             arete_inicio: "",
             arete_fin: "",
@@ -60,7 +60,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
           descripcion: "",
           responsable_id: "",
           animal: {
-            especie: "",
+            raza_id: "",
             raza: "",
             arete_inicio: "",
             arete_fin: "",
@@ -73,7 +73,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
       }
       // Reset animalData para la UI
       setAnimalData({
-        especie: "",
+        raza_id: "",
         raza: "",
         arete_inicio: "",
         arete_fin: "",
@@ -101,7 +101,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
     e.preventDefault();
     
     // Validaciones
-    if (!animalData.especie || !animalData.sexo || !animalData.arete_inicio || !animalData.arete_fin) {
+    if (!animalData.sexo || !animalData.arete_inicio || !animalData.arete_fin) {
       alert("Especie, sexo y rango de aretes son obligatorios");
       return;
     }
@@ -227,33 +227,17 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Especie */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Especie *</label>
-                <select 
-                  value={animalData.especie} 
-                  onChange={(e) => handleAnimalChange("especie", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                >
-                  <option value="">Selecciona especie</option>
-                  {especies.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Raza */}
+              {/* Raza — del catálogo ovino configurable */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Raza</label>
-                <select 
-                  value={animalData.raza} 
-                  onChange={(e) => handleAnimalChange("raza", e.target.value)}
+                <select
+                  value={animalData.raza_id}
+                  onChange={(e) => handleAnimalChange("raza_id", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">Selecciona raza</option>
-                  {(razasPorEspecie[animalData.especie] || []).map(r => (
-                    <option key={r} value={r}>{r}</option>
+                  {razas.map(r => (
+                    <option key={r.id} value={r.id}>{r.nombre}</option>
                   ))}
                 </select>
               </div>
@@ -309,7 +293,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">Selecciona estado</option>
-                  {(estadosProductivos[animalData.especie] || []).map(s => (
+                  {(estadosProductivos.Ovino || []).map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>

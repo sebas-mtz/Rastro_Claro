@@ -13,7 +13,6 @@ export default function SacrificioModal({ show, onClose, animales = [], lotes = 
         cuero: false,
         grasa: false,
         visceras: false,
-        plumas: false,
         observaciones: ''
     });
 
@@ -36,20 +35,12 @@ export default function SacrificioModal({ show, onClose, animales = [], lotes = 
         return '';
     };
 
-    // ✅ Auto-marcar plumas para aves
     const handleAnimalChange = (animalId) => {
         setData('animal_id', animalId);
-        
-        const animalSeleccionado = animales.find(a => a.id == animalId);
-        if (animalSeleccionado && ['Gallos', 'Aves de corral (gallinas y pollitos)'].includes(animalSeleccionado.especie)) {
-            // Auto-marcar plumas para aves
-            setData('plumas', true);
-        } else {
-            // Desmarcar plumas si no es ave
-            setData('plumas', false);
-        }
 
-        // ✅ Auto-completar peso vivo si el animal tiene peso registrado
+        const animalSeleccionado = animales.find(a => a.id == animalId);
+
+        // Auto-completar peso vivo si el ejemplar tiene peso registrado
         if (animalSeleccionado && animalSeleccionado.peso && !data.peso_vivo) {
             setData('peso_vivo', animalSeleccionado.peso);
         }
@@ -121,7 +112,7 @@ export default function SacrificioModal({ show, onClose, animales = [], lotes = 
                                 required
                                 disabled={processing}
                             >
-                                <option value="">Seleccionar animal...</option>
+                                <option value="">Seleccionar ejemplar...</option>
                                 {animales.map((animal) => (
                                     <option key={animal.id} value={animal.id}>
                                         {animal.nombre} - {animal.especie} ({animal.peso} kg) - {animal.edad} - {animal.lote_nombre}
@@ -323,21 +314,6 @@ export default function SacrificioModal({ show, onClose, animales = [], lotes = 
                                         disabled={processing}
                                     />
                                     <span className="ml-3 text-sm font-medium text-gray-700">Vísceras</span>
-                                </label>
-                                <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                                    processing ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
-                                } ${data.plumas ? 'bg-gray-50' : ''}`}>
-                                    <input
-                                        type="checkbox"
-                                        checked={data.plumas}
-                                        onChange={(e) => setData('plumas', e.target.checked)}
-                                        className="text-red-600 focus:ring-red-500"
-                                        disabled={processing}
-                                    />
-                                    <span className="ml-3 text-sm font-medium text-gray-700">Plumas</span>
-                                    {data.plumas && (
-                                        <span className="ml-2 text-xs text-gray-500">(Auto)</span>
-                                    )}
                                 </label>
                             </div>
                         </div>

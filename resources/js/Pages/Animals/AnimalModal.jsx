@@ -41,14 +41,8 @@ export default function AnimalModal({
               placeholder="Ej: Manchado, Blanquita, etc."
             />
             
-            <Select 
-              label="Especie *" 
-              value={data.especie} 
-              onChange={(e) => setData("especie", e.target.value)} 
-              options={especies} 
-              required 
-            />
-            <Input 
+            {/* La especie no se elige: el sistema es exclusivamente ovino. */}
+            <Input
               label="Arete *" 
               value={data.arete} 
               onChange={(e) => setData("arete", e.target.value)} 
@@ -62,15 +56,22 @@ export default function AnimalModal({
               required 
             />
 
-            {/* Campos condicionales */}
-            {razas.length > 0 && (
-              <Select 
-                label="Raza" 
-                value={data.raza} 
-                onChange={(e) => setData("raza", e.target.value)} 
-                options={razas} 
-              />
-            )}
+            {/* Raza principal y segunda raza (catálogo ovino configurable) */}
+            <Select
+              label="Raza principal"
+              value={data.raza_id}
+              onChange={(e) => setData("raza_id", e.target.value)}
+              options={razas.map((r) => ({ value: r.id, text: r.nombre }))}
+            />
+
+            <Select
+              label="Segunda raza (si es cruza)"
+              value={data.raza_secundaria_id}
+              onChange={(e) => setData("raza_secundaria_id", e.target.value)}
+              options={razas
+                .filter((r) => String(r.id) !== String(data.raza_id))
+                .map((r) => ({ value: r.id, text: r.nombre }))}
+            />
             
             <Input 
               label="Fecha de Nacimiento" 

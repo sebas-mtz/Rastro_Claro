@@ -9,15 +9,87 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 
 class Animal extends Model
 {
     use HasFactory;
 
+    public const TIPOS_IDENTIFICADOR = ['microchip', 'rfid', 'qr', 'arete', 'manual'];
+    public const ESTADOS_MICROCHIP = ['activo', 'inactivo', 'perdido', 'dañado'];
+
     protected $fillable = [
         'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id',
-        'madre_id', 'padre_id', 'padre_externo_id', 'imagen'
+        'madre_id', 'padre_id', 'padre_externo_id', 'imagen',
+        'microchip_codigo', 'tipo_identificador', 'fecha_colocacion_microchip',
+        'estado_microchip', 'observaciones_microchip', 'qr_token',
+        'tipo_origen', 'fecha_adquisicion', 'proveedor_origen',
+        'raza_id', 'raza_secundaria_id', 'es_cruza', 'raza_original',
+        'etapa_vida', 'etapa_vida_confirmada_at',
+        'activo', 'fecha_baja',
     ];
+
+    /** Este sistema es exclusivamente ovino. */
+    public const ESPECIE = 'Ovino';
+
+    /**
+     * Motivo del cambio de lote, que MovimientoLoteObserver escribe en el
+     * historial de movimientos.
+     *
+     * Es una propiedad real de PHP, no un atributo de Eloquent: si se asignara
+     * con $animal->motivo = '...' entraría al arreglo de atributos y el save()
+     * intentaría guardarla como columna inexistente.
+     */
+    public ?string $motivoMovimientoLote = null;
+
+    protected $casts = [
+        'fecha_colocacion_microchip' => 'date',
+        'fecha_adquisicion'          => 'date',
+        'es_cruza'                   => 'boolean',
+        'etapa_vida_confirmada_at'   => 'datetime',
+        'activo'                     => 'boolean',
+        'fecha_baja'                 => 'date',
+    ];
+
+    public const ORIGEN_NACIDO = 'nacido';
+    public const ORIGEN_COMPRADO = 'comprado';
+    public const ORIGEN_DESCONOCIDO = 'desconocido';
+
+    public const TIPOS_ORIGEN = [
+        self::ORIGEN_NACIDO,
+        self::ORIGEN_COMPRADO,
+        self::ORIGEN_DESCONOCIDO,
+    ];
+
+    /**
+     * Normaliza el código de microchip/RFID: quita espacios, saltos de línea
+     * y lo uniformiza en mayúsculas para evitar duplicados por formato.
+     */
+    public function setMicrochipCodigoAttribute(?string $value): void
+    {
+        $this->attributes['microchip_codigo'] = $value !== null && trim($value) !== ''
+            ? strtoupper(preg_replace('/\s+/', '', trim($value)))
+            : null;
+    }
+
+    /**
+     * Normaliza cualquier identificador libre (arete/alias/microchip) recibido
+     * desde un lector o input de búsqueda antes de compararlo en BD.
+     */
+    public static function normalizarIdentificador(string $valor): string
+    {
+        return strtoupper(preg_replace('/\s+/', '', trim($valor)));
+    }
+
+    public function asegurarQrToken(): string
+    {
+        if (! $this->qr_token) {
+            $this->qr_token = (string) Str::random(32);
+            $this->save();
+        }
+
+        return $this->qr_token;
+    }
 
     public function lote() {
         return $this->belongsTo(Lote::class);
@@ -262,5 +334,107 @@ public function padreExterno(): BelongsTo
 public function getPadreGenealogicoAttribute()
 {
     return $this->padre ?? $this->padreExterno;
+}
+
+// ── Valuación y cotización ────────────────────────────────────────────
+
+/**
+ * Registro de cría del que proviene este animal, si nació dentro de la
+ * unidad productiva. Es la puerta de entrada a los costos de gestación:
+ * cria → parto → evento reproductivo → madre.
+ */
+public function cria(): HasOne
+{
+    return $this->hasOne(Cria::class, 'animal_id');
+}
+
+public function genetica(): HasOne
+{
+    return $this->hasOne(AnimalGenetica::class);
+}
+
+public function valuaciones(): HasMany
+{
+    return $this->hasMany(AnimalValuation::class)->orderByDesc('created_at');
+}
+
+public function valuacionActiva(): HasOne
+{
+    return $this->hasOne(AnimalValuation::class)
+                ->where('estado', AnimalValuation::ESTADO_ACTIVA)
+                ->latestOfMany();
+}
+
+public function tratamientos(): HasMany
+{
+    return $this->hasMany(Tratamiento::class);
+}
+
+// ── Raza (catálogo ovino) ─────────────────────────────────────────────
+
+public function razaPrincipal(): BelongsTo
+{
+    return $this->belongsTo(Raza::class, 'raza_id');
+}
+
+public function razaSecundaria(): BelongsTo
+{
+    return $this->belongsTo(Raza::class, 'raza_secundaria_id');
+}
+
+// ── Permanencia en el rebaño ──────────────────────────────────────────
+
+public function bajas(): HasMany
+{
+    return $this->hasMany(Baja::class)->orderByDesc('fecha');
+}
+
+/** La baja vigente del ejemplar, si ya salió del rebaño. */
+public function baja(): HasOne
+{
+    return $this->hasOne(Baja::class)->latestOfMany('fecha');
+}
+
+public function movimientosLote(): HasMany
+{
+    return $this->hasMany(MovimientoLote::class)->orderByDesc('fecha');
+}
+
+public function condicionesCorporales(): HasMany
+{
+    return $this->hasMany(CondicionCorporal::class)->orderByDesc('fecha');
+}
+
+public function documentos(): \Illuminate\Database\Eloquent\Relations\MorphMany
+{
+    return $this->morphMany(Documento::class, 'documentable')->orderByDesc('created_at');
+}
+
+/** Solo ejemplares que siguen en el rebaño. */
+public function scopeActivo($query)
+{
+    return $query->where('activo', true);
+}
+
+public function scopeDadoDeBaja($query)
+{
+    return $query->where('activo', false);
+}
+
+/**
+ * Raza legible: "Pelibuey x Dorper" para cruzas, el nombre simple si es pura.
+ * Cae al texto original capturado cuando el catálogo aún no está asignado.
+ */
+public function getRazaDescriptivaAttribute(): string
+{
+    $principal = $this->razaPrincipal?->nombre;
+
+    if (! $principal) {
+        return $this->raza_original ?? $this->raza ?? 'Sin raza';
+    }
+
+    $secundaria = $this->razaSecundaria?->nombre;
+
+    return $secundaria ? "{$principal} x {$secundaria}" : $principal;
 }
 }

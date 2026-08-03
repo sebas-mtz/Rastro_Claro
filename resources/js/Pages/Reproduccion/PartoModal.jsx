@@ -11,14 +11,18 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
     padre_id:               "", // ← nuevo — solo si no hay servicio vinculado
     padre_externo_id: "",
     fecha:                  new Date().toISOString().split("T")[0],
+    hora:                   "",
     tipo_parto:             "normal",
+    asistido:               false,
     asistencia_requerida:   false,
     complicaciones:         false,
     detalle_complicaciones: "",
     costo:                  "",
+    costo_atencion:         "",
+    abortos:                0,
     observaciones:          "",
     crias: [
-      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", arete: "", arete_temporal: "" }
+      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", arete: "", arete_temporal: "", calostro_aplicado: false }
     ],
   });
 
@@ -314,6 +318,14 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
                   onChange={e => setData("asistencia_requerida", e.target.checked)}
                 />
                 Requirió asistencia
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={data.asistido}
+                  onChange={e => setData("asistido", e.target.checked)}
+                />
+                Parto asistido
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input

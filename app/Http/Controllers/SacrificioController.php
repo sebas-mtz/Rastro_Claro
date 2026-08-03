@@ -50,17 +50,15 @@ class SacrificioController extends Controller
             'cuero' => 'boolean',
             'grasa' => 'boolean',
             'visceras' => 'boolean',
-            'plumas' => 'boolean',
             'observaciones' => 'nullable|string|max:500',
         ]);
 
         $validated['rendimiento'] = ($validated['peso_canal'] / $validated['peso_vivo']) * 100;
 
+        // Sistema exclusivamente ovino: se retiró el subproducto "plumas".
+        // La columna permanece en la base de datos por compatibilidad.
+
         $animal = Animal::find($validated['animal_id']);
-        if (in_array($animal->especie, ['Gallos', 'Aves de corral (gallinas y pollitos)']) &&
-            !isset($validated['plumas'])) {
-            $validated['plumas'] = true;
-        }
 
         $sacrificio = Sacrificio::create($validated);
 

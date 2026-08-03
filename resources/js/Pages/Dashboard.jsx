@@ -5,7 +5,7 @@ import AppLayout from '@/Layouts/AppLayout';
 export default function Home() {
   return (
     <>
-      <Head title="Inicio – Hato360" />
+      <Head title="Inicio – Rebaño360" />
       <div className="container-centered">
         <h1>Dashboard</h1>
         <p className="lead">Resumen general del día</p>

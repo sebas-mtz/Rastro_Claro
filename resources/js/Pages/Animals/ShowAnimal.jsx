@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import {
     ArrowLeft, PawPrint, Edit, PlusCircle, Eye, Camera,
-    Scale, Utensils, GitBranch, MoreVertical, Trash2,
+    Scale, Utensils, GitBranch, MoreVertical, Trash2, QrCode, IdCard, DollarSign,
 } from "lucide-react";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -12,13 +12,26 @@ import EditModal from "./Edit";
 import ProduccionModal from "../Producciones/ProduccionModal";
 import ShowProduccionModal from "../Producciones/ShowProduccionModal";
 import ProduccionEditModal from "../Producciones/ProduccionEditModal";
+import ScanIdentificadorModal from "./ScanIdentificadorModal";
+import QrCodeModal from "./QrCodeModal";
+import CicloVidaPanel from "./CicloVidaPanel";
+import DocumentosPanel from "./DocumentosPanel";
 
 export default function ShowAnimal({
     animal,
     lotes,
     especies,
-    razasPorEspecie,
+    razas = [],
     estadosProductivos,
+    movimientosLote = [],
+    condicionesCorporales = [],
+    etapaSugerida = {},
+    etapasVida = {},
+    desarrolloCorporal = {},
+    documentos = [],
+    tiposDocumento = {},
+    extensionesDocumento = [],
+    tamanoMaximoKb = 5120,
 }) {
     const { data, setData, post, processing, reset } = useForm({
         imagen: null,
@@ -49,6 +62,8 @@ export default function ShowAnimal({
     const [showAddProduccion, setShowAddProduccion] = useState(false);
     const [showProduccionList, setShowProduccionList] = useState(false);
     const [editProduccion, setEditProduccion] = useState(null);
+    const [showQr, setShowQr] = useState(false);
+    const [showRegistrarId, setShowRegistrarId] = useState(false);
 
     function calcularEdad(fechaNac) {
         if (!fechaNac) return "N/D";
@@ -117,6 +132,27 @@ export default function ShowAnimal({
                             >
                                 <GitBranch className="w-4 h-4" /> Genealogía
                             </Link>
+
+                            <Link
+                                href={route('valuaciones.show', animal.id)}
+                                className="flex items-center gap-2 px-4 py-2 bg-emerald-700 text-white text-sm rounded-lg hover:bg-emerald-800 transition"
+                            >
+                                <DollarSign className="w-4 h-4" /> Ver valuación
+                            </Link>
+
+                            <button
+                                onClick={() => setShowRegistrarId(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white text-sm rounded-lg hover:bg-slate-700 transition"
+                            >
+                                <IdCard className="w-4 h-4" /> Registrar identificador
+                            </button>
+
+                            <button
+                                onClick={() => setShowQr(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition"
+                            >
+                                <QrCode className="w-4 h-4" /> Generar QR
+                            </button>
 
                             <button
                                 onClick={() => { setSelectedAnimal(animal); setIsEditOpen(true); }}
@@ -222,6 +258,10 @@ export default function ShowAnimal({
                             <Data label="Peso actual"         value={pesoActual != null ? fmtPeso(pesoActual) : (animal.peso ? fmtPeso(animal.peso) : "N/D")} />
                             <Data label="BCS"                 value={animal.BCS || "N/D"} />
                             <Data label="Lote"                value={animal.lote?.nombre || "Sin lote"} />
+                            <Data label="Identificador"       value={animal.microchip_codigo ? `${animal.microchip_codigo} (${animal.tipo_identificador || 'sin tipo'})` : "Sin registrar"} />
+                            {animal.microchip_codigo && (
+                                <Data label="Estado identificador" value={animal.estado_microchip || "N/D"} />
+                            )}
                             <Data label="Fecha de Registro"   value={fmtFecha(animal.created_at)} />
 
                             {/* Madre — solo si está registrada */}
@@ -252,6 +292,25 @@ export default function ShowAnimal({
                         </div>
                     </div>
                 </div>
+
+                {/* ── Card: Ciclo de vida ──────────────────────────────── */}
+                <CicloVidaPanel
+                    animal={animal}
+                    movimientosLote={movimientosLote}
+                    condicionesCorporales={condicionesCorporales}
+                    etapaSugerida={etapaSugerida}
+                    etapasVida={etapasVida}
+                    desarrolloCorporal={desarrolloCorporal}
+                />
+
+                {/* ── Card: Documentos y evidencias ────────────────────── */}
+                <DocumentosPanel
+                    animal={animal}
+                    documentos={documentos}
+                    tiposDocumento={tiposDocumento}
+                    extensiones={extensionesDocumento}
+                    tamanoMaximoKb={tamanoMaximoKb}
+                />
 
                 {/* ── Card: Historial de Peso ──────────────────────────────── */}
                 <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
@@ -484,7 +543,7 @@ export default function ShowAnimal({
                     animal={selectedAnimal}
                     lotes={lotes}
                     especies={especies}
-                    razasPorEspecie={razasPorEspecie}
+                    razas={razas}
                     estadosProductivos={estadosProductivos}
                     onClose={() => setIsEditOpen(false)}
                 />
@@ -502,6 +561,20 @@ export default function ShowAnimal({
             {editProduccion && (
                 <ProduccionEditModal produccion={editProduccion} onClose={() => setEditProduccion(null)} />
             )}
+
+            <ScanIdentificadorModal
+                show={showRegistrarId}
+                onClose={() => setShowRegistrarId(false)}
+                animales={[animal]}
+                modoDirecto
+                animalPreseleccionado={animal.id}
+            />
+
+            <QrCodeModal
+                show={showQr}
+                onClose={() => setShowQr(false)}
+                animal={animal}
+            />
         </div>
     );
 }

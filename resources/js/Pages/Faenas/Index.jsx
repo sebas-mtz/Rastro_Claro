@@ -49,7 +49,6 @@ export default function FaenasIndex({ auth, faenas, estadisticas, animales, lote
         total_carne: 0,
         total_cuero: 0,
         total_grasa: 0,
-        total_plumas: 0,
         rendimiento_promedio: 0,
         faenas_este_mes: 0
     };
@@ -127,9 +126,6 @@ export default function FaenasIndex({ auth, faenas, estadisticas, animales, lote
                             <div>
                                 <p className="text-sm text-gray-600">Grasa (kg)</p>
                                 <p className="text-2xl font-bold text-gray-800">{stats.total_grasa?.toFixed(1) || '0'}</p>
-                                {stats.total_plumas > 0 && (
-                                    <p className="text-xs text-gray-500">Plumas: {stats.total_plumas?.toFixed(1)}kg</p>
-                                )}
                             </div>
                             <Package className="w-8 h-8 text-yellow-400" />
                         </div>
@@ -231,11 +227,6 @@ export default function FaenasIndex({ auth, faenas, estadisticas, animales, lote
                                                     {faena.peso_grasa > 0 && (
                                                         <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
                                                             Grasa: {faena.peso_grasa}kg
-                                                        </span>
-                                                    )}
-                                                    {faena.peso_plumas > 0 && (
-                                                        <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
-                                                            Plumas: {faena.peso_plumas}kg
                                                         </span>
                                                     )}
                                                     {faena.peso_hueso > 0 && (

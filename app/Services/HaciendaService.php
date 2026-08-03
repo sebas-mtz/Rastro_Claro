@@ -19,7 +19,8 @@ class HaciendaService
     private $cacheTtl = 60;
 
     // ✅ TODOS los tipos de producción definidos en un solo lugar
-    private $tiposProduccion = ['leche', 'lana', 'huevo', 'carne', 'grasa', 'cuero', 'plumas', 'canal'];
+    // Sistema exclusivamente ovino: leche, lana y derivados del sacrificio.
+    private $tiposProduccion = ['leche', 'lana', 'carne', 'grasa', 'cuero', 'canal'];
 
     // Tipos que se registran diariamente (sin subproductos de faena)
     private $tiposDiarios = ['leche', 'huevo', 'lana'];
@@ -397,7 +398,6 @@ class HaciendaService
             'carne'    => (float) Faena::sum('peso_carne'),
             'cuero'    => (float) Faena::sum('peso_cuero'),
             'grasa'    => (float) Faena::sum('peso_grasa'),
-            'plumas'   => (float) Faena::sum('peso_plumas'),
             'hueso'    => (float) Faena::sum('peso_hueso'),
             'visceras' => (float) Faena::sum('peso_visceras'),
         ];
@@ -444,7 +444,6 @@ class HaciendaService
                 'peso_carne'     => $faena->peso_carne,
                 'peso_cuero'     => $faena->peso_cuero,
                 'peso_grasa'     => $faena->peso_grasa,
-                'peso_plumas'    => $faena->peso_plumas,
                 'peso_hueso'     => $faena->peso_hueso,
                 'peso_visceras'  => $faena->peso_visceras,
                 'rendimiento'    => $faena->rendimiento,
@@ -464,7 +463,6 @@ class HaciendaService
                 'total_carne'          => (float) Faena::sum('peso_carne'),
                 'total_cuero'          => (float) Faena::sum('peso_cuero'),
                 'total_grasa'          => (float) Faena::sum('peso_grasa'),
-                'total_plumas'         => (float) Faena::sum('peso_plumas'),
                 'total_hueso'          => (float) Faena::sum('peso_hueso'),
                 'total_visceras'       => (float) Faena::sum('peso_visceras'),
                 'rendimiento_promedio' => (float) Faena::avg('rendimiento'),
@@ -478,7 +476,6 @@ class HaciendaService
                     'carne'    => $grupo->sum('peso_carne'),
                     'cuero'    => $grupo->sum('peso_cuero'),
                     'grasa'    => $grupo->sum('peso_grasa'),
-                    'plumas'   => $grupo->sum('peso_plumas'),
                     'hueso'    => $grupo->sum('peso_hueso'),
                     'visceras' => $grupo->sum('peso_visceras'),
                     'cantidad' => $grupo->count(),
@@ -537,7 +534,6 @@ class HaciendaService
                 'cuero'          => $sacrificio->cuero,
                 'grasa'          => $sacrificio->grasa,
                 'visceras'       => $sacrificio->visceras,
-                'plumas'         => $sacrificio->plumas,
                 'subproductos'   => $sacrificio->subproductos,
                 'observaciones'  => $sacrificio->observaciones,
             ];
@@ -569,7 +565,6 @@ class HaciendaService
                     'total_con_cuero'    => $sacrificios->where('cuero',    true)->count(),
                     'total_con_grasa'    => $sacrificios->where('grasa',    true)->count(),
                     'total_con_visceras' => $sacrificios->where('visceras', true)->count(),
-                    'total_con_plumas'   => $sacrificios->where('plumas',   true)->count(),
                 ],
             ];
 

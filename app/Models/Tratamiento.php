@@ -17,6 +17,7 @@ class Tratamiento extends Model
         'fecha_inicio',
         'fecha_fin',
         'estado',
+        'costo',
         'notas',
         'responsable',
         'user_id',
@@ -25,6 +26,7 @@ class Tratamiento extends Model
     protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin'    => 'date',
+        'costo'        => 'decimal:2',
     ];
 
     const ESTADO_ACTIVO     = 'activo';

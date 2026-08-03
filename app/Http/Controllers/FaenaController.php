@@ -49,18 +49,14 @@ class FaenaController extends Controller
             'peso_carne' => 'required|numeric|min:0.1',
             'peso_cuero' => 'nullable|numeric|min:0',
             'peso_grasa' => 'nullable|numeric|min:0',
-            'peso_plumas' => 'nullable|numeric|min:0',
             'peso_hueso' => 'nullable|numeric|min:0',
             'peso_visceras' => 'nullable|numeric|min:0',
             'observaciones' => 'nullable|string|max:500',
         ]);
 
-        if (empty($validated['peso_plumas'])) {
-            $animal = Animal::find($validated['animal_id']);
-            if ($animal && in_array($animal->especie, ['Gallos', 'Aves de corral (gallinas y pollitos)', 'Ave', 'Pollo', 'Gallina'])) {
-                $validated['peso_plumas'] = round($validated['peso_canal'] * 0.06, 2);
-            }
-        }
+        // Sistema exclusivamente ovino: se retiró la captura de plumas y su
+        // estimación automática para aves. La columna sigue en la base de datos
+        // por compatibilidad, pero ya no se usa.
 
         $validated['rendimiento'] = round(($validated['peso_carne'] / $validated['peso_canal']) * 100, 2);
 

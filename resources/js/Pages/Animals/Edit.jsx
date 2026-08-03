@@ -6,7 +6,7 @@ export default function EditModal({
     animal, 
     lotes = [], 
     especies = [], 
-    razasPorEspecie = {}, 
+    razas = [], 
     estadosProductivos = {}, 
     onClose 
 }) {
@@ -32,7 +32,6 @@ export default function EditModal({
     };
 
     // Protege arrays
-    const razas = data.especie ? (razasPorEspecie[data.especie] || []) : [];
     const estados = data.especie ? (estadosProductivos[data.especie] || []) : [];
     const safeLotes = Array.isArray(lotes) ? lotes : [];
     const safeEspecies = Array.isArray(especies) ? especies : [];

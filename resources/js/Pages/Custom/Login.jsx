@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies = [], razasPorEspecie = {}, estadosProductivos = {} }) {
+function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies = [], razas = [], estadosProductivos = {} }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   
@@ -18,7 +18,7 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
   // Actualizar razas y estados cuando cambia la especie
   useEffect(() => {
     if (filtroEspecie) {
-      setRazasDisponibles(razasPorEspecie[filtroEspecie] || []);
+      setRazasDisponibles(razas.map((r) => r.nombre ?? r));
       setEstadosDisponibles(estadosProductivos[filtroEspecie] || []);
       setFiltroRaza(''); // Resetear raza al cambiar especie
       setFiltroEstadoProductivo(''); // Resetear estado al cambiar especie
@@ -28,7 +28,7 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
       setFiltroRaza('');
       setFiltroEstadoProductivo('');
     }
-  }, [filtroEspecie, razasPorEspecie, estadosProductivos]);
+  }, [filtroEspecie, razas, estadosProductivos]);
 
   if (!isOpen) return null;
 
@@ -153,7 +153,7 @@ function ModalAnimalSelect({ isOpen, onClose, onSelect, animals = [], especies =
             {/* Aquí puedes agregar más opciones de filtro si lo deseas */} 
           </div>
 
-          {/* Lista de animales */}
+          {/* Lista de ejemplares */}
           <div className="flex-1 overflow-y-auto p-4">
             {filteredAnimals.length === 0 ? (
               <div className="text-center py-8 text-gray-500 text-sm">

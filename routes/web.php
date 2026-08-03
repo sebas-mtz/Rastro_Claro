@@ -15,9 +15,8 @@ use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\Admin\PermisoController as AdminPermisoController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\PrediccionController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EventoReproductivoController;
 use App\Http\Controllers\ServicioReproductivoController;
 use App\Http\Controllers\DiagnosticoGestacionController;
@@ -35,6 +34,14 @@ use App\Http\Controllers\TermoController;
 use App\Http\Controllers\PajillaController;
 use App\Http\Controllers\DonadorExternoController;
 use App\Http\Controllers\EstadisticasSaludController;
+use App\Http\Controllers\CostoController;
+use App\Http\Controllers\AnimalValuationController;
+use App\Http\Controllers\BajaController;
+use App\Http\Controllers\TrabajadorController;
+use App\Http\Controllers\ActividadTrabajadorController;
+use App\Http\Controllers\CalendarioSanitarioController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\ReporteOvinoController;
 
 
 /*
@@ -64,14 +71,40 @@ Route::get('/splash', [CustomController::class, 'splash'])->name('splash');
 
 /*
 |--------------------------------------------------------------------------
-| Solo admin
+| Solo superadministrador
 |--------------------------------------------------------------------------
+| Administración de cuentas, roles, contraseñas y bitácora del sistema.
+|
+| Antes este grupo usaba `role:admin`, lo que permitía a cualquier
+| administrador cambiar roles y planes de todas las cuentas. Ahora exige
+| `super_admin`; los nombres de las rutas se conservan para no romper los
+| enlaces existentes.
 */
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'verified', 'super_admin'])->group(function () {
     Route::get('/admin/usuarios', [AdminUserController::class, 'index'])
         ->name('admin.usuarios.index');
+    Route::post('/admin/usuarios', [AdminUserController::class, 'store'])
+        ->name('admin.usuarios.store');
     Route::put('/admin/usuarios/{user}', [AdminUserController::class, 'update'])
         ->name('admin.usuarios.update');
+    Route::patch('/admin/usuarios/{user}/estado', [AdminUserController::class, 'cambiarEstado'])
+        ->name('admin.usuarios.estado');
+    Route::patch('/admin/usuarios/{user}/password', [AdminUserController::class, 'restablecerPassword'])
+        ->name('admin.usuarios.password');
+    Route::delete('/admin/usuarios/{user}', [AdminUserController::class, 'destroy'])
+        ->name('admin.usuarios.destroy');
+
+    // Bitácora: solo lectura. No existe ruta para editarla ni borrarla.
+    Route::get('/admin/auditoria', [AdminUserController::class, 'auditoria'])
+        ->name('admin.auditoria.index');
+
+    // Permisos: qué módulos toca cada puesto y las excepciones por persona.
+    Route::get('/admin/permisos', [AdminPermisoController::class, 'index'])
+        ->name('admin.permisos.index');
+    Route::put('/admin/permisos/puesto/{puesto}', [AdminPermisoController::class, 'actualizarPuesto'])
+        ->name('admin.permisos.puesto');
+    Route::put('/admin/permisos/persona/{user}', [AdminPermisoController::class, 'actualizarPersona'])
+        ->name('admin.permisos.persona');
 });
 
 /*
@@ -107,7 +140,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('eventos-salud.completar');
     Route::post('eventos-salud/{eventoSalud}/completar', [EventoSaludController::class, 'completar'])
         ->name('eventos-salud.completar.post');
-    Route::resource('eventos-salud', EventoSaludController::class)->except(['index']);
+    // ->parameters() es necesario: por el guion, el recurso generaba el parámetro
+    // {eventos_salud}, que no coincide con el $eventoSalud del controlador. Sin esa
+    // coincidencia el enlace implícito no ocurría y update()/destroy() recibían un
+    // modelo vacío, así que editar o eliminar un evento no hacía nada.
+    Route::resource('eventos-salud', EventoSaludController::class)
+        ->except(['index'])
+        ->parameters(['eventos-salud' => 'eventoSalud']);
 
     Route::post('tratamientos/marcar-vencidos', [TratamientoController::class, 'marcarVencidos'])
         ->name('tratamientos.marcar-vencidos');
@@ -123,7 +162,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/animales', [AnimalController::class, 'index'])->name('animales.index');
-    Route::get('/animales/create', [AnimalController::class, 'create'])->name('animales.create');
+    // Sin ruta /animales/create: el alta se hace por modal desde el listado.
     Route::post('/animales', [AnimalController::class, 'store'])->name('animales.store');
     Route::get('/animales/{animal}', [AnimalController::class, 'show'])->name('animales.show');
     Route::get('/animales/{animal}/edit', [AnimalController::class, 'edit'])->name('animales.edit');
@@ -134,13 +173,115 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     /*
     |----------------------------------------------------------------------
+    | Identificación (microchip / RFID / QR)
+    |----------------------------------------------------------------------
+    */
+    // Nota: NO se usa el prefijo /api/animales/... a propósito: routes/api.php (capa
+    // móvil sin comitear, fuera de alcance) ya registra GET /api/animales/{animale},
+    // y esa ruta comodín capturaría "buscar-identificador" como si fuera un ID.
+    Route::get('/api/identificadores/buscar', [AnimalController::class, 'buscarPorIdentificador'])
+        ->name('animales.buscar-identificador');
+    Route::post('/animales/{animal}/identificador', [AnimalController::class, 'registrarIdentificador'])
+        ->name('animales.identificador.store');
+    Route::get('/animales/{animal}/qr', [AnimalController::class, 'qr'])
+        ->name('animales.qr');
+    Route::get('/escanear/{token}', [AnimalController::class, 'escanearQr'])
+        ->name('animales.escanear');
+
+    /*
+    |----------------------------------------------------------------------
+    | Calendario sanitario y reportes ovinos
+    |----------------------------------------------------------------------
+    */
+    Route::get('/calendario-sanitario', [CalendarioSanitarioController::class, 'index'])
+        ->name('calendario.index');
+    Route::get('/reportes-ovinos', [ReporteOvinoController::class, 'index'])
+        ->name('reportes.ovinos');
+
+    /*
+    |----------------------------------------------------------------------
+    | Documentos y evidencias
+    |----------------------------------------------------------------------
+    */
+    Route::post('/documentos', [DocumentoController::class, 'store'])->name('documentos.store');
+    Route::get('/documentos/{documento}/descargar', [DocumentoController::class, 'download'])->name('documentos.download');
+    Route::delete('/documentos/{documento}', [DocumentoController::class, 'destroy'])->name('documentos.destroy');
+
+    /*
+    |----------------------------------------------------------------------
+    | Bajas y salidas del rebaño
+    |----------------------------------------------------------------------
+    */
+    Route::get('/bajas', [BajaController::class, 'index'])->name('bajas.index');
+    Route::post('/bajas', [BajaController::class, 'store'])->name('bajas.store');
+    Route::delete('/bajas/{baja}', [BajaController::class, 'destroy'])->name('bajas.destroy');
+
+    /*
+    |----------------------------------------------------------------------
+    | Trabajadores y mano de obra
+    |----------------------------------------------------------------------
+    | El acceso a cada acción lo resuelve TrabajadorPolicy: consultar y
+    | registrar actividades es de operación; alta, edición, cambio de estado
+    | y datos salariales exigen rol de administrador.
+    */
+    Route::get('/trabajadores', [TrabajadorController::class, 'index'])
+        ->name('trabajadores.index');
+    Route::post('/trabajadores', [TrabajadorController::class, 'store'])
+        ->name('trabajadores.store');
+    Route::get('/trabajadores/{trabajador}', [TrabajadorController::class, 'show'])
+        ->name('trabajadores.show');
+    Route::put('/trabajadores/{trabajador}', [TrabajadorController::class, 'update'])
+        ->name('trabajadores.update');
+    Route::patch('/trabajadores/{trabajador}/estado', [TrabajadorController::class, 'cambiarEstado'])
+        ->name('trabajadores.estado');
+    Route::delete('/trabajadores/{trabajador}', [TrabajadorController::class, 'destroy'])
+        ->name('trabajadores.destroy');
+
+    Route::get('/actividades-trabajador', [ActividadTrabajadorController::class, 'index'])
+        ->name('actividades-trabajador.index');
+    Route::post('/actividades-trabajador', [ActividadTrabajadorController::class, 'store'])
+        ->name('actividades-trabajador.store');
+    Route::put('/actividades-trabajador/{actividad}', [ActividadTrabajadorController::class, 'update'])
+        ->name('actividades-trabajador.update');
+    Route::delete('/actividades-trabajador/{actividad}', [ActividadTrabajadorController::class, 'destroy'])
+        ->name('actividades-trabajador.destroy');
+    // Vista previa del importe; no persiste nada.
+    Route::post('/actividades-trabajador/calcular', [ActividadTrabajadorController::class, 'calcular'])
+        ->name('actividades-trabajador.calcular');
+
+    /*
+    |----------------------------------------------------------------------
+    | Valuación y cotización
+    |----------------------------------------------------------------------
+    */
+    Route::get('/valuaciones/{animal}', [AnimalValuationController::class, 'show'])
+        ->name('valuaciones.show');
+    Route::post('/valuaciones/{animal}/recalcular', [AnimalValuationController::class, 'recalcular'])
+        ->name('valuaciones.recalcular');
+    Route::post('/valuaciones/{animal}/simular', [AnimalValuationController::class, 'simular'])
+        ->name('valuaciones.simular');
+    Route::post('/valuaciones/{animal}/guardar', [AnimalValuationController::class, 'guardar'])
+        ->name('valuaciones.guardar');
+    Route::post('/valuaciones/{animal}/confirmar-venta', [AnimalValuationController::class, 'confirmarPrecioVenta'])
+        ->name('valuaciones.confirmar-venta');
+    Route::get('/valuaciones/{animal}/pdf', [AnimalValuationController::class, 'exportarPdf'])
+        ->name('valuaciones.pdf');
+    // Los valores del plus reproductivo entran en la fórmula del precio de
+    // toda la explotación. Estaba abierta a cualquier usuario autenticado;
+    // ahora es una modificación crítica y exige superadministrador.
+    Route::put('/valuaciones-configuracion', [AnimalValuationController::class, 'actualizarConfiguracion'])
+        ->middleware('super_admin')
+        ->name('valuaciones.configuracion');
+
+    /*
+    |----------------------------------------------------------------------
     | Lotes
     |----------------------------------------------------------------------
     */
     Route::get('/lotes', [LoteController::class, 'index'])->name('lotes.index');
-    Route::get('/lotes/create', [LoteController::class, 'create'])->name('lotes.create');
+    // Sin ruta /lotes/create: el alta se hace por modal desde el listado.
     Route::post('/lotes', [LoteController::class, 'store'])->name('lotes.store');
-    Route::get('/lotes/{lote}', [LoteController::class, 'show'])->name('lotes.show');
+    // Sin ruta /lotes/{lote}: el detalle se muestra en un modal del listado.
     Route::get('/lotes/{lote}/edit', [LoteController::class, 'edit'])->name('lotes.edit');
     Route::put('/lotes/{lote}', [LoteController::class, 'update'])->name('lotes.update');
     Route::delete('/lotes/{lote}', [LoteController::class, 'destroy'])->name('lotes.destroy');
@@ -217,7 +358,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::resource('faenas', FaenaController::class);
-    Route::resource('ventas', VentaController::class);
+    // VentaController solo implementa index y store; el resto del recurso
+    // apuntaba a métodos inexistentes y devolvía 500 al visitarlo.
+    Route::resource('ventas', VentaController::class)->only(['index', 'store']);
     Route::resource('sacrificios', SacrificioController::class);
     Route::put('/ventas/{venta}/estados', [VentaController::class, 'updateEstado'])
         ->name('ventas.update-estados');
@@ -226,6 +369,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/ventas/estadisticas', [VentaController::class, 'estadisticas']);
     Route::get('/api/sacrificios/estadisticas', [SacrificioController::class, 'estadisticas']);
     Route::get('/api/sacrificios/tendencias', [SacrificioController::class, 'tendencias']);
+
+    /*
+    |----------------------------------------------------------------------
+    | Costos
+    |----------------------------------------------------------------------
+    */
+    Route::resource('costos', CostoController::class)->except(['create', 'edit', 'show']);
+    Route::get('/costos/exportar/csv', [CostoController::class, 'exportarCsv'])->name('costos.exportar.csv');
+    Route::get('/costos/exportar/pdf', [CostoController::class, 'exportarPdf'])->name('costos.exportar.pdf');
+    Route::get('/api/costos/resumen', [CostoController::class, 'resumen'])->name('costos.resumen');
 
     /*
     |----------------------------------------------------------------------
@@ -305,14 +458,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('genetica.index');
     /*
     |----------------------------------------------------------------------
-    | Predicciones
-    |----------------------------------------------------------------------
-    */
-    Route::get('/predicciones', [PrediccionController::class, 'index'])
-        ->name('predicciones.index');
-
-    /*
-    |----------------------------------------------------------------------
     | Perfil
     |----------------------------------------------------------------------
     */
@@ -320,15 +465,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    /*
-    |----------------------------------------------------------------------
-    | Pagos
-    |----------------------------------------------------------------------
-    */
-    Route::get('/planes', [PaymentController::class, 'showPlans'])->name('planes.index');
-    Route::get('/pago/premium', [PaymentController::class, 'createCheckout'])->name('pago.premium');
-    Route::get('/pago/success', [PaymentController::class, 'success'])->name('pago.success');
-    Route::get('/pago/cancel', [PaymentController::class, 'cancel'])->name('pago.cancel');
 });
 
 /*

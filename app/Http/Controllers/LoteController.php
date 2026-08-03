@@ -15,38 +15,25 @@ class LoteController extends Controller
     public function index()
     {
         $lotes = Lote::with(['responsable', 'animales'])->get();
-        $usuarios = User::whereKey(Auth::id())->get();
+        $usuarios = $this->responsablesDisponibles();
 
-        $especies = ["Bovino","Porcino","Caprino","Ovino","Equino","Gallos","Aves de corral (gallinas y pollitos)"];
+        // Sistema exclusivamente ovino: la especie no se elige y las razas
+        // se administran desde el catálogo configurable (tabla `razas`).
+        $especies = [\App\Models\Animal::ESPECIE];
 
-        $razasPorEspecie = [
-            'Bovino' => ["Holstein", "Angus", "Hereford", "Simmental", "Otra"],
-            'Porcino' => ["Yorkshire", "Landrace", "Duroc", "Pietrain", "Otra"],
-            'Caprino' => ["Saanen", "Boer", "Alpina", "Toggenburg", "Otra"],
-            'Ovino' => ["Dorper", "Merino", "Suffolk", "Katahdin", "Otra"],
-            'Equino'=> ["Cuarto de Milla", "Pura Sangre", "Árabe", "Criollo", "Otra"],
-            'Gallos' => [ "Gallos de pelea (Asil)", "Gallos Kelso","Gallos Hatch", "Gallos Sweater", "Gallos Shamo", 
-            "Gallos Cuban Brown", "Gallos Navajeros (LATAM)","Otra"],
-            'Aves de corral'=> ["Leghorn", "Rhode Island", "Plymouth Rock", "Otra"],
-        ];
+        $razas = \App\Models\Raza::activa()->orderBy('nombre')->get(['id', 'nombre']);
 
-        $estadosProductivos = [
-            'Bovino' => ["Vaca seca", "Lactante", "Gestante", "En crecimiento", "Reproductor"],
-            'Caprino' =>["Gestante", "En crecimiento", "Lactante", "Reproductor"],
-            'Ovino' =>["Gestante", "En crecimiento", "Reproductor"],
-            'Porcino' =>["Gestante", "En crecimiento", "Reproductor"],
-            'Equino' =>["En entrenamiento", "Reproductor", "En descanso"],
-            'Aves de corral'=> ["Postura", "En descanso", "En crecimiento"],
-            'Gallos' => ["Reproductor", "En crecimiento", "En descanso", "De pelea / exhibición", 
-            "En entrenamiento"]
-        ];
+        $estadosProductivos = \App\Services\EstadoProductivoService::estadosManualesPorEspecie();
+
+        $tiposLote = \App\Models\Lote::TIPOS;
 
         return Inertia::render('Lotes/Index', compact(
             'lotes',
             'usuarios',
             'especies',
-            'razasPorEspecie',
-            'estadosProductivos'
+            'razas',
+            'estadosProductivos',
+            'tiposLote'
         ));
     }
 
@@ -58,10 +45,11 @@ class LoteController extends Controller
             'corral_potrero' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:255',
             'responsable_id' => 'nullable',
+            'tipo' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(Lote::TIPOS))],
+            'capacidad' => 'nullable|integer|min:0',
 
-            // Campos del ganado
-            'animal.especie' => 'required|string',
-            'animal.raza' => 'nullable|string',
+            // Campos del ganado ovino. La especie no se envía: es siempre Ovino.
+            'animal.raza_id' => 'nullable|exists:razas,id',
             'animal.arete_inicio' => 'required|integer|min:1',
             'animal.arete_fin' => 'required|integer|gte:animal.arete_inicio',
             'animal.sexo' => 'required|string|in:M,F',
@@ -75,6 +63,8 @@ class LoteController extends Controller
             'nombre' => $validated['nombre'],
             'corral_potrero' => $validated['corral_potrero'],
             'descripcion' => $validated['descripcion'] ?? null,
+            'tipo' => $validated['tipo'] ?? null,
+            'capacidad' => $validated['capacidad'] ?? null,
             'responsable_id' => Auth::id(),
         ]);
 
@@ -94,8 +84,8 @@ class LoteController extends Controller
             }
 
             $lote->animales()->create([
-                'especie' => $animalData['especie'],
-                'raza' => $animalData['raza'] ?? null,
+                'especie' => Animal::ESPECIE,
+                'raza_id' => $animalData['raza_id'] ?? null,
                 'arete' => (string)$i,
                 'sexo' => $animalData['sexo'],
                 'fecha_nac' => $animalData['fecha_nac'] ?? null,
@@ -104,7 +94,7 @@ class LoteController extends Controller
             ]);
         }
 
-        $mensaje = 'Lote y animales registrados correctamente.';
+        $mensaje = 'Lote y ejemplares registrados correctamente.';
         if (!empty($duplicados)) {
             $mensaje .= ' Los siguientes aretes ya existían y no fueron registrados: ' . implode(', ', $duplicados);
         }
@@ -115,7 +105,7 @@ class LoteController extends Controller
     // Editar lote
     public function edit(Lote $lote)
     {
-        $usuarios = User::whereKey(Auth::id())->get();
+        $usuarios = $this->responsablesDisponibles();
 
         return Inertia::render('Lotes/Edit', [
             'lote' => $lote->load('responsable', 'animales'),
@@ -146,5 +136,22 @@ class LoteController extends Controller
     {
         $lote->delete();
         return redirect()->route('lotes.index')->with('success', 'Lote eliminado correctamente');
+    }
+
+    /**
+     * Personas que pueden quedar como responsables de un lote.
+     *
+     * Antes devolvía únicamente al propio usuario, porque cada cuenta era un
+     * rancho de una sola persona. Ahora lista a quienes trabajan en el mismo
+     * rancho, que es lo que el desplegable siempre quiso decir.
+     */
+    private function responsablesDisponibles()
+    {
+        $cuentaId = Auth::user()?->cuentaId();
+
+        return User::where('cuenta_id', $cuentaId)
+            ->where('activo', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 }

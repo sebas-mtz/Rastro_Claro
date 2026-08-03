@@ -86,7 +86,7 @@ export default function ShowLoteModal({ lote, onClose }) {
               </div>
             ) : (
               <p className="mt-1 text-sm text-gray-500">
-                No hay animales asociados.
+                No hay ejemplares asociados.
               </p>
             )}
           </div>

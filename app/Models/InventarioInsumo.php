@@ -32,7 +32,7 @@ class InventarioInsumo extends Model
  
     protected $casts = [
         'existencias'        => 'float',
-        'costo_promedio'     => 'float',
+        'costo_promedio'     => 'decimal:2',
         'MS'                 => 'float',
         'PB'                 => 'float',
         'EM'                 => 'float',

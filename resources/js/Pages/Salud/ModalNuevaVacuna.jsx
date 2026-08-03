@@ -100,7 +100,7 @@ export default function ModalNuevaVacuna({ isOpen, onClose }) {
         },
     };
 
-    const ESPECIES = ['Bovino', 'Ovino', 'Caprino', 'Porcino', 'Aviar', 'Equino', 'General'];
+    const ESPECIES = ['Ovino', 'General'];
 
     return (
         <div style={css.backdrop} onClick={handleClose}>

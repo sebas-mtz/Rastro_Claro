@@ -30,6 +30,10 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [],   lotes 
         vacuna_id:        '',   // FK al catálogo de Vacunas
         dosis:            '',
         lote_vacuna:      '',
+        costo:            '',   // se refleja solo en el módulo de Costos
+        producto:         '',
+        via_administracion: '',
+        periodo_retiro_dias: '',
         observaciones:    '',
         responsable:      '',
         estado:           'pendiente',
@@ -97,12 +101,42 @@ const loteLabel = selectedLote
     const TIPOS = [
         { key: 'vacunacion', emoji: '💉', label: 'Vacunación',
           desc: 'Aplica una vacuna del catálogo y programa el refuerzo automático.' },
-        { key: 'consulta',   emoji: '🩺', label: 'Consulta',
+        { key: 'desparasitacion', emoji: '🪱', label: 'Desparasitación',
+          desc: 'Antiparasitario interno o externo. Recuerda capturar el periodo de retiro.' },
+        { key: 'vitaminas', emoji: '🧪', label: 'Vitaminas / minerales',
+          desc: 'Suplementación vitamínica o mineral.' },
+        { key: 'revision_pezunas', emoji: '🦶', label: 'Revisión de pezuñas',
+          desc: 'Inspección de aplomos y estado de las pezuñas.' },
+        { key: 'recorte_pezunas', emoji: '✂️', label: 'Recorte de pezuñas',
+          desc: 'Recorte correctivo o de mantenimiento.' },
+        { key: 'bano_externo', emoji: '🚿', label: 'Baño o tratamiento externo',
+          desc: 'Baño garrapaticida, sarnicida o similar.' },
+        { key: 'mastitis', emoji: '🩹', label: 'Mastitis',
+          desc: 'Registro y seguimiento de mastitis en la borrega.' },
+        { key: 'problema_respiratorio', emoji: '🫁', label: 'Problema respiratorio',
+          desc: 'Neumonía, tos u otro cuadro respiratorio.' },
+        { key: 'problema_digestivo', emoji: '🩺', label: 'Problema digestivo',
+          desc: 'Diarrea, timpanismo u otro cuadro digestivo.' },
+        { key: 'problema_reproductivo', emoji: '🐑', label: 'Problema reproductivo',
+          desc: 'Retención placentaria, prolapso u otro evento reproductivo.' },
+        { key: 'lesion', emoji: '🩼', label: 'Lesión',
+          desc: 'Herida, cojera o traumatismo.' },
+        { key: 'cirugia', emoji: '⚕️', label: 'Cirugía',
+          desc: 'Intervención quirúrgica.' },
+        { key: 'estudio', emoji: '🔬', label: 'Estudio de laboratorio',
+          desc: 'Coprológico, sanguíneo u otro análisis.' },
+        { key: 'consulta',   emoji: '🩺', label: 'Consulta veterinaria',
           desc: 'Visita veterinaria, revisión de diagnóstico o seguimiento.' },
-        { key: 'revision',   emoji: '🔍', label: 'Revisión',
+        { key: 'revision',   emoji: '🔍', label: 'Revisión general',
           desc: 'Chequeo rutinario: peso, gestación, condición corporal.' },
         { key: 'emergencia', emoji: '🚨', label: 'Emergencia',
           desc: 'Evento urgente. Puedes registrar el tratamiento aplicado.' },
+    ];
+
+    const VIAS = [
+        ['subcutanea', 'Subcutánea'], ['intramuscular', 'Intramuscular'],
+        ['intravenosa', 'Intravenosa'], ['oral', 'Oral'],
+        ['topica', 'Tópica'], ['intramamaria', 'Intramamaria'], ['otra', 'Otra'],
     ];
 
     // ── Estilos ──────────────────────────────────────────────────
@@ -294,7 +328,7 @@ const loteLabel = selectedLote
                             </label>
 
                             <span style={css.labelHint}>
-                                Selecciona un animal o un lote, no ambos.
+                                Selecciona un ejemplar o un lote, no ambos.
                             </span>
                         </fieldset>
                     
@@ -438,6 +472,61 @@ const loteLabel = selectedLote
                         </div>
 
                         <label style={css.label}>
+                            Costo <span style={css.labelHint}>(opcional, en pesos)</span>
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={data.costo}
+                                onChange={e => setData('costo', e.target.value)}
+                                placeholder="Ej: 95.00"
+                                style={css.input}
+                            />
+                            {errors.costo && <span style={css.error}>{errors.costo}</span>}
+                            <span style={{ ...css.labelHint, marginTop: 4 }}>
+                                {data.animal_id
+                                    ? 'Se registrará solo una vez: aparecerá en el módulo de Costos y en la valuación del animal.'
+                                    : 'Para que el costo se registre necesitas seleccionar un animal (los eventos de lote se capturan desde el módulo de Costos).'}
+                            </span>
+                        </label>
+
+                        <div style={css.row2}>
+                            <label style={css.label}>
+                                Producto aplicado <span style={css.labelHint}>(opcional)</span>
+                                <input type="text" value={data.producto}
+                                    onChange={e => setData('producto', e.target.value)}
+                                    placeholder="Ej: Ivermectina 1%"
+                                    style={css.input} />
+                                {errors.producto && <span style={css.error}>{errors.producto}</span>}
+                            </label>
+
+                            <label style={css.label}>
+                                Vía de administración <span style={css.labelHint}>(opcional)</span>
+                                <select value={data.via_administracion}
+                                    onChange={e => setData('via_administracion', e.target.value)}
+                                    style={css.input}>
+                                    <option value="">Sin especificar</option>
+                                    {VIAS.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+                                </select>
+                                {errors.via_administracion && <span style={css.error}>{errors.via_administracion}</span>}
+                            </label>
+                        </div>
+
+                        <label style={css.label}>
+                            Periodo de retiro <span style={css.labelHint}>(días, opcional)</span>
+                            <input type="number" min="0" max="365" value={data.periodo_retiro_dias}
+                                onChange={e => setData('periodo_retiro_dias', e.target.value)}
+                                placeholder="Ej: 35"
+                                style={css.input} />
+                            {errors.periodo_retiro_dias && <span style={css.error}>{errors.periodo_retiro_dias}</span>}
+                            <span style={{ ...css.labelHint, marginTop: 4 }}>
+                                Días tras la aplicación en los que el ejemplar no puede destinarse a
+                                consumo ni a venta para sacrificio. El sistema calcula la fecha de fin
+                                y avisa mientras siga vigente.
+                            </span>
+                        </label>
+
+                        <label style={css.label}>
                             Observaciones <span style={css.labelHint}>(opcional)</span>
                             <textarea
                                 value={data.observaciones}
@@ -452,13 +541,13 @@ const loteLabel = selectedLote
                     {/* Errores sin campo específico */}
                     {Object.keys(errors).some(k =>
                         !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna','diagnostico',
-                          'tratamiento','fecha_programada','responsable','observaciones'].includes(k)
+                          'tratamiento','fecha_programada','responsable','observaciones','costo','producto','via_administracion','periodo_retiro_dias'].includes(k)
                     ) && (
                         <div style={css.error}>
                             {Object.entries(errors)
                                 .filter(([k]) => !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna',
                                     'diagnostico','tratamiento','fecha_programada',
-                                    'responsable','observaciones'].includes(k))
+                                    'responsable','observaciones','costo','producto','via_administracion','periodo_retiro_dias'].includes(k))
                                 .map(([, v]) => v).join(' · ')}
                         </div>
                     )}

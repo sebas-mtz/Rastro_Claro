@@ -7,10 +7,20 @@ use App\Models\Animal;
 use App\Models\Produccion;
 use App\Models\InventarioInsumo;
 use App\Models\EventoSalud;
+use App\Services\AlertaOperativaService;
+use App\Services\CostoService;
+use App\Services\IndicadoresOvinosService;
 use Carbon\Carbon;
 
 class CustomController extends Controller
 {
+    public function __construct(
+        protected CostoService $costoService,
+        protected IndicadoresOvinosService $indicadores,
+        protected AlertaOperativaService $alertas,
+    ) {
+    }
+
     public function home()
     {
         $hoy = Carbon::today();
@@ -58,30 +68,24 @@ class CustomController extends Controller
             'foodDaysAvailable'    => $foodDaysAvailable,
         ];
 
-        // 🐐 2) DISTRIBUCIÓN POR ESPECIE
-        $rows = Animal::selectRaw('especie, COUNT(*) as total')
-            ->groupBy('especie')
-            ->get();
+        // 🐑 2) DISTRIBUCIÓN DEL REBAÑO POR RAZA
+        // El sistema es exclusivamente ovino, así que agrupar por especie ya no
+        // aporta información: se agrupa por raza principal del catálogo.
+        // Se agrupa por la expresión completa (no por el alias) para cumplir
+        // con el modo ONLY_FULL_GROUP_BY de MySQL.
+        $expresionRaza = "COALESCE(razas.nombre, animals.raza_original, animals.raza, 'Sin raza')";
 
-        $speciesDistribution = $rows->map(function ($row) {
-            $icons = [
-                'bovino'  => '🐄',
-                'porcino' => '🐖',
-                'ovino'   => '🐑',
-                'caprino' => '🐐',
-                'equino'  => '🐎',
-                'ave'     => '🐓',
-            ];
-
-            $key  = strtolower($row->especie ?? 'otro');
-            $icon = $icons[$key] ?? '🐾';
-
-            return [
-                'name'  => ucfirst($row->especie ?? 'Otro'),
+        $speciesDistribution = Animal::query()
+            ->leftJoin('razas', 'animals.raza_id', '=', 'razas.id')
+            ->selectRaw("{$expresionRaza} as nombre, COUNT(*) as total")
+            ->groupByRaw($expresionRaza)
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn ($row) => [
+                'name'  => $row->nombre,
                 'value' => (int) $row->total,
-                'icon'  => $icon,
-            ];
-        });
+                'icon'  => '🐑',
+            ]);
 
         // 🥛 3) PRODUCCIÓN POR MES (últimos 6 meses)
         $productionByMonth = [];
@@ -140,11 +144,42 @@ class CustomController extends Controller
             ];
         }
 
+        // 💵 5) COSTOS Y UTILIDAD DEL MES
+        $comparacionMes = $this->costoService->compararIngresosCostos(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+
+        // 🐑 6) INDICADORES OVINOS DEL REBAÑO
+        $inventario = $this->indicadores->inventario();
+        $reproduccion = $this->indicadores->reproduccion(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+        $economico = $this->indicadores->economico(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+
         return Inertia::render('Custom/Home', [
             'summary'            => $summary,
             'speciesDistribution'=> $speciesDistribution,
             'productionByMonth'  => $productionByMonth,
+            // Las alertas del dashboard son ahora las operativas del rebaño.
             'alerts'             => $alerts,
+            'alertasOperativas'  => $this->alertas->todas(),
+            'costos'             => $comparacionMes,
+            'rebano'             => [
+                'activos'               => $inventario['total_activos'],
+                'borregas_reproductoras'=> $inventario['borregas_reproductoras'],
+                'sementales'            => $inventario['sementales'],
+                'sin_identificador'     => $inventario['sin_identificador'],
+                'gestaciones_activas'   => $reproduccion['gestaciones_activas'],
+                'partos_proximos'       => $reproduccion['partos_proximos'],
+                'crias_periodo'         => $reproduccion['crias_nacidas'],
+                'prolificidad'          => $reproduccion['prolificidad'],
+                'precio_estimado'       => $economico['precio_estimado_rebano'],
+            ],
         ]);
     }
 

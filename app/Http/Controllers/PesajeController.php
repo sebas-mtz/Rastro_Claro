@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Animal;
+use App\Models\CondicionCorporal;
 use App\Models\Pesaje;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -56,16 +59,16 @@ class PesajeController extends Controller
 
         return Inertia::render('Pesajes/Pesajes', [
             'animales' => $animales,
+            'metodos' => Pesaje::METODOS,
+            'escalaCondicionCorporal' => CondicionCorporal::ESCALA,
+            'rangoOptimoCC' => CondicionCorporal::RANGO_OPTIMO,
         ]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $data = $request->validate($this->reglas() + [
             'animal_id' => ['required', 'exists:animals,id'],
-            'fecha'     => ['required', 'date'],
-            'peso'      => ['required', 'numeric', 'min:0.01'],
-            'notas'     => ['nullable', 'string', 'max:500'],
         ]);
 
         // Evitar duplicado exacto (mismo animal, misma fecha)
@@ -75,11 +78,13 @@ class PesajeController extends Controller
 
         if ($existe) {
             return back()->withErrors([
-                'fecha' => 'Ya existe un pesaje para este animal en esa fecha.',
+                'fecha' => 'Ya existe un pesaje para este ejemplar en esa fecha.',
             ]);
         }
 
-        Pesaje::create($data);
+        $pesaje = Pesaje::create($data);
+
+        $this->sincronizarCondicionCorporal($pesaje);
 
         // Actualizar el campo peso del animal con el último pesaje
         $ultimoPeso = Pesaje::where('animal_id', $data['animal_id'])
@@ -93,11 +98,7 @@ class PesajeController extends Controller
 
     public function update(Request $request, Pesaje $pesaje)
     {
-        $data = $request->validate([
-            'fecha' => ['required', 'date'],
-            'peso'  => ['required', 'numeric', 'min:0.01'],
-            'notas' => ['nullable', 'string', 'max:500'],
-        ]);
+        $data = $request->validate($this->reglas());
 
         // Evitar duplicado en otra fila (misma fecha, mismo animal, distinto id)
         $existe = Pesaje::where('animal_id', $pesaje->animal_id)
@@ -107,11 +108,13 @@ class PesajeController extends Controller
 
         if ($existe) {
             return back()->withErrors([
-                'fecha' => 'Ya existe un pesaje para este animal en esa fecha.',
+                'fecha' => 'Ya existe un pesaje para este ejemplar en esa fecha.',
             ]);
         }
 
         $pesaje->update($data);
+
+        $this->sincronizarCondicionCorporal($pesaje);
 
         // Sincronizar peso actual del animal
         $ultimoPeso = Pesaje::where('animal_id', $pesaje->animal_id)
@@ -135,6 +138,65 @@ class PesajeController extends Controller
 
         Animal::where('id', $animalId)->update(['peso' => $ultimoPeso]);
 
+        // La condición corporal capturada desde este pesaje se va con él.
+        CondicionCorporal::where('origen_tipo', Pesaje::class)
+            ->where('origen_id', $pesaje->id)
+            ->delete();
+
         return back()->with('success', 'Pesaje eliminado correctamente.');
+    }
+
+    /**
+     * Reglas comunes de alta y edición del pesaje ovino.
+     */
+    private function reglas(): array
+    {
+        return [
+            'fecha'              => ['required', 'date', 'before_or_equal:today'],
+            'peso'               => ['required', 'numeric', 'min:0.01'],
+            'unidad'             => ['nullable', 'string', 'max:10'],
+            'condicion_corporal' => ['nullable', 'numeric', 'min:1', 'max:5'],
+            'metodo'             => ['nullable', Rule::in(array_keys(Pesaje::METODOS))],
+            'responsable'        => ['nullable', 'string', 'max:150'],
+            'notas'              => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    /**
+     * Refleja la condición corporal capturada durante el pesaje como un
+     * registro del historial de CC, ligado al pesaje por origen_tipo/origen_id
+     * para no duplicar la información.
+     */
+    private function sincronizarCondicionCorporal(Pesaje $pesaje): void
+    {
+        $existente = CondicionCorporal::where('origen_tipo', Pesaje::class)
+            ->where('origen_id', $pesaje->id)
+            ->first();
+
+        if (blank($pesaje->condicion_corporal)) {
+            $existente?->delete();
+
+            return;
+        }
+
+        $atributos = [
+            'animal_id'          => $pesaje->animal_id,
+            'fecha'              => $pesaje->fecha,
+            'calificacion'       => $pesaje->condicion_corporal,
+            'etapa_reproductiva' => $pesaje->animal?->estado_reproductivo,
+            'responsable'        => $pesaje->responsable,
+            'observaciones'      => 'Capturada durante el pesaje del ' . $pesaje->fecha->format('d/m/Y') . '.',
+            'origen_tipo'        => Pesaje::class,
+            'origen_id'          => $pesaje->id,
+            'registrado_por'     => Auth::id(),
+        ];
+
+        if ($existente) {
+            $existente->update($atributos);
+
+            return;
+        }
+
+        CondicionCorporal::create($atributos);
     }
 }

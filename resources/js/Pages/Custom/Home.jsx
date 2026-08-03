@@ -10,6 +10,7 @@ export default function Home( {
         speciesDistribution,
         productionByMonth,
         alerts,
+        costos,
     } ) {
     return (
           <>
@@ -19,10 +20,11 @@ export default function Home( {
                 speciesDistribution={speciesDistribution}
                 productionByMonth={productionByMonth}
                 alerts={alerts}
+                costos={costos}
             />
           </>
     );
-    
+
 }
 Home.layout = (page) => (
             <AuthenticatedLayout user={page.props.auth.user}>

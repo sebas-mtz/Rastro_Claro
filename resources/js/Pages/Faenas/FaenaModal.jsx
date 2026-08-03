@@ -12,7 +12,6 @@ export default function FaenaModal({ show, onClose, animales = [], lotes = [] })
         peso_carne: '',
         peso_cuero: '',
         peso_grasa: '',
-        peso_plumas: '', // ✅ Agregado plumas
         peso_hueso: '',
         peso_visceras: '',
         observaciones: ''
@@ -42,24 +41,13 @@ export default function FaenaModal({ show, onClose, animales = [], lotes = [] })
             (parseFloat(data.peso_carne) || 0) +
             (parseFloat(data.peso_cuero) || 0) +
             (parseFloat(data.peso_grasa) || 0) +
-            (parseFloat(data.peso_plumas) || 0) +
             (parseFloat(data.peso_hueso) || 0) +
             (parseFloat(data.peso_visceras) || 0);
         return total.toFixed(2);
     };
 
-    // ✅ Auto-calcular plumas para aves
     const handleAnimalChange = (animalId) => {
         setData('animal_id', animalId);
-        
-        const animalSeleccionado = animales.find(a => a.id == animalId);
-        if (animalSeleccionado && ['Gallos', 'Aves de corral (gallinas y pollitos)'].includes(animalSeleccionado.especie)) {
-            // Estimación automática de plumas para aves (5-7% del peso canal)
-            if (data.peso_canal && !data.peso_plumas) {
-                const plumasEstimadas = (parseFloat(data.peso_canal) * 0.06).toFixed(2);
-                setData('peso_plumas', plumasEstimadas);
-            }
-        }
     };
 
     const handleSubmit = (e) => {
@@ -128,7 +116,7 @@ export default function FaenaModal({ show, onClose, animales = [], lotes = [] })
                                 required
                                 disabled={processing}
                             >
-                                <option value="">Seleccionar animal...</option>
+                                <option value="">Seleccionar ejemplar...</option>
                                 {animales.map((animal) => (
                                     <option key={animal.id} value={animal.id}>
                                         {animal.alias || animal.arete} - {animal.especie} ({animal.peso} kg)
@@ -294,22 +282,6 @@ export default function FaenaModal({ show, onClose, animales = [], lotes = [] })
                                         type="number"
                                         value={data.peso_grasa}
                                         onChange={(e) => setData('peso_grasa', e.target.value)}
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                                        placeholder="0.00"
-                                        step="0.01"
-                                        min="0"
-                                        disabled={processing}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <Package className="w-4 h-4 inline mr-2 text-gray-500" />
-                                        Plumas (kg)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={data.peso_plumas}
-                                        onChange={(e) => setData('peso_plumas', e.target.value)}
                                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                                         placeholder="0.00"
                                         step="0.01"

@@ -13,16 +13,22 @@ public static function estadosAutomaticos(): array
 {
     return ['empadre', 'gestante', 'lactancia', 'vacia'];
 }
+/**
+ * Sistema exclusivamente ovino: se conserva la forma de arreglo indexado por
+ * especie porque las vistas y los formularios ya la consumen así, pero solo
+ * existe la entrada 'Ovino'.
+ */
 public static function estadosManualesPorEspecie(): array
 {
     return [
-        'Bovino'  => ['Vaca seca', 'En crecimiento', 'Reproductor', 'Reemplazo', 'Mantenimiento', 'Desecho'],
-        'Caprino' => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Ovino'   => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Porcino' => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Equino'  => ['En entrenamiento', 'Reproductor', 'En descanso', 'reemplazo', 'desecho'],
-        'Aves de corral (gallinas y pollitos)' => ['Postura', 'En descanso', 'En crecimiento', 'desecho'],
-        'Gallos'  => ['En crecimiento', 'Reproductor', 'De pelea / exhibición', 'En entrenamiento', 'En descanso', 'desecho'],
+        'Ovino' => [
+            'En crecimiento',
+            'Reproductor',
+            'Reemplazo',
+            'Mantenimiento',
+            'Engorda',
+            'Desecho',
+        ],
     ];
 }
 // El catálogo completo — para filtros, reportes, o validaciones internas
@@ -39,7 +45,7 @@ public static function estadosPorEspecie(): array
 
     public static function especiesConReproduccion(): array
     {
-        return ['Bovino', 'Caprino', 'Ovino', 'Porcino'];
+        return [Animal::ESPECIE];
     }
 
     // ── Transición automática por evento reproductivo ─────────────────────
@@ -53,7 +59,7 @@ public static function estadosPorEspecie(): array
      * diagnóstico repetir  → vacia
      * parto               → lactancia
      *
-     * No toca equinos, gallos ni aves.
+     * Solo aplica a ovinos, la única especie del sistema.
      */
     public function transicionPorEvento(
         Animal $animal,

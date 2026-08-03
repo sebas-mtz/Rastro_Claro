@@ -56,7 +56,7 @@ export default function VentaModal({
     };
 
     const calcularInventarioSubproducto = (subproducto) => {
-        // subproductos: 'carne', 'cuero', 'grasa', 'hueso', 'plumas', 'visceras'
+        // subproductos ovinos: 'carne', 'cuero', 'grasa', 'hueso', 'visceras'
         return Number(inventarioSubproductos[subproducto] ?? 0);
     };
 
@@ -130,12 +130,6 @@ export default function VentaModal({
                         nombre: 'Hueso',
                         unidad: 'kg',
                         inventario: calcularInventarioSubproducto('hueso'),
-                    },
-                    {
-                        id: 'plumas',
-                        nombre: 'Plumas',
-                        unidad: 'kg',
-                        inventario: calcularInventarioSubproducto('plumas'),
                     },
                     {
                         id: 'visceras',

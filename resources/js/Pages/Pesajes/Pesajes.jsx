@@ -58,7 +58,13 @@ function buildChartData(animals, fechaInicio, fechaFin) {
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 function Pesajes() {
-    const { animales = [], flash = {} } = usePage().props;
+    const {
+        animales = [],
+        flash = {},
+        metodos = {},
+        escalaCondicionCorporal = {},
+        rangoOptimoCC = [2.5, 3.5],
+    } = usePage().props;
 
     const formRef     = useRef(null);
     const animalesRef = useRef(animales);
@@ -86,6 +92,10 @@ function Pesajes() {
         animal_id: "",
         fecha:     hoy,
         peso:      "",
+        unidad:    "kg",
+        condicion_corporal: "",
+        metodo:    "",
+        responsable: "",
         notas:     "",
     });
 
@@ -191,6 +201,10 @@ function Pesajes() {
             animal_id: "",
             fecha: new Date().toISOString().split("T")[0],
             peso: "",
+            unidad: "kg",
+            condicion_corporal: "",
+            metodo: "",
+            responsable: "",
             notas: "",
         });
     };
@@ -307,7 +321,7 @@ function Pesajes() {
                                 value={data.animal_id}
                                 onChange={(e) => handleSelectAnimal(e.target.value)}
                             >
-                                <option value="">Selecciona un animal</option>
+                                <option value="">Selecciona un ejemplar</option>
                                 {animales.map((a) => (
                                     <option key={a.id} value={a.id}>
                                         {a.arete}
@@ -354,6 +368,57 @@ function Pesajes() {
                             {errors.peso && (
                                 <p className="mt-1 text-xs text-red-500">{errors.peso}</p>
                             )}
+                        </div>
+
+                        <div>
+                            <label className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
+                                Condición corporal
+                            </label>
+                            <select
+                                className={inputClass}
+                                value={data.condicion_corporal}
+                                onChange={(e) => setData("condicion_corporal", e.target.value)}
+                            >
+                                <option value="">Sin registrar</option>
+                                {Object.entries(escalaCondicionCorporal).map(([valor, texto]) => (
+                                    <option key={valor} value={valor}>{valor} — {texto}</option>
+                                ))}
+                            </select>
+                            <p className="mt-1 text-xs text-gray-400">
+                                Escala 1 a 5. Rango óptimo en ovinos: {rangoOptimoCC?.[0]} a {rangoOptimoCC?.[1]}.
+                            </p>
+                            {errors.condicion_corporal && (
+                                <p className="mt-1 text-xs text-red-500">{errors.condicion_corporal}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
+                                Método de pesaje
+                            </label>
+                            <select
+                                className={inputClass}
+                                value={data.metodo}
+                                onChange={(e) => setData("metodo", e.target.value)}
+                            >
+                                <option value="">Sin especificar</option>
+                                {Object.entries(metodos).map(([valor, texto]) => (
+                                    <option key={valor} value={valor}>{texto}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
+                                Responsable
+                            </label>
+                            <input
+                                type="text"
+                                className={inputClass}
+                                placeholder="Quién realizó el pesaje"
+                                value={data.responsable}
+                                onChange={(e) => setData("responsable", e.target.value)}
+                            />
                         </div>
 
                         <div>
@@ -578,7 +643,7 @@ function Pesajes() {
                             <p className="text-sm text-gray-400">
                                 {busqueda
                                     ? "No se encontraron animales con esa búsqueda."
-                                    : "No hay animales registrados."}
+                                    : "No hay ejemplares registrados."}
                             </p>
                         </div>
                     )}
@@ -903,7 +968,7 @@ function Pesajes() {
                     <div className="rounded-2xl border border-gray-100 bg-white p-10 text-center shadow">
                         <Scale size={32} className="mx-auto mb-3 text-gray-300" />
                         <p className="text-sm font-medium text-gray-500">
-                            No hay animales con pesajes en este período.
+                            No hay ejemplares con pesajes en este período.
                         </p>
                         <p className="mt-1 text-xs text-gray-400">
                             Ajusta las fechas o registra pesajes en la pestaña Animales.

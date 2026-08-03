@@ -20,7 +20,6 @@ class Sacrificio extends Model
         'cuero',
         'grasa',
         'visceras',
-        'plumas', // ✅ PLUMAS
         'observaciones'
     ];
 
@@ -32,7 +31,6 @@ class Sacrificio extends Model
         'cuero' => 'boolean',
         'grasa' => 'boolean', 
         'visceras' => 'boolean',
-        'plumas' => 'boolean',
     ];
 
     // ✅ RELACIONES
@@ -75,7 +73,6 @@ class Sacrificio extends Model
         if ($this->cuero) $subproductos[] = 'Cuero';
         if ($this->grasa) $subproductos[] = 'Grasa';
         if ($this->visceras) $subproductos[] = 'Vísceras';
-        if ($this->plumas) $subproductos[] = 'Plumas';
         
         return $subproductos;
     }

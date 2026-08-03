@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventoSaludRequest;
 use App\Http\Requests\UpdateEventoSaludRequest;
 use App\Models\Animal;
+use App\Models\Costo;
 use App\Models\EventoSalud;
 use App\Models\Lote;
 use App\Models\Vacuna;
@@ -12,6 +13,7 @@ use App\Models\Tratamiento;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -168,12 +170,7 @@ class EventoSaludController extends Controller
             'animales'  => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
             'lotes'     => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'   => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
-            'tipos'     => [
-                EventoSalud::TIPO_CONSULTA,
-                EventoSalud::TIPO_VACUNACION,
-                EventoSalud::TIPO_REVISION,
-                EventoSalud::TIPO_EMERGENCIA,
-            ],
+            'tipos'     => array_keys(EventoSalud::TIPOS),
         ]);
     }
 
@@ -194,6 +191,10 @@ class EventoSaludController extends Controller
         if ($evento->estado === EventoSalud::ESTADO_APLICADA && !$evento->fecha_aplicacion) {
             $evento->update(['fecha_aplicacion' => Carbon::today()]);
         }
+
+        // Un solo registro: el costo capturado aquí se refleja en el módulo de
+        // Costos sin volver a escribirlo.
+        $this->sincronizarCosto($evento);
 
         // Programar refuerzo automático si es vacunación con refuerzo configurado
         if ($evento->tipo === EventoSalud::TIPO_VACUNACION && $evento->vacuna_id) {
@@ -220,12 +221,7 @@ class EventoSaludController extends Controller
             'animales' => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
             'lotes'    => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'  => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
-            'tipos'    => [
-                EventoSalud::TIPO_CONSULTA,
-                EventoSalud::TIPO_VACUNACION,
-                EventoSalud::TIPO_REVISION,
-                EventoSalud::TIPO_EMERGENCIA,
-            ],
+            'tipos'    => array_keys(EventoSalud::TIPOS),
         ]);
     }
 
@@ -233,16 +229,79 @@ class EventoSaludController extends Controller
     {
         $eventoSalud->update($request->validated());
 
+        $this->sincronizarCosto($eventoSalud);
+
         return redirect()->route('salud.index')
             ->with('success', 'Evento actualizado correctamente.');
     }
 
     public function destroy(EventoSalud $eventoSalud): RedirectResponse
     {
+        // El costo generado por este evento se va con él, para no dejar
+        // gastos huérfanos en el módulo de Costos.
+        Costo::where('origen_tipo', EventoSalud::class)
+            ->where('origen_id', $eventoSalud->id)
+            ->delete();
+
         $eventoSalud->delete();
 
         return redirect()->route('salud.index')
             ->with('success', 'Evento eliminado.');
+    }
+
+    /**
+     * Refleja el costo capturado en el evento de salud como una fila de la
+     * tabla `costos`, ligada al evento mediante origen_tipo/origen_id.
+     *
+     * Así el gasto se captura una sola vez: aparece en el módulo de Costos y
+     * en la valuación del animal, y la deduplicación de AnimalValuationService
+     * impide que se cuente dos veces.
+     */
+    private function sincronizarCosto(EventoSalud $evento): void
+    {
+        $existente = Costo::where('origen_tipo', EventoSalud::class)
+            ->where('origen_id', $evento->id)
+            ->first();
+
+        // Sin monto, o sin animal concreto, no hay costo individual que registrar.
+        // (Los eventos de lote no se prorratean aquí: se registran desde Costos.)
+        if (blank($evento->costo) || (float) $evento->costo <= 0 || ! $evento->animal_id) {
+            $existente?->delete();
+
+            return;
+        }
+
+        $categoria = $evento->tipo === EventoSalud::TIPO_VACUNACION
+            ? 'vacunas'
+            : ($evento->tipo === EventoSalud::TIPO_CONSULTA ? 'consultas_veterinarias' : 'medicamentos');
+
+        $atributos = [
+            'concepto' => $evento->vacuna?->nombre
+                ?? $evento->diagnostico
+                ?? ucfirst((string) $evento->tipo),
+            'descripcion' => $evento->observaciones,
+            'categoria' => $categoria,
+            'tipo_costo' => 'directo',
+            'monto' => $evento->costo,
+            'cantidad' => 1,
+            'unidad_medida' => $evento->dosis,
+            'fecha' => $evento->fecha_aplicacion ?? $evento->fecha_programada,
+            'animal_id' => $evento->animal_id,
+            'lote_id' => $evento->lote_id,
+            'proveedor' => $evento->responsable,
+            'observaciones' => 'Registrado automáticamente desde el módulo de Salud.',
+            'user_id' => $evento->user_id ?? Auth::id(),
+            'origen_tipo' => EventoSalud::class,
+            'origen_id' => $evento->id,
+        ];
+
+        if ($existente) {
+            $existente->update($atributos);
+
+            return;
+        }
+
+        Costo::create($atributos);
     }
 
     /**
