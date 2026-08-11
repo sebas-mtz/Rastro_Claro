@@ -14,7 +14,6 @@ const estadoPajillaBadge = {
     disponible: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
     utilizada: 'bg-blue-100 text-blue-700 border border-blue-200',
     dañada: 'bg-red-100 text-red-600 border border-red-200',
-    vencida: 'bg-gray-100 text-gray-500 border border-gray-200',
 };
 
 function Badge({ label, map }) {
@@ -241,119 +240,66 @@ export default function TabTermos({ termos }) {
                                     </div>
                                 </div>
 
-                                {pajillasTermo.length === 0 ? (
-                                    <div className="px-4 py-8 text-center text-sm text-gray-400">
-                                        Este termo no tiene pajillas registradas.
-                                    </div>
-                                ) : (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                                        Código
-                                                    </th>
+                               {pajillasTermo.length === 0 ? (
+                                <div className="px-4 py-8 text-center text-sm text-gray-400">
+                                    Este termo no tiene pajillas registradas.
+                                </div>
+                            ) : (
+                                <div className="p-4 space-y-4">
+                                    {Array.from({ length: t.numero_canastillas }, (_, i) => i + 1).map((numCanastilla) => {
+                                        const pajillasCanastilla = pajillasTermo.filter(
+                                            (p) => p.canastilla_numero === numCanastilla
+                                        );
+                                        const ocupadas = pajillasCanastilla.filter((p) => p.estado !== 'utilizada').length;
+                                        const llena = ocupadas >= t.capacidad_canastilla;
 
-                                                    <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                                        Donador
-                                                    </th>
+                                        return (
+                                            <div key={numCanastilla} className="rounded-lg border border-gray-200">
+                                                <div className={`flex items-center justify-between px-3 py-2 rounded-t-lg ${
+                                                    llena ? 'bg-red-50' : 'bg-gray-50'
+                                                }`}>
+                                                    <span className="text-xs font-semibold text-gray-600">
+                                                        Canastilla {numCanastilla}
+                                                    </span>
+                                                    <span className={`text-xs font-medium ${llena ? 'text-red-600' : 'text-gray-400'}`}>
+                                                        {ocupadas} / {t.capacidad_canastilla}
+                                                        {llena ? ' · Llena' : ''}
+                                                    </span>
+                                                </div>
 
-                                                    <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                                        Lote
-                                                    </th>
-
-                                                    <th className="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                                        Vencimiento
-                                                    </th>
-
-                                                    <th className="px-4 py-2 text-center text-xs font-semibold uppercase tracking-wide text-gray-400">
-                                                        Estado
-                                                    </th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody className="divide-y divide-gray-100">
-                                                {pajillasTermo.map((pajilla) => (
-                                                    <tr
-                                                        key={pajilla.id}
-                                                        className="hover:bg-gray-50"
-                                                    >
-                                                        <td className="px-4 py-3 font-mono text-xs text-gray-600">
-                                                            {pajilla.codigo}
-                                                        </td>
-
-                                                        <td className="px-4 py-3 text-gray-700">
-                                                            {pajilla.animal ? (
-                                                                <div>
-                                                                    <p className="font-medium">
-                                                                        {pajilla
-                                                                            .animal
-                                                                            .nombre ??
-                                                                            pajilla
-                                                                                .animal
-                                                                                .arete ??
-                                                                            `Animal #${pajilla.animal.id}`}
-                                                                    </p>
-
-                                                                    <p className="text-xs text-gray-400">
-                                                                        Interno
-                                                                        {pajilla
-                                                                            .animal
-                                                                            .arete
-                                                                            ? ` · Arete: ${pajilla.animal.arete}`
-                                                                            : ''}
-                                                                    </p>
-                                                                </div>
-                                                            ) : pajilla.donador_externo ? (
-                                                                <div>
-                                                                    <p className="font-medium">
-                                                                        {
-                                                                            pajilla
-                                                                                .donador_externo
-                                                                                .nombre
-                                                                        }
-                                                                    </p>
-
-                                                                    <p className="text-xs text-gray-400">
-                                                                        Externo
-                                                                        {pajilla
-                                                                            .donador_externo
-                                                                            .codigo
-                                                                            ? ` · Código: ${pajilla.donador_externo.codigo}`
-                                                                            : ''}
-                                                                    </p>
-                                                                </div>
-                                                            ) : (
-                                                                '—'
-                                                            )}
-                                                        </td>
-
-                                                        <td className="px-4 py-3 text-gray-500">
-                                                            {pajilla.lote ?? '—'}
-                                                        </td>
-
-                                                        <td className="px-4 py-3 tabular-nums text-gray-500">
-                                                            {pajilla.fecha_vencimiento
-                                                                ?.slice(0, 10) ??
-                                                                '—'}
-                                                        </td>
-
-                                                        <td className="px-4 py-3 text-center">
-                                                            <Badge
-                                                                label={
-                                                                    pajilla.estado
-                                                                }
-                                                                map={
-                                                                    estadoPajillaBadge
-                                                                }
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
+                                                {pajillasCanastilla.length === 0 ? (
+                                                    <div className="px-3 py-3 text-xs text-gray-400">Vacía</div>
+                                                ) : (
+                                                    <table className="w-full text-sm">
+                                                        <tbody className="divide-y divide-gray-100">
+                                                            {pajillasCanastilla.map((pajilla) => (
+                                                                <tr key={pajilla.id} className="hover:bg-gray-50">
+                                                                    <td className="px-3 py-2 font-mono text-xs text-gray-600 w-28">
+                                                                        {pajilla.codigo}
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-gray-700">
+                                                                        {pajilla.animal
+                                                                            ? (pajilla.animal.nombre ?? pajilla.animal.arete ?? `Animal #${pajilla.animal.id}`)
+                                                                            : pajilla.donador_externo
+                                                                            ? pajilla.donador_externo.nombre
+                                                                            : '—'}
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-gray-500 w-24">
+                                                                        {pajilla.lote ?? '—'}
+                                                                    </td>
+                                                                    <td className="px-3 py-2 text-center w-28">
+                                                                        <Badge label={pajilla.estado} map={estadoPajillaBadge} />
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                             </div>
                         </td>
                     </tr>

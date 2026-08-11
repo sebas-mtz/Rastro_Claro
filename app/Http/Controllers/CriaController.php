@@ -3,12 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cria;
+use App\Services\CriaDisponibilidadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CriaController extends Controller
 {
+    public function actualizarObservaciones(
+        Request $request,
+        Cria $cria,
+        CriaDisponibilidadService $disponibilidadService,
+    ): RedirectResponse {
+        $datos = $request->validate([
+            'observaciones' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $cria->load(['animal.muerte', 'animal.ventas']);
+        $situacion = $disponibilidadService->clasificar($cria);
+
+        if ($situacion['disponible_destete']) {
+            return back()->withErrors([
+                'observaciones' => 'Las notas de baja sólo aplican a crías no disponibles.',
+            ]);
+        }
+
+        if ($situacion['observacion_baja']) {
+            return back()->withErrors([
+                'observaciones' => 'Esta cría ya tiene una observación registrada.',
+            ]);
+        }
+
+        $cria->update(['observaciones' => $datos['observaciones']]);
+
+        return back()->with('success', 'Nota de la cría guardada correctamente.');
+    }
+
     // GET /reproduccion/crias/{cria}
     // Redirige a la ficha del animal vinculado si existe
     public function show(Cria $cria): RedirectResponse

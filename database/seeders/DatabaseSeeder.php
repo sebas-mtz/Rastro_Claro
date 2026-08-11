@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             FaenaSeeder::class,      // ✅ Nuevo
             SacrificioSeeder::class, // ✅ Nuevo
             VentaSeeder::class,      // ✅ Nuevo
+            ControlPartosSeeder::class,
         ]);
     }
 }

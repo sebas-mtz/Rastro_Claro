@@ -8,12 +8,14 @@ use App\Models\Produccion;
 use App\Models\InventarioInsumo;
 use App\Models\EventoSalud;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class CustomController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
         $hoy = Carbon::today();
+        $settings = $request->user()?->settings ?? [];
 
         // 🐄 1) RESUMEN SUPERIOR (summary)
         $animalsActive = Animal::count();
@@ -38,13 +40,13 @@ class CustomController extends Controller
 
         // inventario de alimento
         $totalAlimento = InventarioInsumo::sum('existencias');   // ajusta nombre de columna si es distinto
-        $capacidadMax  = 3000; // pon aquí un valor "meta" de kilos totales
+        $capacidadMax = (float) data_get($settings, 'inventory_capacity_kg', 3000);
         $foodInventoryPercent = $capacidadMax > 0
             ? round(($totalAlimento / $capacidadMax) * 100)
             : 0;
 
         // estimar días disponibles (consumo diario aproximado)
-        $consumoDiario = 200; // aquí luego podemos calcularlo con alimentaciones reales
+        $consumoDiario = (float) data_get($settings, 'daily_feed_kg', 200);
         $foodDaysAvailable = $consumoDiario > 0
             ? floor($totalAlimento / $consumoDiario)
             : 0;

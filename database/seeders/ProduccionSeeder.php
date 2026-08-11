@@ -55,7 +55,7 @@ class ProduccionSeeder extends Seeder
         // La condición sexo = F evita que un macho quede como lactancia por error.
         Animal::query()
             ->where('especie', 'Ovino')
-            ->where('sexo', 'F')
+            ->where('sexo', 'H')
             ->whereIn('arete', $ovejasEnLactancia)
             ->update(['estado_productivo' => 'lactancia']);
 
@@ -82,7 +82,7 @@ class ProduccionSeeder extends Seeder
     private function puedeProducirLeche(Animal $animal, array $ovejasEnLactancia): bool
     {
         return $animal->especie === 'Ovino'
-            && $animal->sexo === 'F'
+            && $animal->sexo === 'H'
             && in_array($animal->arete, $ovejasEnLactancia, true)
             && $animal->estado_productivo === 'lactancia';
     }

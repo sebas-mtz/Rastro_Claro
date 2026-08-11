@@ -56,6 +56,12 @@ class ProduccionController extends Controller
             'unidad' => 'nullable|string|max:50',
         ]);
 
+        if (Animal::findOrFail($validated['animal_id'])->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se puede registrar producción para un animal muerto.',
+            ]);
+        }
+
         // ✅ AGREGAR: Unidad por defecto según el tipo
         if (empty($validated['unidad'])) {
             $validated['unidad'] = match($validated['tipo']) {
@@ -90,6 +96,12 @@ class ProduccionController extends Controller
 
     public function update(Request $request, Produccion $produccion)
     {
+        if ($produccion->animal?->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se puede modificar la producción de un animal muerto.',
+            ]);
+        }
+
         $validated = $request->validate([
             'animal_id' => 'required|exists:animals,id',
             'fecha' => 'required|date',
@@ -97,6 +109,12 @@ class ProduccionController extends Controller
             'valor' => 'required|numeric|min:0',
             'unidad' => 'nullable|string|max:50',
         ]);
+
+        if (Animal::findOrFail($validated['animal_id'])->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se puede mover producción a un animal muerto.',
+            ]);
+        }
 
         // ✅ AGREGAR: Unidad por defecto si está vacía
         if (empty($validated['unidad'])) {
@@ -118,6 +136,12 @@ class ProduccionController extends Controller
 
     public function destroy(Produccion $produccion)
     {
+        if ($produccion->animal?->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se puede eliminar la producción de un animal muerto.',
+            ]);
+        }
+
         $produccion->delete();
 
         return redirect()->route('producciones.index')->with([

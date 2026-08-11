@@ -59,6 +59,11 @@ class EventoReproductivo extends Model
         return $this->hasOne(Parto::class, 'evento_id');
     }
 
+    public function destete(): HasOne
+    {
+        return $this->hasOne(Destete::class, 'evento_id');
+    }
+
     // ─── Scopes ───────────────────────────────────────────────────────────
 
     public function scopeDeHembra($query, int $hembraId)

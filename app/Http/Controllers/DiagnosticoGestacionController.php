@@ -16,6 +16,12 @@ class DiagnosticoGestacionController extends Controller
 {
     public function store(Request $request, EstadoProductivoService $estadoService): RedirectResponse
     {
+        $diasGestacionPromedio = (int) data_get(
+            $request->user()->settings,
+            'gestation_days',
+            150,
+        );
+
         $datos = $request->validate([
             'hembra_id' => 'required|exists:animals,id',
             'lote_id' => 'nullable|exists:lotes,id',
@@ -23,7 +29,7 @@ class DiagnosticoGestacionController extends Controller
             'servicio_evento_id' => 'nullable|exists:evento_reproductivos,id',
             'metodo' => 'required|in:tacto_rectal,ultrasonido,laboratorio',
             'resultado' => 'required|in:positivo,negativo,repetir',
-            'dias_gestacion_estimados' => 'nullable|integer|min:1|max:283',
+            'dias_gestacion_estimados' => "nullable|integer|min:1|max:{$diasGestacionPromedio}",
             'veterinario_id' => 'nullable|exists:users,id',
             'veterinario_externo' => 'nullable|string|max:100',
             'costo' => 'nullable|numeric|min:0',
@@ -32,6 +38,21 @@ class DiagnosticoGestacionController extends Controller
 
         $hembra = Animal::findOrFail($datos['hembra_id']);
         $fechaDiagnostico = Carbon::parse($datos['fecha']);
+
+        // 1. NUEVO: Validar que el animal sea hembra
+        if (!$hembra->esHembra()) {
+            return back()->withErrors([
+                'hembra_id' => 'El animal seleccionado no es una hembra.'
+            ])->withInput();
+        }
+
+        // 2. NUEVO: Validar edad mínima reproductiva
+        if (!$hembra->esAptoParaReproduccion($fechaDiagnostico)) {
+            return back()->withErrors([
+                'hembra_id' => "La hembra '{$hembra->alias}' no cumple con la edad mínima requerida para eventos reproductivos."
+            ])->withInput();
+        }
+
         $eventoServicio = null;
         $servicioEventoIdResuelto = null;
         $diasGestacionEstimados = $datos['dias_gestacion_estimados'] ?? null;
@@ -77,7 +98,7 @@ class DiagnosticoGestacionController extends Controller
             if ($eventoServicio) {
                 $fechaProbableParto = $eventoServicio->fecha
                     ->copy()
-                    ->addDays(283)
+                    ->addDays($diasGestacionPromedio)
                     ->format('Y-m-d');
 
                 /*
@@ -101,7 +122,7 @@ class DiagnosticoGestacionController extends Controller
                     ])->withInput();
                 }
 
-                $diasRestantes = max(0, 283 - $diasGestacionEstimados);
+                $diasRestantes = max(0, $diasGestacionPromedio - $diasGestacionEstimados);
 
                 $fechaProbableParto = $fechaDiagnostico
                     ->copy()
@@ -115,6 +136,7 @@ class DiagnosticoGestacionController extends Controller
 
         try {
             DB::transaction(function () use (
+                $request,
                 $datos,
                 $hembra,
                 $estadoService,
@@ -125,7 +147,7 @@ class DiagnosticoGestacionController extends Controller
                 $evento = EventoReproductivo::create([
                     'hembra_id' => $datos['hembra_id'],
                     'lote_id' => $datos['lote_id'] ?? $hembra->lote_id,
-                    'user_id' =>null,
+                    'user_id' => $request->user()->id,
                     'tipo_evento' => 'diagnostico',
                     'fecha' => $datos['fecha'],
                     'costo' => $datos['costo'] ?? null,

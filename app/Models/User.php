@@ -34,12 +34,28 @@ class User extends Authenticatable
         'role',   // 'user' o 'admin'
         'plan',   // 'normal' o 'premium'
         'activo', // 1 / 0
+        'settings',
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
         'activo'            => 'boolean',
+        'settings'          => 'array',
     ];
+
+    public static function defaultSettings(): array
+    {
+        return [
+            'location' => '',
+            'weight_unit' => 'kg',
+            'currency' => 'MXN',
+            'theme' => 'light',
+            'gestation_days' => 150,
+            'monthly_financial_goal' => 0,
+            'inventory_capacity_kg' => 3000,
+            'daily_feed_kg' => 200,
+        ];
+    }
 
     // ======== HELPERS DE ROLE ========
 

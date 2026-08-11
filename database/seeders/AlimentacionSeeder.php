@@ -303,7 +303,7 @@ if (isset($lotes[1])) {
 // Programación individual para borregas en producción/lactancia
 $hembras = DB::table('animals')
     ->where('especie', 'Ovino')
-    ->where('sexo', 'F')
+    ->where('sexo', 'H')
     ->whereNotIn('estado_productivo', ['vendido', 'sacrificado', 'faeneado', 'desecho'])
     ->limit(4)
     ->get();

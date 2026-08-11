@@ -79,10 +79,9 @@ class PesajeSeeder extends Seeder
                 $pesoAdulto = max($pesoAdulto, (float) $animal->peso + 3);
             }
 
-            // Primer pesaje: nacimiento.
-            $batch[] = $this->registro($animal->id, $nacimiento, $pesoNacimiento, 'Peso estimado de nacimiento');
-
-            // Historial general.
+            // El peso de nacimiento queda como línea base en animals y no se
+            // duplica como pesaje. Así el primer pesaje del historial muestra
+            // su ganancia real contra el peso inicial.
             $fecha = $nacimiento->copy();
 
             while (true) {
@@ -140,6 +139,15 @@ class PesajeSeeder extends Seeder
 
             $batch[] = $this->registro($animal->id, $fechaAnterior, $pesoAnterior, 'Pesaje reciente anterior');
             $batch[] = $this->registro($animal->id, $fechaActual, $pesoActual, 'Pesaje reciente actual');
+
+            DB::table('animals')
+                ->where('id', $animal->id)
+                ->update([
+                    'peso_inicial' => round(max($pesoNacimiento, 0.1), 2),
+                    'fecha_peso_inicial' => $nacimiento->toDateString(),
+                    'peso' => round(max($pesoActual, 0.1), 2),
+                    'updated_at' => now(),
+                ]);
         }
 
         if (!empty($batch)) {

@@ -121,7 +121,7 @@ export default function FiltrosPanel({
                     <Select label="Sexo" value={filtros.sexo} onChange={set("sexo")}>
                         <option value="">Todos</option>
                         <option value="M">Macho</option>
-                        <option value="F">Hembra</option>
+                        <option value="H">Hembra</option>
                     </Select>
                     <Select label="Raza" value={filtros.raza} onChange={set("raza")}>
                         <option value="">Todas</option>
@@ -239,14 +239,17 @@ export default function FiltrosPanel({
                     <Select label="Tipo de servicio" value={filtros.tipo_servicio} onChange={set("tipo_servicio")}>
                         <option value="">Todos</option>
                         <option value="monta_natural">Monta natural</option>
+                        <option value="monta_controlada">Monta controlada</option>
                         <option value="inseminacion_artificial">Inseminación artificial</option>
                         <option value="iatf">IATF</option>
+                        <option value="transferencia_embriones">Transferencia de embriones</option>
+                        <option value="fiv">FIV</option>
                     </Select>
                     <Select label="Resultado diagnóstico" value={filtros.resultado_diagnostico} onChange={set("resultado_diagnostico")}>
                         <option value="">Todos</option>
                         <option value="positivo">Positivo</option>
                         <option value="negativo">Negativo</option>
-                        <option value="repetir">Repetir</option>
+                        <option value="repetir">Temprana</option>
                     </Select>
                 </div>
             )}

@@ -6,7 +6,11 @@ import path from 'path'; // Importamos la herramienta de rutas de Node
 export default defineConfig({
     plugins: [
         laravel({
-            input: 'resources/js/app.jsx',
+            input: [
+                'resources/css/app.css',
+                'resources/css/custom.css',
+                'resources/js/app.jsx',
+            ],
             refresh: true,
         }),
         react(),

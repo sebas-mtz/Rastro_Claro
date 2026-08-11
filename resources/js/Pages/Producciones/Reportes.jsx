@@ -1,4 +1,7 @@
+import { usePreferences } from '@/Contexts/PreferencesContext';
+
 export default function Reportes({ resumen = {} }) {
+    const { formatCurrency } = usePreferences();
 
     const {
         totalMes = 0,
@@ -43,11 +46,11 @@ export default function Reportes({ resumen = {} }) {
                 <div className="bg-white rounded-2xl shadow p-6">
                     <p className="text-gray-500 font-medium">Ingreso Estimado</p>
                     <h2 className="text-3xl font-bold mt-2">
-                        ${typeof ingresoMes === 'number' ? ingresoMes.toLocaleString() : '0'}
+                        {formatCurrency(typeof ingresoMes === 'number' ? ingresoMes : 0)}
                     </h2>
                     <p className="text-sm text-gray-500">Producción del mes</p>
                     <p className="text-purple-600 text-sm mt-1">
-                        Proyección anual: ${typeof ingresoAnual === 'number' ? ingresoAnual.toLocaleString() : '0'}
+                        Proyección anual: {formatCurrency(typeof ingresoAnual === 'number' ? ingresoAnual : 0)}
                     </p>
                 </div>
 

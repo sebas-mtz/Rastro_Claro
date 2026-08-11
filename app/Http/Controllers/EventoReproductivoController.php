@@ -11,16 +11,23 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\DonadorExterno;
 use App\Models\Pajilla;
+use App\Services\EstadoProductivoService;
+use App\Services\CriaDisponibilidadService;
 
 class EventoReproductivoController extends Controller
 {
+    public function __construct(
+        private readonly CriaDisponibilidadService $criaDisponibilidadService,
+    ) {
+    }
+
     // GET /reproduccion
     // Vista principal del módulo — devuelve Inertia con todos los datos
     public function index(Request $request): Response
     {
         // Todos los eventos del rancho con sus relaciones
         $eventos = EventoReproductivo::with([
-            'hembra:id,arete,alias,sexo,especie,lote_id',
+            'hembra:id,arete,alias,sexo,especie,estado_productivo,lote_id',
             'lote:id,nombre',
             'registradoPor:id,name',
             'servicio.macho:id,arete,alias',
@@ -29,7 +36,14 @@ class EventoReproductivoController extends Controller
             'servicio.pajilla.animal:id,arete,alias',
             'servicio.pajilla.donadorExterno:id,nombre',
             'diagnostico',
-            'parto.crias.animal:id,arete,alias',
+            'parto.crias.animal:id,arete,alias,especie,estado_productivo,peso,lote_id,padre_id,padre_externo_id',
+            'parto.crias.animal.padre:id,arete,alias',
+            'parto.crias.animal.padreExterno:id,codigo,nombre',
+            'parto.crias.animal.pesajes:id,animal_id,fecha,peso,notas',
+            'parto.crias.animal.muerte:id,animal_id,fecha,causa,observaciones',
+            'parto.crias.animal.ventas:id,vendible_id,vendible_type,estado_venta,fecha_venta,observaciones',
+            'parto.destete.evento:id,fecha',
+            'parto.destete.detalles',
         ])
         ->orderBy('fecha', 'desc')
         ->get()
@@ -37,16 +51,18 @@ class EventoReproductivoController extends Controller
 
         // Todos los animales con su lote para los selectores del modal
         $animales = Animal::with('lote:id,nombre')
-            ->whereNotIn('estado_productivo', ['faeneado', 'vendido', 'sacrificado'])
+            ->whereNotIn('estado_productivo', ['faeneado', 'vendido', 'sacrificado', 'muerto'])
             ->get()
             ->map(fn($a) => [
                 'id'          => $a->id,
                 'alias'       => $a->alias,
                 'arete'       => $a->arete,
-                'sexo'        => in_array(strtolower($a->sexo), ['f', 'female', 'hembra']) ? 'hembra' : 'macho',
+                'sexo' => strtoupper($a->sexo) === 'H' ? 'hembra' : 'macho',
                 'especie'     => $a->especie,
                 'lote_id'     => $a->lote_id,
                 'lote_nombre' => $a->lote?->nombre,
+                'peso' => $a->peso,
+                'estado_productivo' => $a->estado_productivo,
             ]);
             $donadoresExternos = DonadorExterno::select(
                 'id',
@@ -91,6 +107,7 @@ class EventoReproductivoController extends Controller
             'lotes'    => $lotes,
             'pajillas' => $pajillas,
             'donadoresExternos' => $donadoresExternos,
+            'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(),
         ]);
     }
 
@@ -99,7 +116,7 @@ class EventoReproductivoController extends Controller
     public function show(EventoReproductivo $eventoReproductivo): JsonResponse
     {
         $eventoReproductivo->load([
-            'hembra:id,arete,alias',
+            'hembra:id,arete,alias,sexo,especie,estado_productivo,lote_id',
             'lote:id,nombre',
             'registradoPor:id,name',
             'servicio.macho:id,arete,alias',
@@ -108,7 +125,14 @@ class EventoReproductivoController extends Controller
             'servicio.pajilla.animal:id,arete,alias',
             'servicio.pajilla.donadorExterno:id,nombre',
             'diagnostico',
-            'parto.crias.animal:id,arete,alias',
+            'parto.crias.animal:id,arete,alias,especie,estado_productivo,peso,lote_id,padre_id,padre_externo_id',
+            'parto.crias.animal.padre:id,arete,alias',
+            'parto.crias.animal.padreExterno:id,codigo,nombre',
+            'parto.crias.animal.pesajes:id,animal_id,fecha,peso,notas',
+            'parto.crias.animal.muerte:id,animal_id,fecha,causa,observaciones',
+            'parto.crias.animal.ventas:id,vendible_id,vendible_type,estado_venta,fecha_venta,observaciones',
+            'parto.destete.evento:id,fecha',
+            'parto.destete.detalles',
         ]);
 
         return response()->json($this->formatearEvento($eventoReproductivo));
@@ -243,6 +267,8 @@ class EventoReproductivoController extends Controller
                 'id'    => $evento->hembra->id,
                 'alias' => $evento->hembra->alias,
                 'arete' => $evento->hembra->arete,
+                'especie' => $evento->hembra->especie,
+                'estado_productivo' => $evento->hembra->estado_productivo,
             ] : null,
         ];
 
@@ -275,18 +301,85 @@ class EventoReproductivoController extends Controller
         ] : null;
 
         $data['parto'] = $evento->parto ? [
+            'id'                     => $evento->parto->id,
+            'servicio_evento_id'     => $evento->parto->servicio_evento_id,
             'tipo_parto'             => $evento->parto->tipo_parto,
             'asistencia_requerida'   => $evento->parto->asistencia_requerida,
             'complicaciones'         => $evento->parto->complicaciones,
             'detalle_complicaciones' => $evento->parto->detalle_complicaciones,
             'numero_crias'           => $evento->parto->numero_crias,
+            'salio_leche'            => $evento->parto->salio_leche,
+            'tipo_nacimiento'        => $evento->parto->tipo_nacimiento,
+'observaciones_leche'    => $evento->parto->observaciones_leche,
+'facilidad_materna'      => $evento->parto->facilidad_materna,
+'observaciones_maternas' => $evento->parto->observaciones_maternas,
+            'destetado'              => $evento->parto->destete !== null,
+            'created_at'             => $evento->parto->created_at?->format('Y-m-d H:i:s'),
+            'destete'                => $evento->parto->destete ? [
+                'fecha'           => $evento->parto->destete->evento?->fecha?->format('Y-m-d'),
+                'estado_madre'    => $evento->parto->destete->estado_madre,
+                'estado_productivo_madre' => $evento->parto->destete->estado_productivo_madre,
+                'tipo_nacimiento' => $evento->parto->destete->tipo_nacimiento,
+                'detalles'        => $evento->parto->destete->detalles->map(fn ($detalle) => [
+                    'cria_id'        => $detalle->cria_id,
+                    'peso_destete'   => $detalle->peso_destete,
+                    'estado_destino' => $detalle->estado_destino,
+                ])->toArray(),
+            ] : null,
             'crias'                  => $evento->parto->crias->map(fn($c) => [
+                ...$this->criaDisponibilidadService->clasificar($c),
                 'id'              => $c->id,
                 'sexo'            => $c->sexo,
                 'peso_nacimiento' => $c->peso_nacimiento,
                 'condicion'       => $c->condicion,
+                'vigor'           => $c->vigor,
                 'identificador'   => $c->identificador,
                 'animal_id'       => $c->animal_id,
+                'observaciones'   => $c->observaciones,
+                'animal'          => $c->animal ? [
+                    'id'                 => $c->animal->id,
+                    'arete'              => $c->animal->arete,
+                    'alias'              => $c->animal->alias,
+                    'especie'            => $c->animal->especie,
+                    'estado_productivo'  => $c->animal->estado_productivo,
+                    'peso'               => $c->animal->peso,
+                    'lote_id'            => $c->animal->lote_id,
+                    'padre_id'           => $c->animal->padre_id,
+                    'padre_externo_id'   => $c->animal->padre_externo_id,
+                    'padre'              => $c->animal->padre ? [
+                        'arete' => $c->animal->padre->arete,
+                        'alias' => $c->animal->padre->alias,
+                    ] : null,
+                    'padre_externo'      => $c->animal->padreExterno ? [
+                        'codigo' => $c->animal->padreExterno->codigo,
+                        'nombre' => $c->animal->padreExterno->nombre,
+                    ] : null,
+                    'pesajes'            => $c->animal->pesajes
+                        ->sortBy('fecha')
+                        ->map(fn ($pesaje) => [
+                            'fecha' => $pesaje->fecha->format('Y-m-d'),
+                            'peso'  => $pesaje->peso,
+                            'notas' => $pesaje->notas,
+                        ])->values()->toArray(),
+                    'muerte'             => $c->animal->muerte ? [
+                        'fecha'         => $c->animal->muerte->fecha->format('Y-m-d'),
+                        'causa'         => $c->animal->muerte->causa,
+                        'observaciones' => $c->animal->muerte->observaciones,
+                    ] : null,
+                    'venta'              => $c->animal->ventas
+                        ->filter(fn ($venta) =>
+                            $venta->estado_venta === 'completada'
+                            || (
+                                $c->animal->estado_productivo === 'vendido'
+                                && $venta->estado_venta !== 'cancelada'
+                            )
+                        )
+                        ->sortByDesc('fecha_venta')
+                        ->map(fn ($venta) => [
+                            'fecha'         => $venta->fecha_venta?->format('Y-m-d'),
+                            'observaciones' => $venta->observaciones,
+                        ])->first(),
+                ] : null,
             ])->toArray(),
         ] : null;
 

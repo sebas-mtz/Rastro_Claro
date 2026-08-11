@@ -15,6 +15,7 @@ class Cria extends Model
         'sexo',
         'peso_nacimiento',
         'condicion',
+        'vigor',
         'arete_temporal',
         'observaciones',
     ];

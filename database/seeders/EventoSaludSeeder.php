@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class EventoSaludSeeder extends Seeder
 {
@@ -15,9 +16,12 @@ class EventoSaludSeeder extends Seeder
         | Limpiar tabla para evitar duplicados al volver a ejecutar el seeder
         |--------------------------------------------------------------------------
         */
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('eventos_salud')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Schema::disableForeignKeyConstraints();
+        try {
+            DB::table('eventos_salud')->truncate();
+        } finally {
+            Schema::enableForeignKeyConstraints();
+        }
 
         $animales = DB::table('animals')
             ->select('id', 'arete', 'sexo', 'fecha_nac')

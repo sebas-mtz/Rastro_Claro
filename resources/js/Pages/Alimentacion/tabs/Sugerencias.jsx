@@ -1,10 +1,13 @@
+import { usePreferences } from '@/Contexts/PreferencesContext';
+
 export default function Sugerencias() {
+    const { formatCurrency } = usePreferences();
     const sugerencias = [
         {
             titulo: "Reducir Costo",
             especie: "Bovino",
-            detalle: "Cambiar a concentrado local puede ahorrar $25/día.",
-            mejora: "Ahorro mensual: $750",
+            detalle: `Cambiar a concentrado local puede ahorrar ${formatCurrency(25)}/día.`,
+            mejora: `Ahorro mensual: ${formatCurrency(750)}`,
         },
         {
             titulo: "Aumentar Proteína",

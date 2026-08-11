@@ -95,6 +95,15 @@ class VentaController extends Controller
                     ->withErrors(['vendible_id' => 'El producto seleccionado no existe'])
                     ->withInput();
             }
+
+            if (
+                $validated['tipo_venta'] === 'animal'
+                && Animal::whereKey($vendibleId)->where('estado_productivo', 'muerto')->exists()
+            ) {
+                return back()
+                    ->withErrors(['vendible_id' => 'Un animal muerto no puede venderse.'])
+                    ->withInput();
+            }
         }
 
         $validated['vendible_type'] = $vendibleType;
@@ -110,7 +119,7 @@ class VentaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('ventas.index')->with([
+            return back()->with([
                 'message' => 'Venta registrada exitosamente',
                 'type'    => 'success',
             ]);

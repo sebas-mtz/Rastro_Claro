@@ -5,49 +5,84 @@ namespace App\Http\Controllers;
 use App\Models\Lote;
 use App\Models\User;
 use App\Models\Animal;
+use App\Services\EstadoProductivoService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class LoteController extends Controller
 {
+    // Las especies ya NO se hardcodean aquí. Se obtienen de
+    // EstadoProductivoService, la misma fuente que usa AnimalController y
+    // que validan StoreAnimalRequest/UpdateAnimalRequest — así los tres
+    // lugares quedan atados a un único catálogo y no pueden volver a
+    // desincronizarse como pasaba antes.
+    private function especiesDisponibles(): array
+    {
+        return array_keys(EstadoProductivoService::estadosPorEspecie());
+    }
+
+    // IMPORTANTE: debe reflejar exactamente el mismo catálogo que
+    // AnimalController::$razasPorEspecie. EstadoProductivoService no
+    // conoce razas (solo estados productivos), así que este catálogo
+    // sigue siendo responsabilidad de cada controlador por ahora. Si en
+    // algún momento quieres centralizarlo también, se podría mover a un
+    // servicio propio (ej. RazaService) o a config/ganado.php.
+    private array $razasPorEspecie = [
+        "Ovino" => [
+            // Razas de Pelo
+            "Katahdin", "Pelibuey", "Dorper", "White Dorper", "Blackbelly", "Saint Croix",
+
+            // Razas Cárnicas de Lana
+            "Suffolk", "Hampshire", "Dorset", "Texel", "Charollais",
+
+            // Razas de Lana / Doble Propósito
+            "Rambouillet", "Corriedale", "Columbia", "Merino",
+
+            // Autóctonas y Criollas
+            "Borrego de Chiapas",
+
+            // Genérica / Otras
+            "Otra",
+        ],
+    ];
+
+    public function storeBasico(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'corral_potrero' => ['nullable', 'string', 'max:255'],
+            'descripcion' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $lote = Lote::create([
+            ...$validated,
+            'responsable_id' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'lote' => $lote->only('id', 'nombre', 'corral_potrero'),
+        ], 201);
+    }
+
     // Mostrar todos los lotes
     public function index()
     {
         $lotes = Lote::with(['responsable', 'animales'])->get();
         $usuarios = User::whereKey(Auth::id())->get();
 
-        $especies = ["Bovino","Porcino","Caprino","Ovino","Equino","Gallos","Aves de corral (gallinas y pollitos)"];
-
-        $razasPorEspecie = [
-            'Bovino' => ["Holstein", "Angus", "Hereford", "Simmental", "Otra"],
-            'Porcino' => ["Yorkshire", "Landrace", "Duroc", "Pietrain", "Otra"],
-            'Caprino' => ["Saanen", "Boer", "Alpina", "Toggenburg", "Otra"],
-            'Ovino' => ["Dorper", "Merino", "Suffolk", "Katahdin", "Otra"],
-            'Equino'=> ["Cuarto de Milla", "Pura Sangre", "Árabe", "Criollo", "Otra"],
-            'Gallos' => [ "Gallos de pelea (Asil)", "Gallos Kelso","Gallos Hatch", "Gallos Sweater", "Gallos Shamo", 
-            "Gallos Cuban Brown", "Gallos Navajeros (LATAM)","Otra"],
-            'Aves de corral'=> ["Leghorn", "Rhode Island", "Plymouth Rock", "Otra"],
-        ];
-
-        $estadosProductivos = [
-            'Bovino' => ["Vaca seca", "Lactante", "Gestante", "En crecimiento", "Reproductor"],
-            'Caprino' =>["Gestante", "En crecimiento", "Lactante", "Reproductor"],
-            'Ovino' =>["Gestante", "En crecimiento", "Reproductor"],
-            'Porcino' =>["Gestante", "En crecimiento", "Reproductor"],
-            'Equino' =>["En entrenamiento", "Reproductor", "En descanso"],
-            'Aves de corral'=> ["Postura", "En descanso", "En crecimiento"],
-            'Gallos' => ["Reproductor", "En crecimiento", "En descanso", "De pelea / exhibición", 
-            "En entrenamiento"]
-        ];
-
-        return Inertia::render('Lotes/Index', compact(
-            'lotes',
-            'usuarios',
-            'especies',
-            'razasPorEspecie',
-            'estadosProductivos'
-        ));
+        return Inertia::render('Lotes/Index', [
+            'lotes' => $lotes,
+            'usuarios' => $usuarios,
+            'especies' => $this->especiesDisponibles(),
+            'razasPorEspecie' => $this->razasPorEspecie,
+            // Antes había un arreglo de estados hardcodeado aquí, distinto
+            // al que usa AnimalController y desalineado con el catálogo
+            // real. Ahora se usa la misma fuente de verdad en todo el
+            // sistema.
+            'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(),
+        ]);
     }
 
     // Guardar nuevo lote + animales
@@ -59,12 +94,13 @@ class LoteController extends Controller
             'descripcion' => 'nullable|string|max:255',
             'responsable_id' => 'nullable',
 
-            // Campos del ganado
-            'animal.especie' => 'required|string',
-            'animal.raza' => 'nullable|string',
+            // Campos del ganado — la especie se valida contra el mismo
+            // catálogo que usan StoreAnimalRequest/UpdateAnimalRequest.
+            'animal.especie' => ['required', 'string', 'in:' . implode(',', $this->especiesDisponibles())],
+            'animal.raza' => ['nullable', 'string', 'in:' . implode(',', $this->razasPorEspecie['Ovino'])],
             'animal.arete_inicio' => 'required|integer|min:1',
             'animal.arete_fin' => 'required|integer|gte:animal.arete_inicio',
-            'animal.sexo' => 'required|string|in:M,F',
+            'animal.sexo' => 'required|string|in:M,H',
             'animal.fecha_nac' => 'nullable|date',
             'animal.peso' => 'nullable|numeric|min:0',
             'animal.estado_productivo' => 'nullable|string',

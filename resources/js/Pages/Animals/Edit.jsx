@@ -21,7 +21,18 @@ export default function EditModal({
         BCS: animal.BCS ?? "",
         estado_productivo: animal.estado_productivo ?? "",
         lote_id: animal.lote_id ?? "",
-    });
+  siniiga_id: animal.siniiga_id ?? "",
+    identificador: animal.identificador ?? "",
+    numero_registro: animal.numero_registro ?? "",
+
+    grado_pureza: animal.grado_pureza ?? "",
+    color: animal.color ?? "",
+
+    // genealogía
+    madre_id: animal.madre_id ?? "",
+    padre_id: animal.padre_id ?? "",
+    padre_externo_id: animal.padre_externo_id ?? "",
+});
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -66,9 +77,28 @@ export default function EditModal({
                         error={errors.especie} 
                         required 
                     />
+                    <Input 
+                        label="ID siniiga"
+                        value={data.siniiga_id}
+                        onChange={(e) => setData("siniiga_id", e.target.value)}
+                        error={errors.siniiga_id}
+                    />
 
                     <Input 
-                        label="Arete *" 
+                        label="Identificador"
+                        value={data.identificador}
+                        onChange={(e) => setData("identificador", e.target.value)}
+                        error={errors.identificador}
+                    />
+
+                    <Input 
+                        label="Número de registro"
+                        value={data.numero_registro}
+                        onChange={(e) => setData("numero_registro", e.target.value)}
+                        error={errors.numero_registro}
+                    />
+                    <Input 
+                        label="Arete interno *" 
                         value={data.arete} 
                         onChange={(e) => setData("arete", e.target.value)} 
                         error={errors.arete} 
@@ -80,7 +110,7 @@ export default function EditModal({
                         value={data.sexo} 
                         options={[
                             { value: "M", label: "Macho" }, 
-                            { value: "F", label: "Hembra" }
+                            { value: "H", label: "Hembra" }
                         ]} 
                         onChange={(e) => setData("sexo", e.target.value)} 
                         error={errors.sexo}
@@ -112,8 +142,10 @@ export default function EditModal({
                             type="number" 
                             step="0.1" 
                             value={data.peso} 
+                             disabled={animal.pesajes?.length > 0}
                             onChange={(e) => setData("peso", e.target.value)} 
                             error={errors.peso}
+                            className={animal.pesajes?.length > 0 ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}
                         />
                         <Input 
                             label="BCS (opcional)" 
@@ -124,7 +156,19 @@ export default function EditModal({
                             error={errors.BCS}
                         />
                     </div>
+                    <Input 
+                        label="Grado de pureza"
+                        value={data.grado_pureza}
+                        onChange={(e) => setData("grado_pureza", e.target.value)}
+                        error={errors.grado_pureza}
+                    />
 
+                    <Input 
+                        label="Color"
+                        value={data.color}
+                        onChange={(e) => setData("color", e.target.value)}
+                        error={errors.color}
+                    />
 
                     {estados.length > 0 && (
                         <Select 
@@ -171,15 +215,17 @@ export default function EditModal({
     );
 }
 
-function Input({ label, error, ...props }) {
+function Input({ label, error, className = "", ...props }) {
     return (
         <div>
             <label className="block text-sm font-medium mb-1">{label}</label>
             <input 
                 {...props} 
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500 ${
-                    error ? "border-red-500" : ""
-                }`} 
+                className={`w-full border rounded-lg px-3 py-2 focus:ring-green-500 focus:border-green-500 
+                    ${props.disabled ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
+                    ${error ? "border-red-500" : ""}
+                    ${className}
+                `}
             />
             {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
         </div>

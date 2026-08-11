@@ -9,18 +9,45 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class Animal extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id',
-        'madre_id', 'padre_id', 'padre_externo_id', 'imagen'
+protected $fillable = [
+    'especie','alias', 'raza', 'arete', 'sexo','fecha_nac','peso','BCS','estado_productivo','lote_id','madre_id','padre_id','padre_externo_id','imagen', 'siniiga_id',
+    'identificador',
+    'numero_registro',
+    'grado_pureza',
+    'lectura_microchip',
+    'color',
     ];
 
+protected $casts = [
+    'fecha_nac' => 'date',
+    'peso' => 'float',
+];
+
+protected static function booted(): void
+{
+    static::updating(function (Animal $animal) {
+
+if (strcasecmp((string) $animal->getOriginal('estado_productivo'), 'muerto') === 0) {
+                throw ValidationException::withMessages([
+                'animal' => 'Un animal dado de baja no puede modificarse.',
+            ]);
+        }
+
+    });
+}
     public function lote() {
         return $this->belongsTo(Lote::class);
+    }
+
+    public function muerte(): HasOne
+    {
+        return $this->hasOne(Muerte::class);
     }
 
     public function salud() {
@@ -88,7 +115,7 @@ class Animal extends Model
     //
     public function getEstadoReproductivoAttribute(): string
     {
-        if ($this->sexo !== 'hembra') {
+        if (!$this->esHembra()) {
             return 'no_aplica';
         }
  
@@ -165,7 +192,7 @@ class Animal extends Model
     //
     public function getDiasAbiertosAttribute(): ?int
     {
-        if ($this->sexo !== 'hembra') {
+        if (!$this->esHembra()) {
             return null;
         }
  
@@ -198,7 +225,7 @@ class Animal extends Model
  
     public function getResumenReproductivoAttribute(): array
     {
-        if ($this->sexo !== 'hembra') {
+        if (!$this->esHembra()) {
             return [];
         }
  
@@ -229,8 +256,11 @@ class Animal extends Model
             'estado_reproductivo' => $this->estado_reproductivo,
         ];
     }
-    // app/Models/Animal.php
 
+    public function esHembra(): bool
+{
+    return strtoupper((string) $this->sexo) === 'H';
+}
 public function madre(): BelongsTo
 {
     return $this->belongsTo(Animal::class, 'madre_id');
@@ -262,5 +292,106 @@ public function padreExterno(): BelongsTo
 public function getPadreGenealogicoAttribute()
 {
     return $this->padre ?? $this->padreExterno;
+}
+public function criaOrigen(): HasOne
+{
+    return $this->hasOne(Cria::class, 'animal_id');
+}
+
+public function getTipoPartoOrigenAttribute(): ?string
+{
+    return $this->criaOrigen?->parto?->tipo_parto;
+}
+
+public function esAptoParaReproduccion(?Carbon $fechaEvento = null, int $mesesMinimos = 7): bool
+{
+    // Si no tiene fecha de nacimiento registrada en la columna fecha_nac
+    if (!$this->fecha_nac) {
+        return true; 
+    }
+
+    $fecha = $fechaEvento ?? today();
+
+    // Calcula la diferencia en meses usando $this->fecha_nac
+    return $this->fecha_nac->diffInMonths($fecha, false) >= $mesesMinimos;
+}
+
+public function ultimoParto(?Carbon $fecha = null): ?EventoReproductivo
+{
+    $fecha = $fecha ?? Carbon::today();
+
+    return EventoReproductivo::where('hembra_id', $this->id)
+        ->where('tipo_evento', 'parto')
+        ->whereDate('fecha', '<=', $fecha)
+        ->latest('fecha')
+        ->first();
+}
+
+/**
+ * Valida si la hembra está apta para recibir un servicio reproductivo.
+ * Retorna [bool $apto, ?string $mensajeError]
+ */
+public function puedeRecibirServicio(?Carbon $fecha = null): array
+{
+    $fecha = $fecha ?? Carbon::today();
+
+    if (!$this->esHembra()) {
+        return [false, "El animal '{$this->alias}' no es una hembra."];
+    }
+
+    if (!$this->esAptoParaReproduccion($fecha)) {
+        return [false, "La hembra '{$this->alias}' no cumple con la edad mínima requerida."];
+    }
+
+    // Comparación insensible a mayúsculas/minúsculas: el catálogo de
+    // estados productivos puede guardar "Gestante", "gestante", etc.
+    if (strcasecmp((string) $this->estado_productivo, 'gestante') === 0) {
+        return [false, "La hembra '{$this->alias}' ya se encuentra en gestación."];
+    }
+
+    $ultimoParto = $this->ultimoParto($fecha);
+    if ($ultimoParto) {
+        $diasDesdeParto = Carbon::parse($ultimoParto->fecha)->diffInDays($fecha);
+        // Comparación insensible a mayúsculas/minúsculas: la especie se
+        // guarda como "Bovino" (con mayúscula) en el catálogo del CRUD.
+        $diasMinimos = 21;
+
+        if ($diasDesdeParto < $diasMinimos) {
+            return [false, "La hembra '{$this->alias}' tuvo un parto hace solo {$diasDesdeParto} días. Requiere al menos {$diasMinimos} días de descanso post-parto."];
+        }
+    }
+
+    return [true, null];
+}
+
+/**
+ * Valida si la hembra puede registrar un parto en la fecha dada.
+ * Retorna [bool $apto, ?string $mensajeError]
+ */
+public function puedeRegistrarParto(?Carbon $fecha = null): array
+{
+    $fecha = $fecha ?? Carbon::today();
+
+    if (!$this->esHembra()) {
+        return [false, "El animal seleccionado no es una hembra."];
+    }
+
+    if (!$this->esAptoParaReproduccion($fecha)) {
+        return [false, "La madre '{$this->alias}' no cumple con la edad mínima requerida."];
+    }
+
+    $ultimoParto = $this->ultimoParto($fecha);
+    if ($ultimoParto) {
+        $diasDesdeParto = Carbon::parse($ultimoParto->fecha)->diffInDays($fecha);
+        // Comparación insensible a mayúsculas/minúsculas: ver nota en
+        // puedeRecibirServicio().
+        $intervaloMinimo = 177;
+
+        if ($diasDesdeParto < $intervaloMinimo) {
+            return [false, "La hembra '{$this->alias}' ya registró un parto hace {$diasDesdeParto} días. El intervalo mínimo biológico entre partos es de {$intervaloMinimo} días."];
+        }
+    }
+
+    return [true, null];
 }
 }

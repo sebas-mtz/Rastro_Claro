@@ -1,6 +1,7 @@
 // resources/js/Pages/Reportes/Tablas.jsx
 import { Children, useEffect, useState } from "react";
 import { Beef, HeartPulse, Syringe, Pill, Scale, UtensilsCrossed, Package } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 // ─── Badge ────────────────────────────────────────────────────────────────────
 export function Badge({ estado }) {
@@ -31,10 +32,13 @@ export function Badge({ estado }) {
         monta_natural:           "bg-green-100  text-green-700",
         inseminacion_artificial: "bg-blue-100   text-blue-700",
         iatf:                    "bg-purple-100 text-purple-700",
+         monta_controlada:           "bg-green-100  text-green-700",
+        transferencia_embriones: "bg-blue-100   text-blue-700",
+        fiv:                    "bg-purple-100 text-purple-700",
         // Diagnóstico gestación
         positivo: "bg-green-100  text-green-700",
         negativo: "bg-red-100    text-red-700",
-        repetir:  "bg-amber-100  text-amber-700",
+        temprana:  "bg-amber-100  text-amber-700",
         // Producción
         leche:  "bg-sky-100    text-sky-700",
         lana:   "bg-yellow-100 text-yellow-700",
@@ -206,6 +210,7 @@ function Tabla({ headers, children }) {
 
 // ─── Animales ─────────────────────────────────────────────────────────────────
 export function TablaAnimales({ registros }) {
+    const { formatWeight } = usePreferences();
     return (
         <Tabla headers={["Arete","Alias","Especie","Raza","Sexo","Fecha Nac.","Peso","BCS","Estado Productivo","Lote"]}>
             {registros?.map(a => (
@@ -220,7 +225,7 @@ export function TablaAnimales({ registros }) {
                         </span>
                     </td>
                     <td className="px-3 py-2 text-gray-500">{a.fecha_nac ?? "—"}</td>
-                    <td className="px-3 py-2">{a.peso ? `${a.peso} kg` : "—"}</td>
+                    <td className="px-3 py-2">{a.peso ? formatWeight(a.peso) : "—"}</td>
                     <td className="px-3 py-2">{a.BCS ?? "—"}</td>
                     <td className="px-3 py-2 text-gray-500">{a.estado_productivo ?? "—"}</td>
                     <td className="px-3 py-2 text-gray-500">{a.lote?.nombre ?? "—"}</td>
@@ -303,15 +308,13 @@ export function TablaTratamientos({ registros }) {
 // El backend ordena por animal_id + fecha desc, así que registros[i+1] puede ser
 // del mismo animal (siguiente pesaje) o de uno diferente (primer pesaje del grupo).
 export function TablaPesajes({ registros }) {
+    const { formatWeight, weightUnit } = usePreferences();
     return (
-        <Tabla headers={["Animal","Alias","Especie","Lote","Fecha","Peso (kg)","Variación","Notas"]}>
+        <Tabla headers={["Animal","Alias","Especie","Lote","Fecha",`Peso (${weightUnit})`,"Variación","Notas"]}>
             {registros?.map((p, i) => {
-                const anterior  = registros[i + 1];
-                // Solo mostrar variación si el anterior es del mismo animal
-                const mismoAnimal = anterior?.animal?.id != null && anterior.animal.id === p.animal?.id;
-                const variacion   = mismoAnimal
-                    ? (p.peso - anterior.peso).toFixed(2)
-                    : null;
+                const variacion = p.variacion == null
+                    ? null
+                    : Number(p.variacion).toFixed(2);
 
                 return (
                     <tr key={p.id} className="border-t border-gray-100 hover:bg-green-50/40 transition-colors">
@@ -320,11 +323,11 @@ export function TablaPesajes({ registros }) {
                         <td className="px-3 py-2">{p.animal?.especie ?? "—"}</td>
                         <td className="px-3 py-2 text-gray-500">{p.animal?.lote?.nombre ?? "—"}</td>
                         <td className="px-3 py-2 text-gray-500">{p.fecha}</td>
-                        <td className="px-3 py-2 font-semibold">{p.peso} kg</td>
+                        <td className="px-3 py-2 font-semibold">{formatWeight(p.peso)}</td>
                         <td className="px-3 py-2">
                             {variacion !== null ? (
                                 <span className={`font-medium ${parseFloat(variacion) >= 0 ? "text-green-600" : "text-red-500"}`}>
-                                    {parseFloat(variacion) >= 0 ? "+" : ""}{variacion} kg
+                                    {parseFloat(variacion) >= 0 ? "+" : "-"}{formatWeight(Math.abs(parseFloat(variacion)))}
                                 </span>
                             ) : "—"}
                         </td>
@@ -368,6 +371,7 @@ export function TablaAlimentacion({ registros }) {
 
 // ─── Inventario ───────────────────────────────────────────────────────────────
 export function TablaInventario({ registros }) {
+    const { formatCurrency } = usePreferences();
     return (
         <Tabla headers={["Nombre","Tipo","Existencias","Unidad","MS%","PB%","Costo prom.","Activo"]}>
             {registros?.map(inv => (
@@ -378,7 +382,7 @@ export function TablaInventario({ registros }) {
                     <td className="px-3 py-2 text-gray-500">{inv.unidad ?? "—"}</td>
                     <td className="px-3 py-2 text-gray-500">{inv.MS ?? "—"}</td>
                     <td className="px-3 py-2 text-gray-500">{inv.PB ?? "—"}</td>
-                    <td className="px-3 py-2">{inv.costo_promedio ? `$${inv.costo_promedio}` : "—"}</td>
+                    <td className="px-3 py-2">{inv.costo_promedio ? formatCurrency(inv.costo_promedio) : "—"}</td>
                     <td className="px-3 py-2"><Badge estado={inv.activo} /></td>
                 </tr>
             ))}
@@ -388,6 +392,7 @@ export function TablaInventario({ registros }) {
 
 // ─── Reproducción — eventos generales ────────────────────────────────────────
 export function TablaEventosReproductivos({ registros }) {
+    const { formatCurrency } = usePreferences();
     return (
         <Tabla headers={["Hembra","Especie","Lote","Tipo Evento","Fecha","Costo","Observaciones"]}>
             {registros?.map(ev => (
@@ -399,7 +404,7 @@ export function TablaEventosReproductivos({ registros }) {
                     <td className="px-3 py-2 text-gray-500">{ev.lote?.nombre ?? "—"}</td>
                     <td className="px-3 py-2"><Badge estado={ev.tipo_evento} /></td>
                     <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
-                    <td className="px-3 py-2">{ev.costo ? `$${ev.costo}` : "—"}</td>
+                    <td className="px-3 py-2">{ev.costo ? formatCurrency(ev.costo) : "—"}</td>
                     <td className="px-3 py-2 text-gray-400 max-w-[200px] truncate">{ev.observaciones ?? "—"}</td>
                 </tr>
             ))}
@@ -409,6 +414,7 @@ export function TablaEventosReproductivos({ registros }) {
 
 // ─── Reproducción — servicios ─────────────────────────────────────────────────
 export function TablaServicios({ registros }) {
+    const { formatCurrency } = usePreferences();
     return (
         <Tabla headers={["Hembra","Lote","Tipo Servicio","Fecha","# Servicio","Macho / Pajilla","Técnico","Costo"]}>
             {registros?.map(ev => {
@@ -432,7 +438,7 @@ export function TablaServicios({ registros }) {
                         <td className="px-3 py-2 text-gray-500">
                             {srv?.tecnico?.name ?? srv?.tecnico_externo ?? "—"}
                         </td>
-                        <td className="px-3 py-2">{ev.costo ? `$${ev.costo}` : "—"}</td>
+                        <td className="px-3 py-2">{ev.costo ? formatCurrency(ev.costo) : "—"}</td>
                     </tr>
                 );
             })}
@@ -524,6 +530,7 @@ export function TablaProduccion({ registros }) {
 
 // ─── Ventas (nuevo) ───────────────────────────────────────────────────────────
 export function TablaVentas({ registros }) {
+    const { formatCurrency } = usePreferences();
     return (
         <Tabla headers={[
             "Fecha","Factura","Tipo","Producto",
@@ -542,10 +549,10 @@ export function TablaVentas({ registros }) {
                     </td>
                     <td className="px-3 py-2 text-gray-500">{v.unidad}</td>
                     <td className="px-3 py-2 text-right">
-                        {v.precio_unitario != null ? `$${Number(v.precio_unitario).toLocaleString()}` : "—"}
+                        {v.precio_unitario != null ? formatCurrency(v.precio_unitario) : "—"}
                     </td>
                     <td className="px-3 py-2 text-right font-semibold text-green-700">
-                        {v.precio_total != null ? `$${Number(v.precio_total).toLocaleString()}` : "—"}
+                        {v.precio_total != null ? formatCurrency(v.precio_total) : "—"}
                     </td>
                     <td className="px-3 py-2"><Badge estado={v.metodo_pago} /></td>
                     <td className="px-3 py-2"><Badge estado={v.estado_venta} /></td>

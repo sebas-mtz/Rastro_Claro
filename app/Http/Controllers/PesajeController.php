@@ -7,6 +7,8 @@ use App\Models\Pesaje;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\EstadoProductivoService;
+
 
 class PesajeController extends Controller
 {
@@ -21,39 +23,43 @@ class PesajeController extends Controller
                 'lote_id', 'peso', 'fecha_nac',
             ]);
 
-        // Calculamos para cada animal:
-        // - peso_inicial: primer pesaje registrado (o el campo peso del animal si no hay pesajes)
-        // - peso_actual:  último pesaje registrado
-        // - ganancia_total: peso_actual - peso_inicial
-        // - ganancia_diaria: ganancia_total / días entre primer y último pesaje
+        // El peso inicial pertenece al alta/nacimiento del animal. Desde el
+        // primer pesaje agregado se calcula la diferencia contra esa base.
         $animales = $animales->map(function ($animal) {
-            $pesajes = $animal->pesajes; // ya ordenados desc
 
-            if ($pesajes->isEmpty()) {
-                $animal->peso_inicial    = $animal->peso ?? null;
-                $animal->peso_actual     = $animal->peso ?? null;
-                $animal->ganancia_total  = null;
-                $animal->ganancia_diaria = null;
-                $animal->dias_seguimiento = null;
-                return $animal;
-            }
+    $pesajes = $animal->pesajes;
 
-            $ultimo  = $pesajes->first();  // más reciente (desc)
-            $primero = $pesajes->last();   // más antiguo
+    if ($pesajes->isEmpty()) {
+        $animal->peso_actual = null;
+        $animal->ganancia_total = null;
+        $animal->ganancia_diaria = null;
+        $animal->dias_seguimiento = 0;
 
-            $diasSeguimiento = (int) $primero->fecha->diffInDays($ultimo->fecha);
+        return $animal;
+    }
 
-            $animal->peso_inicial     = (float) $primero->peso;
-            $animal->peso_actual      = (float) $ultimo->peso;
-            $animal->ganancia_total   = round($ultimo->peso - $primero->peso, 2);
-            $animal->ganancia_diaria  = $diasSeguimiento > 0
-                ? round(($ultimo->peso - $primero->peso) / $diasSeguimiento, 3)
-                : null;
-            $animal->dias_seguimiento = $diasSeguimiento;
+    $primerPesaje = $pesajes->sortBy('fecha')->first();
+    $ultimoPesaje = $pesajes->first();
 
-            return $animal;
-        });
+    $pesoInicial = (float) $primerPesaje->peso;
+    $pesoActual = (float) $ultimoPesaje->peso;
 
+    $diasSeguimiento = $primerPesaje->fecha
+        ? (int) $primerPesaje->fecha->diffInDays($ultimoPesaje->fecha)
+        : 0;
+
+    $ganancia = $pesoActual - $pesoInicial;
+
+    $animal->peso_actual = $pesoActual;
+    $animal->ganancia_total = round($ganancia, 2);
+    $animal->ganancia_diaria = $diasSeguimiento > 0
+        ? round($ganancia / $diasSeguimiento, 3)
+        : 0;
+
+    $animal->dias_seguimiento = $diasSeguimiento;
+
+    return $animal;
+});
         return Inertia::render('Pesajes/Pesajes', [
             'animales' => $animales,
         ]);
@@ -63,12 +69,20 @@ class PesajeController extends Controller
     {
         $data = $request->validate([
             'animal_id' => ['required', 'exists:animals,id'],
-            'fecha'     => ['required', 'date'],
+            'fecha'     => ['required', 'date', 'before_or_equal:today'],
             'peso'      => ['required', 'numeric', 'min:0.01'],
             'notas'     => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Evitar duplicado exacto (mismo animal, misma fecha)
+        $animal = Animal::findOrFail($data['animal_id']);
+    if (in_array($animal->estado_productivo,EstadoProductivoService::estadosSistema(),true)) {            return back()->withErrors([
+                'animal_id' => 'No se pueden agregar pesajes a un animal muerto.',
+            ]);
+        }
+
+        // Evitar duplicado exacto (mismo animal, misma fecha). Este es el
+        // único límite de "un pesaje por día" que existe; un mismo animal
+        // puede tener tantos pesajes como fechas distintas se registren.
         $existe = Pesaje::where('animal_id', $data['animal_id'])
             ->where('fecha', $data['fecha'])
             ->exists();
@@ -81,7 +95,9 @@ class PesajeController extends Controller
 
         Pesaje::create($data);
 
-        // Actualizar el campo peso del animal con el último pesaje
+        // Actualizar el campo peso del animal con el pesaje de fecha más
+        // reciente (no necesariamente el último insertado, por si se
+        // registró un pesaje "atrasado" de una fecha anterior a otro ya existente).
         $ultimoPeso = Pesaje::where('animal_id', $data['animal_id'])
             ->orderByDesc('fecha')
             ->value('peso');
@@ -93,8 +109,14 @@ class PesajeController extends Controller
 
     public function update(Request $request, Pesaje $pesaje)
     {
+        if ($pesaje->animal?->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se pueden modificar pesajes de un animal muerto.',
+            ]);
+        }
+
         $data = $request->validate([
-            'fecha' => ['required', 'date'],
+            'fecha' => ['required', 'date', 'before_or_equal:today'],
             'peso'  => ['required', 'numeric', 'min:0.01'],
             'notas' => ['nullable', 'string', 'max:500'],
         ]);
@@ -118,13 +140,21 @@ class PesajeController extends Controller
             ->orderByDesc('fecha')
             ->value('peso');
 
-        Animal::where('id', $pesaje->animal_id)->update(['peso' => $ultimoPeso]);
+        Animal::where('id', $pesaje->animal_id)->update([
+            'peso' => $ultimoPeso,
+        ]);
 
         return back()->with('success', 'Pesaje actualizado correctamente.');
     }
 
     public function destroy(Pesaje $pesaje)
     {
+        if ($pesaje->animal?->estado_productivo === 'muerto') {
+            return back()->withErrors([
+                'animal_id' => 'No se pueden eliminar pesajes de un animal dado de baja.',
+            ]);
+        }
+
         $animalId = $pesaje->animal_id;
         $pesaje->delete();
 
@@ -133,7 +163,9 @@ class PesajeController extends Controller
             ->orderByDesc('fecha')
             ->value('peso');
 
-        Animal::where('id', $animalId)->update(['peso' => $ultimoPeso]);
+        Animal::where('id', $animalId)->update([
+    'peso' => $ultimoPeso,
+]);
 
         return back()->with('success', 'Pesaje eliminado correctamente.');
     }

@@ -1,7 +1,9 @@
 import { useForm, usePage, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 export default function AlimentacionModal() {
+    const { formatCurrency } = usePreferences();
     const {
         programaciones = [],
         animales = [],
@@ -280,7 +282,7 @@ export default function AlimentacionModal() {
                             Costo estimado por aplicación
                         </label>
                         <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                            {costoEstimado ? `$${costoEstimado}` : '—'}
+                            {costoEstimado ? formatCurrency(costoEstimado) : '—'}
                         </div>
                     </div>
 

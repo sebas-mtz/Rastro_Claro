@@ -260,7 +260,7 @@ function DonutDiagnosticos({ positivo, negativo, repetir }) {
       chartRef.current = new Chart(ctx, {
         type: "doughnut",
         data: {
-          labels: ["Positivo", "Negativo", "Repetir"],
+          labels: ["Positivo", "Negativo", "Temprana"],
           datasets: [{
             data: [positivo, negativo, repetir],
             backgroundColor: [PALETTE.verde, PALETTE.rojo, PALETTE.naranja],

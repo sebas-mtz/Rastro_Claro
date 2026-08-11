@@ -401,6 +401,38 @@ class ReportesController extends Controller
             ->orderByDesc('fecha')
             ->get();
 
+        $animalIds = $rows->pluck('animal_id')->unique();
+        
+        $variaciones = Pesaje::whereIn('animal_id', $animalIds)
+    ->orderBy('animal_id')
+    ->orderBy('fecha')
+    ->orderBy('id')
+    ->get(['id', 'animal_id', 'peso'])
+    ->groupBy('animal_id')
+    ->reduce(function ($variaciones, $pesajes) {
+
+        $ordenados = $pesajes->values();
+
+        $ordenados->each(function ($pesaje, $indice) use ($ordenados, $variaciones) {
+
+            if ($indice === 0) {
+                $variaciones->put($pesaje->id, null);
+                return;
+            }
+
+            $variacion = round($pesaje->peso - $ordenados[$indice - 1]->peso, 2);
+
+            $variaciones->put($pesaje->id, $variacion);
+        });
+
+        return $variaciones;
+
+    }, collect());
+
+        $rows->each(fn ($pesaje) =>
+            $pesaje->setAttribute('variacion', $variaciones->get($pesaje->id))
+        );
+
         return [
             'registros'     => $rows,
             'total'         => $rows->count(),
@@ -549,7 +581,7 @@ class ReportesController extends Controller
         return [
             'total_animales'           => (clone $animQ)->count(),
             'animales_machos'          => (clone $animQ)->where('sexo', 'M')->count(),
-            'animales_hembras'         => (clone $animQ)->where('sexo', 'F')->count(),
+            'animales_hembras'         => (clone $animQ)->where('sexo', 'H')->count(),
             'lotes_activos'            => Lote::count(),
             'total_eventos_salud'      => (clone $saludQ)->count(),
             'eventos_pendientes'       => (clone $saludQ)->where('estado', 'pendiente')->count(),

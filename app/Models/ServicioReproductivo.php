@@ -56,14 +56,19 @@ class ServicioReproductivo extends Model
     {
         $tipo = match ($this->tipo_servicio) {
             'monta_natural' => 'Monta natural',
-            'inseminacion_artificial' => 'Inseminación artificial',
-            'iatf' => 'IATF',
+    'monta_controlada' => 'Monta controlada',
+    'inseminacion_artificial' => 'Inseminación artificial',
+    'iatf' => 'IATF',
+    'transferencia_embriones' => 'Transferencia de embriones',
+    'fiv' => 'FIV',
             default => $this->tipo_servicio,
         };
-
-        if ($this->tipo_servicio === 'monta_natural' && $this->macho) {
-            return "{$tipo} — Semental: {$this->macho->nombre}";
-        }
+if (
+    in_array($this->tipo_servicio, ['monta_natural', 'monta_controlada']) &&
+    $this->macho
+) {
+    return "{$tipo} — Semental: {$this->macho->nombre}";
+}
 
         if ($this->pajilla) {
             return "{$tipo} — Pajilla: {$this->pajilla->codigo}";

@@ -35,7 +35,7 @@ class FaenaSeeder extends Seeder
                     'especie' => ['Bovino', 'Porcino', 'Ovino'][$i % 3],
                     'raza' => ['Angus', 'Duroc', 'Merino'][$i % 3],
                     'arete' => 200 + $i,
-                    'sexo' => ['M', 'F'][$i % 2],
+                    'sexo' => ['M', 'H'][$i % 2],
                     'fecha_nac' => Carbon::now()->subYears(2)->addMonths($i),
                     'peso' => rand(350, 450),
                     'BCS' => rand(25, 35) / 10,

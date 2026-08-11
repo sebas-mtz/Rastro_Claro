@@ -21,6 +21,7 @@ import {
     TablaDiagnosticos, TablaPartos,
     TablaProduccion, TablaVentas,
 } from "./Tablas";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 // ─── Estado inicial de filtros ────────────────────────────────────────────────
 const FILTROS_VACIOS = {
@@ -35,6 +36,7 @@ const FILTROS_VACIOS = {
 
 // ─── Página ───────────────────────────────────────────────────────────────────
 function Reportes({ catalogos = {}, datos = null, filtros: init = {}, ficha = null }) {
+    const { formatCurrency } = usePreferences();
 
     const [tab, setTab]           = useState(ficha ? "animal" : "general");
     const [filtros, setFiltros]   = useState({ ...FILTROS_VACIOS, ...init });
@@ -186,7 +188,7 @@ function Reportes({ catalogos = {}, datos = null, filtros: init = {}, ficha = nu
                                 <StatCard icon={Baby}            label="Serv. por concepción"  value={resumen.servicios_por_concepcion} color="orange" sub="promedio" />
                                 <StatCard icon={Milk}            label="Reg. producción"       value={resumen.total_produccion}         color="teal"   />
                                 <StatCard icon={ShoppingCart}    label="Ventas"                value={resumen.total_ventas}             color="green"  />
-                                <StatCard icon={DollarSign}      label="Ingresos"              value={resumen.ingresos_ventas != null ? `$${Number(resumen.ingresos_ventas).toLocaleString()}` : "—"} color="blue" sub="ventas completadas" />
+                                <StatCard icon={DollarSign}      label="Ingresos"              value={resumen.ingresos_ventas != null ? formatCurrency(resumen.ingresos_ventas) : "—"} color="blue" sub="ventas completadas" />
                             </div>
                         </div>
                     )}

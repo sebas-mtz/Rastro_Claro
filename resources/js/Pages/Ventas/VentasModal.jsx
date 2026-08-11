@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { X, DollarSign, Package, Scale, User, Calendar, ShoppingCart, Database } from 'lucide-react';
 import { useForm, router } from '@inertiajs/react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
+
+const EMPTY_LIST = [];
+const EMPTY_INVENTORY = {};
 
 export default function VentaModal({
     show,
     onClose,
-    animales = [],
-    lotes = [],
-    inventario_producciones = {},
-    inventario_subproductos = {},
-    compradores = [],
+    animales = EMPTY_LIST,
+    lotes = EMPTY_LIST,
+    inventario_producciones = EMPTY_INVENTORY,
+    inventario_subproductos = EMPTY_INVENTORY,
+    compradores = EMPTY_LIST,
+    initialAnimalId = null,
+    onSuccess,
 }) {
+    const { formatCurrency, currency, formatWeight } = usePreferences();
     const { data, setData, post, processing, errors, reset } = useForm({
         tipo_venta: 'animal',
         vendible_id: '',
@@ -31,6 +38,7 @@ export default function VentaModal({
 
     const [productosDisponibles, setProductosDisponibles] = useState([]);
     const [inventarioDisponible, setInventarioDisponible] = useState(0);
+    const ventaAnimalFija = Boolean(initialAnimalId);
 
     // Normalizamos inventarios (por si vienen null/undefined)
     const inventarioProducciones = inventario_producciones || {};
@@ -158,6 +166,18 @@ export default function VentaModal({
         setInventarioDisponible(0);
     }, [data.tipo_venta, animales, lotes, inventarioProducciones, inventarioSubproductos]);
 
+    useEffect(() => {
+        if (
+            show &&
+            initialAnimalId &&
+            data.tipo_venta === 'animal' &&
+            productosDisponibles.some((producto) => String(producto.id) === String(initialAnimalId)) &&
+            String(data.vendible_id) !== String(initialAnimalId)
+        ) {
+            setData('vendible_id', String(initialAnimalId));
+        }
+    }, [show, initialAnimalId, data.tipo_venta, data.vendible_id, productosDisponibles]);
+
     // Cuando seleccionas un producto (animal, lote, tipo de producción, subproducto)
     useEffect(() => {
         if (!data.vendible_id) return;
@@ -263,6 +283,7 @@ export default function VentaModal({
             onSuccess: () => {
                 onClose();
                 reset();
+                onSuccess?.();
                 router.reload();
             },
             onError: (errors) => {
@@ -274,7 +295,7 @@ export default function VentaModal({
     const getProductoLabel = (producto) => {
         switch (data.tipo_venta) {
             case 'animal':
-                return `${producto.alias} - ${producto.especie} (${producto.peso} kg)`;
+                return `${producto.alias} - ${producto.especie} (${formatWeight(producto.peso)})`;
 
             case 'lote':
                 return `${producto.nombre} - ${producto.especie} (${producto.animales_count} animales)`;
@@ -322,7 +343,9 @@ export default function VentaModal({
                                 Tipo de Venta
                             </label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {tiposVenta.map((tipo) => (
+                                {tiposVenta
+                                  .filter((tipo) => !ventaAnimalFija || tipo.value === 'animal')
+                                  .map((tipo) => (
                                     <label
                                         key={tipo.value}
                                         className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-colors ${
@@ -367,7 +390,7 @@ export default function VentaModal({
                                 value={data.vendible_id}
                                 onChange={(e) => setData('vendible_id', e.target.value)}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                disabled={processing}
+                                disabled={processing || ventaAnimalFija}
                                 required={data.tipo_venta !== 'subproducto_faena'}
                             >
                                 <option value="">Seleccionar...</option>
@@ -493,7 +516,7 @@ export default function VentaModal({
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <DollarSign className="w-4 h-4 inline mr-2" />
-                                Precio Unitario ($)
+                                Precio Unitario ({currency})
                             </label>
                             <input
                                 type="number"
@@ -514,7 +537,7 @@ export default function VentaModal({
                         {/* Precio total */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Precio Total ($)
+                                Precio Total ({currency})
                             </label>
                             <input
                                 type="number"
@@ -624,15 +647,12 @@ export default function VentaModal({
 
                             <div>Precio Unitario:</div>
                             <div className="font-medium">
-                                ${data.precio_unitario || '0.00'}
+                                {formatCurrency(data.precio_unitario || 0, { minimumFractionDigits: 2 })}
                             </div>
 
                             <div className="text-lg font-bold text-green-600">Total:</div>
                             <div className="text-lg font-bold text-green-600">
-                                {Number(data.precio_total || 0).toLocaleString('es-ES', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                })}
+                                {formatCurrency(data.precio_total || 0, { minimumFractionDigits: 2 })}
                             </div>
                         </div>
 

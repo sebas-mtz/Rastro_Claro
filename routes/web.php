@@ -23,6 +23,8 @@ use App\Http\Controllers\ServicioReproductivoController;
 use App\Http\Controllers\DiagnosticoGestacionController;
 use App\Http\Controllers\PartoController;
 use App\Http\Controllers\CriaController;
+use App\Http\Controllers\DesteteController;
+use App\Http\Controllers\MuerteController;
 use App\Http\Controllers\RacionController;
 use App\Http\Controllers\ProgramacionAlimentacionController;
 use App\Http\Controllers\PesajeController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\TermoController;
 use App\Http\Controllers\PajillaController;
 use App\Http\Controllers\DonadorExternoController;
 use App\Http\Controllers\EstadisticasSaludController;
+use App\Http\Controllers\SettingsController;
 
 
 /*
@@ -244,10 +247,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('reproduccion.diagnosticos.store');
     Route::post('/reproduccion/partos', [PartoController::class, 'store'])
         ->name('reproduccion.partos.store');
+    Route::post('/reproduccion/destetes', [DesteteController::class, 'store'])
+        ->name('reproduccion.destetes.store');
+    Route::post('/reproduccion/lotes', [LoteController::class, 'storeBasico'])
+        ->name('reproduccion.lotes.store');
     Route::get('/reproduccion/crias/{cria}', [CriaController::class, 'show'])
         ->name('reproduccion.crias.show');
     Route::patch('/reproduccion/crias/{cria}/asignar-arete', [CriaController::class, 'asignarArete'])
         ->name('reproduccion.crias.asignar-arete');
+    Route::patch('/reproduccion/crias/{cria}/observaciones', [CriaController::class, 'actualizarObservaciones'])
+        ->name('reproduccion.crias.observaciones');
+    Route::post('/animales/{animal}/muerte', [MuerteController::class, 'store'])
+        ->name('animales.muerte.store');
 
     Route::get('/api/reproduccion/estadisticas', [EventoReproductivoController::class, 'estadisticas'])
         ->name('reproduccion.estadisticas');
@@ -319,6 +330,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     /*
     |----------------------------------------------------------------------

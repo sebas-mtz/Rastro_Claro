@@ -31,7 +31,6 @@ return new class extends Migration
                 'nacido_muerto',
                 'murio_al_nacer',
             ]);
-        
             $table->string('arete_temporal', 50)->nullable();
         
             $table->text('observaciones')->nullable();

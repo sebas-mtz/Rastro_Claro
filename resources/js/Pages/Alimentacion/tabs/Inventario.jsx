@@ -1,9 +1,11 @@
 import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 const DRAFT_KEY = 'inventario_form_draft_v2';
 
 export default function Inventario() {
+    const { formatCurrency, currency } = usePreferences();
     const { inventario = [], flash = {} } = usePage().props;
 
     const [processingId, setProcessingId]               = useState(null);
@@ -346,9 +348,9 @@ export default function Inventario() {
                             </div>
 
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-gray-600">Costo por kg</label>
+                                <label className="mb-1 block text-xs font-medium text-gray-600">Costo por kg ({currency})</label>
                                 <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-                                    {costoPorKg ? `$${costoPorKg}` : '—'}
+                                    {costoPorKg ? formatCurrency(costoPorKg) : '—'}
                                 </div>
                             </div>
                         </>
@@ -496,7 +498,7 @@ export default function Inventario() {
                                 </p>
 
                                 {item.costo_promedio != null && (
-                                    <p className="text-xs text-gray-400">Costo por kg: ${item.costo_promedio}</p>
+                                    <p className="text-xs text-gray-400">Costo por kg: {formatCurrency(item.costo_promedio)}</p>
                                 )}
 
                                 {(item.MS != null || item.PB != null || item.EM != null || item.FDN != null) && (

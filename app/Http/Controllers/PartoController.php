@@ -6,7 +6,9 @@ use App\Models\Animal;
 use App\Models\Cria;
 use App\Models\EventoReproductivo;
 use App\Models\Parto;
+use App\Models\Pesaje;
 use App\Services\EstadoProductivoService;
+use Carbon\Carbon; // <-- 1. IMPORTAR CARBON AQUÍ
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,15 +29,21 @@ class PartoController extends Controller
             'asistencia_requerida' => 'boolean',
             'complicaciones' => 'boolean',
             'detalle_complicaciones' => 'nullable|string',
+            'salio_leche' => 'boolean',
+            'observaciones_leche' => 'nullable|string|max:1000',
+            'facilidad_materna' => 'boolean',
+            'observaciones_maternas' => 'nullable|string|max:1000',
             'costo' => 'nullable|numeric|min:0',
             'observaciones' => 'nullable|string',
             'crias' => 'required|array|min:1',
             'crias.*.sexo' => 'required|in:macho,hembra',
             'crias.*.peso_nacimiento' => 'nullable|numeric|min:0|max:100',
             'crias.*.condicion' => 'required|in:vivo,nacido_muerto,murio_al_nacer',
+            'crias.*.vigor' => 'nullable|in:B,R,M',
             'crias.*.arete' => 'nullable|string|max:100',
             'crias.*.arete_temporal' => 'nullable|string|max:50',
             'crias.*.observaciones' => 'nullable|string',
+            'crias.*.lote_id' => 'nullable|exists:lotes,id',
         ]);
 
         if (!empty($datos['padre_id']) && !empty($datos['padre_externo_id'])) {
@@ -45,10 +53,17 @@ class PartoController extends Controller
         }
 
         $madre = Animal::findOrFail($datos['hembra_id']);
+        $fechaParto = Carbon::parse($datos['fecha']);
 
-        if (!in_array(strtolower((string) $madre->sexo), ['f', 'female', 'hembra'])) {
+        // 2. NUEVO: Verificar que sea hembra
+        if (!$madre->esHembra()) {
+            return back()->withErrors(['hembra_id' => 'El animal seleccionado no es una hembra.'])->withInput();
+        }
+
+        // 3. NUEVO: Validar edad mínima reproductiva de la madre a la fecha del parto
+        if (!$madre->esAptoParaReproduccion($fechaParto)) {
             return back()->withErrors([
-                'hembra_id' => 'El animal seleccionado no es una hembra.',
+                'hembra_id' => "La madre '{$madre->alias}' no cumple con la edad mínima requerida para reproducción."
             ])->withInput();
         }
 
@@ -89,17 +104,17 @@ class PartoController extends Controller
                 ])->withInput();
             }
 
-            if ($servicio->tipo_servicio === 'monta_natural') {
+            if (in_array($servicio->tipo_servicio, ['monta_natural','monta_controlada'])) {
                 if (empty($servicio->macho_id)) {
                     return back()->withErrors([
-                        'servicio_evento_id' => 'La monta natural seleccionada no tiene un semental asociado.',
+                        'servicio_evento_id' => 'La monta seleccionada no tiene un semental asociado.',
                     ])->withInput();
                 }
 
                 $padreId = $servicio->macho_id;
             }
 
-            if (in_array($servicio->tipo_servicio, ['inseminacion_artificial', 'iatf'])) {
+            if (in_array($servicio->tipo_servicio, ['inseminacion_artificial', 'iatf', 'transferencia_embriones','fiv'])) {
                 $pajilla = $servicio->pajilla;
 
                 if (!$pajilla) {
@@ -142,6 +157,13 @@ class PartoController extends Controller
                 ])->withInput();
             }
 
+            // 4. NUEVO: Validar edad mínima del padre si fue ingresado manualmente
+            if (!$padre->esAptoParaReproduccion($fechaParto)) {
+                return back()->withErrors([
+                    'padre_id' => "El semental '{$padre->alias}' no cumple con la edad mínima requerida para reproducción."
+                ])->withInput();
+            }
+
             if ($padre->especie !== $madre->especie) {
                 return back()->withErrors([
                     'padre_id' => 'El padre debe pertenecer a la misma especie que la madre.',
@@ -149,13 +171,25 @@ class PartoController extends Controller
             }
         }
 
+        foreach ($datos['crias'] as $indice => $criaDatos) {
+            if ($criaDatos['condicion'] === 'vivo' && empty($criaDatos['vigor'])) {
+                return back()->withErrors([
+                    "crias.{$indice}.vigor" => 'Selecciona el vigor de cada cría viva.',
+                ])->withInput();
+            }
+        }
+
         try {
             DB::beginTransaction();
+
+            $esPartoNormal = $datos['tipo_parto'] === 'normal';
+            $salioLeche = $request->boolean('salio_leche');
+            $facilidadMaterna = $request->boolean('facilidad_materna');
 
             $evento = EventoReproductivo::create([
                 'hembra_id' => $datos['hembra_id'],
                 'lote_id' => $datos['lote_id'] ?? $madre->lote_id,
-                'user_id' => null,
+                'user_id' => $request->user()->id,
                 'tipo_evento' => 'parto',
                 'fecha' => $datos['fecha'],
                 'costo' => $datos['costo'] ?? null,
@@ -166,10 +200,18 @@ class PartoController extends Controller
                 'evento_id' => $evento->id,
                 'servicio_evento_id' => $servicioEventoIdResuelto,
                 'tipo_parto' => $datos['tipo_parto'],
-                'asistencia_requerida' => $datos['asistencia_requerida'] ?? false,
-                'complicaciones' => $datos['complicaciones'] ?? false,
-                'detalle_complicaciones' => $datos['detalle_complicaciones'] ?? null,
+                'asistencia_requerida' => ! $esPartoNormal && $request->boolean('asistencia_requerida'),
+                'complicaciones' => ! $esPartoNormal && $request->boolean('complicaciones'),
+                'detalle_complicaciones' => ! $esPartoNormal && $request->boolean('complicaciones')
+                    ? ($datos['detalle_complicaciones'] ?? null)
+                    : null,
                 'numero_crias' => count($datos['crias']),
+                'salio_leche' => $salioLeche,
+                'observaciones_leche' => $salioLeche ? null : ($datos['observaciones_leche'] ?? null),
+                'facilidad_materna' => $facilidadMaterna,
+                'observaciones_maternas' => $facilidadMaterna
+                    ? null
+                    : ($datos['observaciones_maternas'] ?? null),
             ]);
 
             foreach ($datos['crias'] as $criaDatos) {
@@ -181,18 +223,27 @@ class PartoController extends Controller
                         'alias' => null,
                         'raza' => $madre->raza,
                         'arete' => $criaDatos['arete'] ?? null,
-                        'sexo' => $criaDatos['sexo'] === 'macho' ? 'M' : 'F',
+                        'sexo' => $criaDatos['sexo'] === 'macho' ? 'M' : 'H',
                         'fecha_nac' => $datos['fecha'],
                         'peso' => $criaDatos['peso_nacimiento'] ?? null,
                         'BCS' => null,
-                        'estado_productivo' => EstadoProductivoService::estadoInicial(),
-                        'lote_id' => $datos['lote_id'] ?? $madre->lote_id,
+                        'estado_productivo' => EstadoProductivoService::estadoInicial($madre->especie),
+                        'lote_id' => $criaDatos['lote_id'] ?? $datos['lote_id'] ?? $madre->lote_id,
                         'madre_id' => $madre->id,
                         'padre_id' => $padreId,
                         'padre_externo_id' => $padreExternoId,
                     ]);
 
                     $animalId = $nuevoAnimal->id;
+
+                    if (!is_null($criaDatos['peso_nacimiento'])) {
+                        Pesaje::create([
+                            'animal_id' => $nuevoAnimal->id,
+                            'fecha' => $datos['fecha'],
+                            'peso' => $criaDatos['peso_nacimiento'],
+                            'notas' => 'Peso al nacimiento',
+                        ]);
+                    }
                 }
 
                 Cria::create([
@@ -201,6 +252,7 @@ class PartoController extends Controller
                     'sexo' => $criaDatos['sexo'],
                     'peso_nacimiento' => $criaDatos['peso_nacimiento'] ?? null,
                     'condicion' => $criaDatos['condicion'],
+                    'vigor' => $criaDatos['condicion'] === 'vivo' ? $criaDatos['vigor'] : null,
                     'arete_temporal' => $criaDatos['arete_temporal'] ?? null,
                     'observaciones' => $criaDatos['observaciones'] ?? null,
                 ]);

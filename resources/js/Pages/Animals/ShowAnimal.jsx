@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import {
     ArrowLeft, PawPrint, Edit, PlusCircle, Eye, Camera,
-    Scale, Utensils, GitBranch, MoreVertical, Trash2,
+    Scale, Utensils, GitBranch, MoreVertical, Trash2, Skull, Info,
 } from "lucide-react";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -12,6 +12,8 @@ import EditModal from "./Edit";
 import ProduccionModal from "../Producciones/ProduccionModal";
 import ShowProduccionModal from "../Producciones/ShowProduccionModal";
 import ProduccionEditModal from "../Producciones/ProduccionEditModal";
+import MuerteModal from "@/Components/MuerteModal";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function ShowAnimal({
     animal,
@@ -19,7 +21,9 @@ export default function ShowAnimal({
     especies,
     razasPorEspecie,
     estadosProductivos,
+    estadoContextual = [],
 }) {
+    const { formatWeight } = usePreferences();
     const { data, setData, post, processing, reset } = useForm({
         imagen: null,
     });
@@ -49,6 +53,8 @@ export default function ShowAnimal({
     const [showAddProduccion, setShowAddProduccion] = useState(false);
     const [showProduccionList, setShowProduccionList] = useState(false);
     const [editProduccion, setEditProduccion] = useState(null);
+    const [showMuerte, setShowMuerte] = useState(false);
+    const bloqueado = animal.estado_productivo === "muerto" || Boolean(animal.muerte);
 
     function calcularEdad(fechaNac) {
         if (!fechaNac) return "N/D";
@@ -61,21 +67,38 @@ export default function ShowAnimal({
     }
 
     const fmtFecha = (f) => f ? new Date(f).toLocaleDateString("es-MX") : "N/D";
-    const fmtPeso  = (v) => v != null ? `${Number(v).toFixed(2)} kg` : "—";
+    const fmtPeso  = (v) => formatWeight(v);
 
     const pesajes        = animal.pesajes ?? [];
     const alimentaciones = animal.alimentaciones ?? [];
+    const pesajesOrdenados = [...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha));
 
     const chartDataPeso = pesajes.map((p) => ({
         fecha: p.fecha,
         peso:  parseFloat(p.peso),
     }));
 
-    const pesoInicial  = pesajes.length > 0 ? parseFloat(pesajes[0].peso) : null;
-    const pesoActual   = pesajes.length > 0 ? parseFloat(pesajes[pesajes.length - 1].peso) : null;
+    const pesoInicial = pesajes.length > 0
+    ? parseFloat([...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha))[0].peso)
+    : null;
+    const pesoActual = pesajesOrdenados.length > 0
+        ? parseFloat(pesajesOrdenados[pesajesOrdenados.length - 1].peso)
+        : (animal.peso != null ? parseFloat(animal.peso) : null);
     const gananciaPeso = pesoInicial != null && pesoActual != null
         ? Math.round((pesoActual - pesoInicial) * 100) / 100
         : null;
+
+    const variacionPesaje = (pesaje) => {
+        const indice = pesajesOrdenados.findIndex((actual) => actual.id === pesaje.id);
+        if (indice < 0) return null;
+        const referencia = indice === 0
+            ? pesoInicial
+            : parseFloat(pesajesOrdenados[indice - 1].peso);
+        if (referencia == null) return null;
+        return Math.round(
+            (parseFloat(pesaje.peso) - referencia) * 100,
+        ) / 100;
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
@@ -118,12 +141,20 @@ export default function ShowAnimal({
                                 <GitBranch className="w-4 h-4" /> Genealogía
                             </Link>
 
-                            <button
+                            {!bloqueado && <button
                                 onClick={() => { setSelectedAnimal(animal); setIsEditOpen(true); }}
                                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
                             >
                                 <Edit className="w-4 h-4" /> Editar Datos
-                            </button>
+                            </button>}
+                            {!bloqueado && (
+                                <button
+                                    onClick={() => setShowMuerte(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition"
+                                >
+                                    <Skull className="w-4 h-4" /> Registrar muerte
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-8">
@@ -137,6 +168,7 @@ export default function ShowAnimal({
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
+                                        disabled={bloqueado}
                                         onChange={(e) => e.target.files[0] && setData("imagen", e.target.files[0])}
                                     />
 
@@ -172,7 +204,7 @@ export default function ShowAnimal({
                             </form>
 
                             {/* Menú de 3 puntos: solo si ya hay imagen guardada y no hay una nueva pendiente */}
-                            {animal.imagen && !data.imagen && (
+                            {animal.imagen && !data.imagen && !bloqueado && (
                                 <div className="absolute top-0 right-0">
                                     <button
                                         type="button"
@@ -222,6 +254,12 @@ export default function ShowAnimal({
                             <Data label="Peso actual"         value={pesoActual != null ? fmtPeso(pesoActual) : (animal.peso ? fmtPeso(animal.peso) : "N/D")} />
                             <Data label="BCS"                 value={animal.BCS || "N/D"} />
                             <Data label="Lote"                value={animal.lote?.nombre || "Sin lote"} />
+                            {animal.muerte && (
+                                <>
+                                    <Data label="Fecha de muerte" value={fmtFecha(animal.muerte.fecha)} />
+                                    <Data label="Causa de muerte" value={animal.muerte.causa} />
+                                </>
+                            )}
                             <Data label="Fecha de Registro"   value={fmtFecha(animal.created_at)} />
 
                             {/* Madre — solo si está registrada */}
@@ -277,9 +315,10 @@ export default function ShowAnimal({
                         <>
                             <div className="mb-5 grid grid-cols-3 gap-3">
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-center">
-                                    <p className="text-[11px] text-gray-500">Peso inicial</p>
+                                    <p className="text-[11px] text-gray-500">Primer Pesaje</p>
                                     <p className="text-base font-semibold text-gray-800">{fmtPeso(pesoInicial)}</p>
-                                    <p className="text-[10px] text-gray-400">{pesajes[0].fecha}</p>
+                                    <p className="text-[10px] text-gray-400">
+                                         {pesajes.length > 0 ? [...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha))[0].fecha : "Sin fecha"}                                    </p>
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-center">
                                     <p className="text-[11px] text-gray-500">Peso actual</p>
@@ -296,7 +335,7 @@ export default function ShowAnimal({
                                         gananciaPeso > 0 ? "text-emerald-700" :
                                         gananciaPeso < 0 ? "text-red-600" : "text-gray-600"
                                     }`}>
-                                        {gananciaPeso != null ? `${gananciaPeso >= 0 ? "+" : ""}${gananciaPeso} kg` : "—"}
+                                        {gananciaPeso != null ? `${gananciaPeso >= 0 ? "+" : ""}${formatWeight(Math.abs(gananciaPeso))}` : "—"}
                                     </p>
                                     <p className="text-[10px] text-gray-400">{pesajes.length} pesaje(s)</p>
                                 </div>
@@ -311,9 +350,9 @@ export default function ShowAnimal({
                                                 dataKey="fecha" tick={{ fontSize: 10 }}
                                                 tickFormatter={(f) => { const [,m,d] = f.split("-"); return `${d}/${m}`; }}
                                             />
-                                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${v} kg`} width={60} />
+                                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatWeight(v, { digits: 0 })} width={60} />
                                             <Tooltip
-                                                formatter={(v) => [`${Number(v).toFixed(2)} kg`, "Peso"]}
+                                                formatter={(v) => [formatWeight(v), "Peso"]}
                                                 labelFormatter={(l) => `Fecha: ${l}`}
                                             />
                                             <Line type="monotone" dataKey="peso" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
@@ -335,11 +374,8 @@ export default function ShowAnimal({
                                     {[...pesajes]
                                         .sort((a, b) => b.fecha.localeCompare(a.fecha))
                                         .slice(0, 4)
-                                        .map((p, idx, arr) => {
-                                            const siguiente = arr[idx + 1];
-                                            const delta = siguiente
-                                                ? Math.round((parseFloat(p.peso) - parseFloat(siguiente.peso)) * 100) / 100
-                                                : null;
+                                        .map((p) => {
+                                            const delta = variacionPesaje(p);
                                             return (
                                                 <tr key={p.id} className="border-t border-gray-100 hover:bg-gray-50">
                                                     <td className="p-2 text-gray-700">{p.fecha}</td>
@@ -347,7 +383,7 @@ export default function ShowAnimal({
                                                     <td className="p-2 text-right">
                                                         {delta != null ? (
                                                             <span className={`text-xs font-medium ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-red-500" : "text-gray-400"}`}>
-                                                                {delta >= 0 ? "+" : ""}{delta} kg
+                                                                {delta >= 0 ? "+" : "-"}{formatWeight(Math.abs(delta))}
                                                             </span>
                                                         ) : <span className="text-gray-300 text-xs">—</span>}
                                                     </td>
@@ -443,12 +479,12 @@ export default function ShowAnimal({
                 <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-semibold text-gray-700">Últimos Registros de Producción</h2>
-                        <button
+                        {!bloqueado && <button
                             onClick={() => setShowAddProduccion(true)}
                             className="flex items-center gap-2 px-3 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition"
                         >
                             <PlusCircle className="w-4 h-4" /> Agregar Registro
-                        </button>
+                        </button>}
                     </div>
 
                     {animal.producciones && animal.producciones.length > 0 ? (
@@ -476,6 +512,26 @@ export default function ShowAnimal({
                         <p className="text-gray-500 text-sm">No hay registros de producción.</p>
                     )}
                 </div>
+
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-6 shadow-sm">
+                    <div className="mb-4 flex items-center gap-2">
+                        <Info className="h-5 w-5 text-blue-700" />
+                        <h2 className="text-lg font-semibold text-blue-950">Estado actual</h2>
+                    </div>
+                    <div className="space-y-3">
+                        {estadoContextual.map((nota, index) => (
+                            <div key={`${nota.tipo}-${index}`} className="rounded-xl bg-white/80 p-4">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <p className="font-semibold text-gray-800">{nota.titulo}</p>
+                                    {nota.fecha && (
+                                        <span className="text-xs text-gray-500">{nota.fecha}</span>
+                                    )}
+                                </div>
+                                <p className="mt-1 text-sm text-gray-600">{nota.detalle}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             {/* Modales */}
@@ -496,12 +552,17 @@ export default function ShowAnimal({
                 <ShowProduccionModal
                     producciones={animal.producciones}
                     onClose={() => setShowProduccionList(false)}
-                    onEdit={(prod) => { setEditProduccion(prod); setShowProduccionList(false); }}
+                    onEdit={bloqueado ? undefined : (prod) => { setEditProduccion(prod); setShowProduccionList(false); }}
                 />
             )}
             {editProduccion && (
                 <ProduccionEditModal produccion={editProduccion} onClose={() => setEditProduccion(null)} />
             )}
+            <MuerteModal
+                show={showMuerte}
+                animal={animal}
+                onClose={() => setShowMuerte(false)}
+            />
         </div>
     );
 }

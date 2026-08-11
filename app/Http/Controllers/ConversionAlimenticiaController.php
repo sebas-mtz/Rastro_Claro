@@ -70,8 +70,8 @@ class ConversionAlimenticiaController extends Controller
             $kgTotal    = $kgDirecto + $kgLote;
             $costoTotal = $costoDirecto + $costoLote;
 
-            $pesoInicio = $this->pesoEnFecha($animal->pesajes, $fechaInicio);
-            $pesoFin    = $this->pesoEnFecha($animal->pesajes, $fechaFin);
+            $pesoInicio = $this->pesoEnFecha($animal, $fechaInicio);
+            $pesoFin    = $this->pesoEnFecha($animal, $fechaFin);
 
             $ganancia        = ($pesoInicio !== null && $pesoFin !== null) ? round($pesoFin - $pesoInicio, 2) : null;
             $conversion      = ($ganancia !== null && $ganancia > 0)       ? round($kgTotal / $ganancia, 2)   : null;
@@ -127,8 +127,8 @@ class ConversionAlimenticiaController extends Controller
             $detalleAnimales   = [];
 
             foreach ($animalesDelLote as $a) {
-                $pesoInicio = $this->pesoEnFecha($a->pesajes, $fechaInicio);
-                $pesoFin    = $this->pesoEnFecha($a->pesajes, $fechaFin);
+                $pesoInicio = $this->pesoEnFecha($a, $fechaInicio);
+                $pesoFin    = $this->pesoEnFecha($a, $fechaFin);
 
                 // Consumo del animal = directo + parte proporcional del lote
                 $kgAnimal    = ($consumoPorAnimal[$a->id]['kg']    ?? 0) + ($kgLoteDirecto / $n);
@@ -190,12 +190,15 @@ class ConversionAlimenticiaController extends Controller
      * Devuelve el peso del pesaje más reciente en o antes de $fecha.
      * Retorna null si no existe ninguno.
      */
-    private function pesoEnFecha($pesajes, string $fecha): ?float
-    {
-        $candidatos = $pesajes->filter(fn($p) => $p->fecha->toDateString() <= $fecha);
-        if ($candidatos->isEmpty()) return null;
-        return (float) $candidatos->sortByDesc('fecha')->first()->peso;
-    }
+    private function pesoEnFecha(Animal $animal, string $fecha): ?float
+{
+    $candidatos = $animal->pesajes
+        ->filter(fn($p) => $p->fecha->toDateString() <= $fecha);
+
+    return $candidatos->isNotEmpty()
+        ? (float) $candidatos->sortByDesc('fecha')->first()->peso
+        : null;
+}
 
     /**
      * Calcula el costo por kg de ración desde el snapshot_composicion.

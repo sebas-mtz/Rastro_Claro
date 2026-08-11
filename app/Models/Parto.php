@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Parto extends Model
 {
+    protected $appends = [ 'tipo_nacimiento', ];
     protected $table = 'partos';
 
     protected $fillable = [
@@ -18,12 +20,18 @@ class Parto extends Model
         'complicaciones',
         'detalle_complicaciones',
         'numero_crias',
+        'salio_leche',
+        'observaciones_leche',
+        'facilidad_materna',
+        'observaciones_maternas',
     ];
 
     protected $casts = [
         'asistencia_requerida' => 'boolean',
         'complicaciones'       => 'boolean',
         'numero_crias'         => 'integer',
+        'salio_leche'          => 'boolean',
+        'facilidad_materna'    => 'boolean',
     ];
 
     // ─── Relaciones ───────────────────────────────────────────────────────
@@ -51,6 +59,11 @@ class Parto extends Model
                     ->where('condicion', 'vivo');
     }
 
+    public function destete(): HasOne
+    {
+        return $this->hasOne(Destete::class);
+    }
+
     // ─── Accessors ────────────────────────────────────────────────────────
 
     // Fecha del parto viene del evento padre
@@ -68,4 +81,15 @@ class Parto extends Model
             default     => $this->tipo_parto,
         };
     }
+    public function getTipoNacimientoAttribute(): string
+{
+    return match ((int) $this->numero_crias) {
+        1 => 'Simple',
+        2 => 'Gemelar',
+        3 => 'Triple',
+        4 => 'Cuádruple',
+        5 => 'Quíntuple',
+        default => "{$this->numero_crias} crías",
+    };
+}
 }

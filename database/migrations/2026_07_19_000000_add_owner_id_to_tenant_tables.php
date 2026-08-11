@@ -10,6 +10,10 @@ return new class extends Migration
     public function up(): void
     {
         foreach (config('tenancy.tables') as $tableName) {
+            if (!Schema::hasTable($tableName)) {
+                continue;
+            }
+
             Schema::table($tableName, function (Blueprint $table) {
                 $table->foreignId('owner_id')
                     ->nullable()
@@ -33,6 +37,10 @@ return new class extends Migration
     public function down(): void
     {
         foreach (array_reverse(config('tenancy.tables')) as $tableName) {
+            if (!Schema::hasTable($tableName) || !Schema::hasColumn($tableName, 'owner_id')) {
+                continue;
+            }
+
             Schema::table($tableName, function (Blueprint $table) {
                 $table->dropConstrainedForeignId('owner_id');
             });

@@ -1,18 +1,28 @@
 import React, { useMemo, useState } from "react";
 import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
-import { Activity, Baby, BarChart3, Plus, CalendarDays, Heart } from "lucide-react";
+import { Activity, Baby, BarChart3, Plus, CalendarDays, Heart, ClipboardList, Scale } from "lucide-react";
 
 import Eventos from "./Eventos";
 import Gestaciones from "./Gestaciones";
 import Partos from "./Partos";
+import ControlPartos from "./ControlPartos";
+import Destetes from "./Destetes";
 import Estadisticas from "./Estadisticas";
 import ServicioModal from "./ServicioModal";
 import DiagnosticoModal from "./DiagnosticoModal.jsx";
 import PartoModal from "./PartoModal";
 import CalendarioReproductivo from "./CalendarioReproductivo";
 
-function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  pajillas = [], donadoresExternos = [],}) {
+function ReproduccionIndex({
+  auth,
+  eventos = [],
+  animales = [],
+  lotes = [],
+  pajillas = [],
+  donadoresExternos = [],
+  estadosProductivos = {},
+}) {
 
   const [tab, setTab] = useState("eventos");
 
@@ -73,6 +83,8 @@ function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  paj
     { key: "eventos",      label: "Eventos",     icon: <Heart size={15} /> },
     { key: "gestaciones",  label: "Gestaciones", icon: <Activity size={15} /> },
     { key: "partos",       label: "Partos",      icon: <Baby size={15} /> },
+    { key: "destetes",     label: "Destetes",    icon: <Scale size={15} /> },
+    { key: "control-partos", label: "Control de partos", icon: <ClipboardList size={15} /> },
     { key: "estadisticas", label: "Estadísticas",icon: <BarChart3 size={15} /> },
   ];
 
@@ -203,6 +215,17 @@ function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  paj
                 onNuevoParto={() => setModalParto(true)}
               />
             )}
+            {tab === "control-partos" && (
+              <ControlPartos eventos={eventos} />
+            )}
+            {tab === "destetes" && (
+              <Destetes
+                eventos={eventos}
+                animales={animales}
+                lotes={lotes}
+                estadosProductivos={estadosProductivos}
+              />
+            )}
             {tab === "estadisticas" && (
               <Estadisticas animales={animales} lotes={lotes} eventos={eventos} />
             )}
@@ -231,6 +254,7 @@ function ReproduccionIndex({ auth, eventos = [], animales = [], lotes = [],  paj
         hembras={hembras}
         eventos={eventos}
         animales={animales}
+        lotes={lotes}
         donadoresExternos={donadoresExternos}
 
       />

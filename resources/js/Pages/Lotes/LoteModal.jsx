@@ -296,7 +296,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
                 >
                   <option value="">Selecciona sexo</option>
                   <option value="M">Macho</option>
-                  <option value="F">Hembra</option>
+                  <option value="H">Hembra</option>
                 </select>
               </div>
 

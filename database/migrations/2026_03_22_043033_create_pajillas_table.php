@@ -25,16 +25,15 @@ return new class extends Migration
         
             $table->string('codigo')->unique();
             $table->string('lote')->nullable();
-        
+            $table->decimal('capacidad_pajilla', 8, 2);
             $table->date('fecha_ingreso')->nullable();
-            $table->date('fecha_vencimiento')->nullable();
+            $table->date('fecha_colecta')->nullable();
             $table->date('fecha_utilizacion')->nullable();
-        
+        $table->unsignedInteger('canastilla_numero')->nullable();
             $table->enum('estado', [
                 'disponible',
                 'utilizada',
                 'dañada',
-                'vencida'
             ])->default('disponible');
         
             $table->text('observaciones')->nullable();

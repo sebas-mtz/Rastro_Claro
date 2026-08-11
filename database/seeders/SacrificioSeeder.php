@@ -34,7 +34,7 @@ class SacrificioSeeder extends Seeder
                     'especie' => ['Bovino', 'Porcino', 'Ovino'][$i % 3],
                     'raza' => ['Hereford', 'Pietrain', 'Dorper'][$i % 3],
                     'arete' => 300 + $i,
-                    'sexo' => ['M', 'F'][$i % 2],
+                    'sexo' => ['M', 'H'][$i % 2],
                     'fecha_nac' => Carbon::now()->subYears(3)->addMonths($i),
                     'peso' => rand(300, 400),
                     'BCS' => rand(20, 30) / 10,

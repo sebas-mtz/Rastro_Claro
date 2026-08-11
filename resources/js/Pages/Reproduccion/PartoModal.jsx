@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { X, Plus, Trash2 } from "lucide-react";
 
-export default function PartoModal({ show, onClose, hembras = [], eventos = [], animales = [],   donadoresExternos = [],
+export default function PartoModal({ show, onClose, hembras = [], eventos = [], animales = [], lotes = [], donadoresExternos = [],
 }) {
 
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,10 +15,14 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
     asistencia_requerida:   false,
     complicaciones:         false,
     detalle_complicaciones: "",
+    salio_leche:            false,
+    observaciones_leche:    "",
+    facilidad_materna:      false,
+    observaciones_maternas: "",
     costo:                  "",
     observaciones:          "",
     crias: [
-      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", arete: "", arete_temporal: "" }
+      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", vigor: "", arete: "", arete_temporal: "", lote_id: "" }
     ],
   });
 
@@ -60,7 +64,7 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
   const agregarCria = () => {
     setData("crias", [
       ...data.crias,
-      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", arete: "", arete_temporal: "" }
+      { sexo: "macho", peso_nacimiento: "", condicion: "vivo", vigor: "", arete: "", arete_temporal: "", lote_id: "" }
     ]);
   };
 
@@ -296,7 +300,18 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
               <label className="text-sm font-medium">Tipo de parto *</label>
               <select
                 value={data.tipo_parto}
-                onChange={e => setData("tipo_parto", e.target.value)}
+                onChange={e => {
+                  const tipoParto = e.target.value;
+                  setData(actual => ({
+                    ...actual,
+                    tipo_parto: tipoParto,
+                    ...(tipoParto === "normal" ? {
+                      asistencia_requerida: false,
+                      complicaciones: false,
+                      detalle_complicaciones: "",
+                    } : {}),
+                  }));
+                }}
                 className="w-full border rounded-lg p-2 mt-1 text-sm"
               >
                 <option value="normal">Normal</option>
@@ -307,6 +322,7 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
 
             {/* CHECKBOXES */}
             <div className="col-span-2 flex gap-6">
+              {data.tipo_parto !== "normal" && (<>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
                   type="checkbox"
@@ -323,14 +339,65 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
                 />
                 Hubo complicaciones
               </label>
+              </>
+              )}
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <select
+                  value={data.salio_leche ? "1" : "0"}
+                  onChange={e => setData("salio_leche", e.target.value === "1")}
+                  className="border rounded p-1 text-sm"
+                >
+                  <option value="1">SÃ­</option>
+                  <option value="0">No</option>
+                </select>
+                Le salió leche
+              </label>
             </div>
 
-            {data.complicaciones && (
+            {data.tipo_parto !== "normal" && data.complicaciones && (
               <div className="col-span-2">
                 <label className="text-sm font-medium">Detalle de complicaciones</label>
                 <textarea
                   value={data.detalle_complicaciones}
                   onChange={e => setData("detalle_complicaciones", e.target.value)}
+                  rows={2}
+                  className="w-full border rounded-lg p-2 mt-1 text-sm resize-none"
+                />
+              </div>
+            )}
+
+            <div className="col-span-2 flex gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <select
+                  value={data.facilidad_materna ? "1" : "0"}
+                  onChange={e => setData("facilidad_materna", e.target.value === "1")}
+                  className="border rounded p-1 text-sm"
+                >
+                  <option value="1">Si</option>
+                  <option value="0">No</option>
+                </select>
+                Facilidad materna
+              </label>
+            </div>
+
+            {!data.salio_leche && (
+              <div className="col-span-2">
+                <label className="text-sm font-medium">Observaciones sobre la leche</label>
+                <textarea
+                  value={data.observaciones_leche}
+                  onChange={e => setData("observaciones_leche", e.target.value)}
+                  rows={2}
+                  className="w-full border rounded-lg p-2 mt-1 text-sm resize-none"
+                />
+              </div>
+            )}
+
+            {!data.facilidad_materna && (
+              <div className="col-span-2">
+                <label className="text-sm font-medium">Observaciones maternas</label>
+                <textarea
+                  value={data.observaciones_maternas}
+                  onChange={e => setData("observaciones_maternas", e.target.value)}
                   rows={2}
                   className="w-full border rounded-lg p-2 mt-1 text-sm resize-none"
                 />
@@ -422,6 +489,44 @@ export default function PartoModal({ show, onClose, hembras = [], eventos = [], 
                           placeholder="Arete definitivo"
                           className="w-full border rounded-lg p-2 mt-1 text-sm"
                         />
+                      </div>
+                    )}
+
+                    {cria.condicion === "vivo" && (
+                      <div>
+                        <label className="text-xs font-medium">Vigor *</label>
+                        <select
+                          value={cria.vigor}
+                          onChange={e => actualizarCria(i, "vigor", e.target.value)}
+                          className="w-full border rounded-lg p-2 mt-1 text-sm"
+                        >
+                          <option value="">Seleccionar vigor...</option>
+                          <option value="B">Bueno</option>
+                          <option value="R">Regular</option>
+                          <option value="M">Malo</option>
+                        </select>
+                        {errors[`crias.${i}.vigor`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`crias.${i}.vigor`]}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {cria.condicion === "vivo" && (
+                      <div className="col-span-2">
+                        <label className="text-xs font-medium">Lote de la cría</label>
+                        <select
+                          value={cria.lote_id}
+                          onChange={e => actualizarCria(i, "lote_id", e.target.value)}
+                          className="w-full border rounded-lg p-2 mt-1 text-sm"
+                        >
+                          <option value="">Mismo lote de la madre</option>
+                          {lotes.map(lote => (
+                            <option key={lote.id} value={lote.id}>{lote.nombre}</option>
+                          ))}
+                        </select>
+                        {errors[`crias.${i}.lote_id`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`crias.${i}.lote_id`]}</p>
+                        )}
                       </div>
                     )}
                   </div>

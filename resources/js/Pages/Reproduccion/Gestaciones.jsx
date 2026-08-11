@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
 import { Activity, Baby, AlertTriangle } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function Gestaciones({ animales = [], eventos = [], onNuevoDiagnostico }) {
+  const { preferences } = usePreferences();
+  const diasGestacionPromedio = Number(preferences.gestation_days || 283);
 
   const items = useMemo(() => {
     // Último diagnóstico por hembra
@@ -25,7 +28,7 @@ export default function Gestaciones({ animales = [], eventos = [], onNuevoDiagno
       // Días de gestación actuales
       let diasGestacion = null;
       if (resultado === "positivo" && fechaProbableParto) {
-        diasGestacion = 283 - Math.floor(
+        diasGestacion = diasGestacionPromedio - Math.floor(
           (new Date(fechaProbableParto) - new Date()) / 86400000
         );
       }
@@ -42,7 +45,7 @@ export default function Gestaciones({ animales = [], eventos = [], onNuevoDiagno
         veterinario: d.diagnostico?.veterinario || null,
       };
     });
-  }, [eventos, animales]);
+  }, [eventos, animales, diasGestacionPromedio]);
 
   const gestantes  = items.filter(i => i.resultado === "positivo");
   const negativos  = items.filter(i => i.resultado === "negativo");
@@ -58,7 +61,7 @@ export default function Gestaciones({ animales = [], eventos = [], onNuevoDiagno
     const label = {
       positivo:  "Gestante",
       negativo:  "Negativo",
-      repetir:   "Repetir",
+      repetir:   "Temprana",
       pendiente: "Pendiente",
     };
     return (

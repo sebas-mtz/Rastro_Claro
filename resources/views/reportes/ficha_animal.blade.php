@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+@php
+    $reportSettings = auth()->user()?->settings ?? [];
+    $reportCurrency = data_get($reportSettings, 'currency', 'MXN');
+    $currencyPrefixes = ['MXN' => '$', 'USD' => 'US$', 'EUR' => '€', 'COP' => 'COL$', 'ARS' => 'AR$'];
+    $formatCurrency = fn ($value) => ($currencyPrefixes[$reportCurrency] ?? $reportCurrency.' ')
+        .number_format((float) $value, 2);
+    $reportWeightUnit = data_get($reportSettings, 'weight_unit', 'kg');
+    $formatWeight = fn ($value) => number_format(
+        $reportWeightUnit === 'lb' ? (float) $value * 2.2046226218 : (float) $value,
+        2,
+    ).' '.$reportWeightUnit;
+@endphp
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -171,11 +183,13 @@
                 <div class="dato-row"><span class="dato-lbl">Estado productivo</span><span class="dato-val">{{ $animal->estado_productivo ?? '—' }}</span></div>
                 @php
                     $pesajesOrden = $animal->pesajes->sortBy('fecha');
-                    $pesoActual   = $pesajesOrden->last()?->peso;
-                    $pesoInicial  = $pesajesOrden->first()?->peso;
-                    $ganancia     = ($pesoInicial && $pesoActual) ? round($pesoActual - $pesoInicial, 2) : null;
+    $pesoActual   = $pesajesOrden->last()?->peso;
+    $pesoInicial  = $pesajesOrden->first()?->peso;
+$ganancia = $pesoInicial !== null && $pesoActual !== null
+        ? round($pesoActual - $pesoInicial, 2)
+        : null;
                 @endphp
-                <div class="dato-row"><span class="dato-lbl">Peso actual</span><span class="dato-val">{{ $pesoActual ? number_format($pesoActual,2).' kg' : ($animal->peso ? number_format($animal->peso,2).' kg' : '—') }}</span></div>
+                <div class="dato-row"><span class="dato-lbl">Peso actual</span><span class="dato-val">{{ $pesoActual ? $formatWeight($pesoActual) : ($animal->peso ? $formatWeight($animal->peso) : '—') }}</span></div>
                 <div class="dato-row"><span class="dato-lbl">BCS</span><span class="dato-val">{{ $animal->BCS ?? '—' }}</span></div>
                 @if($animal->madre)
                 <div class="dato-row"><span class="dato-lbl">Madre</span><span class="dato-val">{{ $animal->madre->arete }}{{ $animal->madre->alias ? ' — '.$animal->madre->alias : '' }}</span></div>
@@ -187,65 +201,93 @@
         </div>
     </div>
 </div>
-
 {{-- ══ HISTORIAL DE PESO ══════════════════════════════════════════════════════ --}}
 @if($animal->pesajes->count() > 0)
+
 <div class="section">
+
     <div class="section-hdr hdr-blue">
         <span class="ttl">⚖ Historial de Peso</span>
         <span class="cnt">{{ $animal->pesajes->count() }} pesaje(s)</span>
     </div>
+
     <div style="padding: 6px 0;">
+        @php
+            $pesajesOrden = $animal->pesajes->sortBy('fecha')->values();
+            $pesoInicial = $pesajesOrden->first()?->peso;
+            $pesoActual = $pesajesOrden->last()?->peso;
+            $ganancia = ($pesoInicial !== null && $pesoActual !== null)
+                ? round($pesoActual - $pesoInicial, 2)
+                : null;     @endphp
         <div class="stat-row">
             <div class="stat-cell">
-                <div class="stat-val">{{ $pesoInicial ? number_format($pesoInicial,2).' kg' : '—' }}</div>
-                <div class="stat-lbl">Peso inicial</div>
-                <div class="stat-sub">{{ $pesajesOrden->first()?->fecha }}</div>
+                <div class="stat-val">
+                    {{ $pesoInicial !== null ? $formatWeight($pesoInicial) : '—' }}
+                </div>
+                <div class="stat-lbl">
+                    Primer pesaje
+                </div>
+                <div class="stat-sub">
+                    {{ $pesajesOrden->first()?->fecha ?? '—' }}
+                </div>
             </div>
             <div class="stat-cell" style="border-color:#bfdbfe; background:#eff6ff;">
-                <div class="stat-val">{{ $pesoActual ? number_format($pesoActual,2).' kg' : '—' }}</div>
-                <div class="stat-lbl" style="color:#1d4ed8;">Peso actual</div>
-                <div class="stat-sub">{{ $pesajesOrden->last()?->fecha }}</div>
-                </div>
-<div class="stat-cell @css($ganancia > 0 ? 'border-[#6ee7b7] bg-[#ecfdf5]' : ($ganancia < 0 ? 'border-[#fca5a5] bg-[#fef2f2]' : ''))">
-    <div class="stat-val {{ $ganancia > 0 ? 'text-[#15803d]' : ($ganancia < 0 ? 'text-[#b91c1c]' : '') }}">
-        {{ $ganancia !== null ? ($ganancia > 0 ? '+' : '').$ganancia.' kg' : '—' }}
-    </div>
-    <div class="stat-lbl">Ganancia total</div>
-    <div class="stat-sub">{{ $animal->pesajes->count() }} pesajes</div>
-</div>
-        </div>
 
-        <table class="data">
-            <thead>
-                <tr><th>Fecha</th><th>Peso (kg)</th><th>Variación</th><th>Notas</th></tr>
+                <div class="stat-val">
+                    {{ $pesoActual !== null ? $formatWeight($pesoActual) : '—' }}
+                </div>
+
+                <div class="stat-lbl" style="color:#1d4ed8;">
+                    Peso actual
+                </div>
+
+                <div class="stat-sub">
+                    {{ $pesajesOrden->last()?->fecha ?? '—' }}
+                </div>           </div>
+            <div class="stat-cell @css($ganancia > 0 ? 'border-[#6ee7b7] bg-[#ecfdf5]' : ($ganancia < 0 ? 'border-[#fca5a5] bg-[#fef2f2]' : ''))">
+                <div class="stat-val {{ $ganancia > 0 ? 'text-[#15803d]' : ($ganancia < 0 ? 'text-[#b91c1c]' : '') }}">
+                    {{ 
+                        $ganancia !== null
+                            ? ($ganancia >= 0 ? '+' : '-') . $formatWeight(abs($ganancia))
+                            : '—'                  }}
+                </div><div class="stat-lbl">
+                    Ganancia total
+                </div>
+                <div class="stat-sub">
+                    {{ $animal->pesajes->count() }} pesajes
+                </div></div>    </div>
+  <table class="data">
+        <thead>     <tr>
+                    <th>Fecha</th>
+                    <th>Peso (kg)</th>
+                    <th>Variación</th>
+                    <th>Notas</th>
+                </tr>
             </thead>
             <tbody>
-                @foreach($pesajesOrden->reverse() as $i => $p)
+                @foreach($pesajesOrden as $i => $p)
                 @php
-                    $arr = $pesajesOrden->values();
-                    $idx = $arr->search(fn($x) => $x->id === $p->id);
-                    $ant = $idx > 0 ? $arr[$idx - 1] : null;
-                    $delta = $ant ? round($p->peso - $ant->peso, 2) : null;
+                    $pesoReferencia = $i > 0 ? $pesajesOrden[$i - 1]->peso : null;$delta = $pesoReferencia !== null ? round($p->peso - $pesoReferencia, 2)                        : null;
                 @endphp
                 <tr>
-                    <td class="gray">{{ $p->fecha }}</td>
-                    <td class="num">{{ number_format($p->peso, 2) }} kg</td>
+                    <td class="gray">
+                        {{ $p->fecha }}
+                    </td>
+                    <td class="num">
+                        {{ $formatWeight($p->peso) }}
+                    </td>
                     <td>
                         @if($delta !== null)
                             <span class="{{ $delta >= 0 ? 'pos' : 'neg' }}">
-                                {{ $delta >= 0 ? '+' : '' }}{{ $delta }} kg
-                            </span>
-                        @else —
+                                {{ $delta >= 0 ? '+' : '-' }}
+                                {{ $formatWeight(abs($delta)) }}</span>
+
+                        @else
                         @endif
-                    </td>
-                    <td class="gray trunc">{{ $p->notas ?? '—' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+                    </td><td class="gray trunc">
+                        {{ $p->notas ?? '—' }}
+                    </td></tr> @endforeach
+ </tbody> </table> </div></div>
 @endif
 
 {{-- ══ EVENTOS DE SALUD ════════════════════════════════════════════════════════ --}}
@@ -403,7 +445,7 @@
 @endif
 
 {{-- ══ HISTORIAL REPRODUCTIVO (solo hembras) ══════════════════════════════════ --}}
-@if($animal->sexo === 'F' && $animal->eventos_reproductivos->count() > 0)
+@if($animal->sexo === 'H' && $animal->eventos_reproductivos->count() > 0)
 @php
     $servicios    = $animal->eventos_reproductivos->where('tipo_evento','servicio');
     $diagnosticos = $animal->eventos_reproductivos->where('tipo_evento','diagnostico');
@@ -432,7 +474,7 @@
                 <tr>
                     <td><span class="badge {{ $bc }}">{{ $ev->tipo_evento }}</span></td>
                     <td class="gray">{{ $ev->fecha }}</td>
-                    <td class="num">{{ $ev->costo ? '$'.number_format($ev->costo,2) : '—' }}</td>
+                    <td class="num">{{ $ev->costo ? $formatCurrency($ev->costo) : '—' }}</td>
                     <td class="gray trunc">{{ \Illuminate\Support\Str::limit($ev->observaciones ?? '—', 40) }}</td>
                 </tr>
                 @endforeach
@@ -467,7 +509,7 @@
             <thead><tr><th>Fecha</th><th>Método</th><th>Resultado</th><th>Días Gest.</th><th>F. Prob. Parto</th><th>Veterinario</th></tr></thead>
             <tbody>
                 @foreach($diagnosticos as $ev)
-                @php $dx = $ev->diagnostico; $br = match($dx?->resultado){ 'positivo'=>'bg-green','negativo'=>'bg-red','repetir'=>'bg-amber', default=>'bg-gray' }; @endphp
+                @php $dx = $ev->diagnostico; $br = match($dx?->resultado){ 'positivo'=>'bg-green','negativo'=>'bg-red','temprana'=>'bg-amber', default=>'bg-gray' }; @endphp
                 <tr>
                     <td class="gray">{{ $ev->fecha }}</td>
                     <td class="gray">{{ str_replace('_',' ',$dx?->metodo ?? '—') }}</td>

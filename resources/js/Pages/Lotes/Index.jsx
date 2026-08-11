@@ -6,32 +6,20 @@ import LoteModal from "./LoteModal";
 import ShowLoteModal from "./ShowLoteModal";
 import AppLayout from "@/Layouts/AppLayout";
 
-
-
-const especies = ["Bovino","Porcino","Caprino","Ovino","Equino","Aves de corral (gallinas y pollitos)","Gallos"];
-const razasPorEspecie = {
-  Bovino: ["Holstein", "Angus", "Hereford", "Simmental", "Otra"],
-  Porcino: ["Yorkshire", "Landrace", "Duroc", "Pietrain", "Otra"],
-  Caprino: ["Saanen", "Boer", "Alpina", "Toggenburg", "Otra"],
-  Ovino: ["Dorper", "Merino", "Suffolk", "Katahdin", "Otra"],
-  Equino: ["Cuarto de Milla", "Pura Sangre", "Árabe", "Criollo", "Otra"],
-  "Aves de corral (gallinas y pollitos)": ["Leghorn", "Rhode Island", "Plymouth Rock", "Otra"],
-  Gallos : [ "Gallos de pelea (Asil)", "Gallos Kelso","Gallos Hatch", "Gallos Sweater", "Gallos Shamo", 
-    "Gallos Cuban Brown", "Gallos Navajeros (LATAM)","Otra"],
-};
-
-const estadosProductivos = {
-  Bovino: ["Vaca seca", "Lactante", "Gestante", "En crecimiento", "Reproductor"],
-  Caprino: ["Gestante", "En crecimiento", "Lactante", "Reproductor"],
-  Ovino: ["Gestante", "En crecimiento", "Reproductor"],
-  Porcino: ["Gestante", "En crecimiento", "Reproductor"],
-  Equino: ["En entrenamiento", "Reproductor", "En descanso"],
-  "Aves de corral": ["Postura", "En descanso", "En crecimiento"],
-  Gallos: ["Reproductor", "En crecimiento", "En descanso", "De pelea / exhibición", 
-    "En entrenamiento"]
-};
-
-export default function Index({ auth, lotes, usuarios = [] }) {
+export default function Index({
+    auth,
+    lotes,
+    usuarios = [],
+    // Antes estos 3 catálogos vivían como constantes hardcodeadas aquí
+    // mismo (con las 7 especies viejas y razas/estados desactualizados).
+    // Ahora se reciben como props desde LoteController::index(), que es
+    // la misma fuente que usa AnimalController — así ambos módulos quedan
+    // sincronizados. El sistema ahora solo maneja Ovinos, así que en la
+    // práctica "especies" siempre llegará como ["Ovino"].
+    especies = [],
+    razasPorEspecie = {},
+    estadosProductivos = {},
+}) {
     const [showModal, setShowModal] = useState(false);
     const [isShowOpen, setIsShowOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);

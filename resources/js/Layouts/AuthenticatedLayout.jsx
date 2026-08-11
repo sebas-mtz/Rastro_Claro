@@ -6,17 +6,17 @@ export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
 
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="app-frame">
 
             {/* 🔹 SIDEBAR */}
             <Sidebar user={auth.user} />
 
             {/* 🔹 CONTENIDO PRINCIPAL */}
-            <div className="flex-1 flex flex-col">
+            <div className="app-content flex flex-col">
 
                 {/* HEADER (OPCIONAL) */}
                 {header && (
-                    <header className="bg-white shadow">
+                    <header className="bg-white shadow dark:bg-slate-900">
                         <div className="max-w-7xl mx-auto py-4 px-6">
                             {header}
                         </div>

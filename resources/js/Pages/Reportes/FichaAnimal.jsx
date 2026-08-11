@@ -9,10 +9,10 @@ import {
     Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Badge, SectionHeader } from "./Tablas";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmtFecha = (f) => f ? new Date(f).toLocaleDateString("es-MX") : "N/D";
-const fmtPeso  = (v) => v != null ? `${Number(v).toFixed(2)} kg` : "—";
 
 function calcularEdad(fechaNac) {
     if (!fechaNac) return "N/D";
@@ -69,21 +69,45 @@ function MiniTabla({ headers, rows, emptyMsg = "Sin registros." }) {
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function FichaAnimal({ animal }) {
+    const { formatWeight, formatCurrency } = usePreferences();
+    const fmtPeso = (v) => formatWeight(v);
     const pesajes        = animal.pesajes        ?? [];
     const alimentaciones = animal.alimentaciones ?? [];
     const eventossalud   = animal.eventos_salud  ?? [];
     const tratamientos   = animal.tratamientos   ?? [];
     const producciones   = animal.producciones   ?? [];
     const eventosRepro   = animal.eventos_reproductivos ?? [];
-    const esHembra       = animal.sexo === "F";
+    const esHembra       = animal.sexo === "H";
 
     // ── Cálculos de peso ──
     const pesajesOrden  = [...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha));
-    const pesoInicial   = pesajesOrden.length ? parseFloat(pesajesOrden[0].peso)                         : null;
-    const pesoActual    = pesajesOrden.length ? parseFloat(pesajesOrden[pesajesOrden.length - 1].peso)   : null;
+const primerPesaje = pesajesOrden.length
+    ? pesajesOrden[0]
+    : null;
+
+const pesoInicial = primerPesaje
+    ? parseFloat(primerPesaje.peso)
+    : null;
+
+const fechaPesoInicial = primerPesaje?.fecha || null;
+    const pesoActual    = pesajesOrden.length
+        ? parseFloat(pesajesOrden[pesajesOrden.length - 1].peso)
+        : (animal.peso != null ? parseFloat(animal.peso) : null);
     const gananciaPeso  = pesoInicial != null && pesoActual != null
-        ? Math.round((pesoActual - pesoInicial) * 100) / 100 : null;
+        ? Math.round((pesoActual - pesoInicial) * 100) / 100
+        : null;
     const chartDataPeso = pesajesOrden.map(p => ({ fecha: p.fecha, peso: parseFloat(p.peso) }));
+    const variacionPesaje = (pesaje) => {
+        const indice = pesajesOrden.findIndex((actual) => actual.id === pesaje.id);
+        if (indice < 0) return null;
+        const referencia = indice === 0
+            ? pesoInicial
+            : parseFloat(pesajesOrden[indice - 1].peso);
+        if (referencia == null) return null;
+        return Math.round(
+            (parseFloat(pesaje.peso) - referencia) * 100,
+        ) / 100;
+    };
 
     // ── Splits de reproductivos ──
     const servicios    = eventosRepro.filter(e => e.tipo_evento === "servicio");
@@ -131,7 +155,9 @@ export default function FichaAnimal({ animal }) {
                         <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-center">
                             <p className="text-[11px] text-gray-500 mb-1">Peso inicial</p>
                             <p className="text-base font-bold text-gray-800">{fmtPeso(pesoInicial)}</p>
-                            <p className="text-[10px] text-gray-400 mt-0.5">{pesajesOrden[0]?.fecha}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                                    {fechaPesoInicial || "Sin fecha"}         
+                           </p>
                         </div>
                         <div className="rounded-xl border border-blue-100 bg-blue-50 p-3 text-center">
                             <p className="text-[11px] text-blue-600 mb-1">Peso actual</p>
@@ -152,7 +178,7 @@ export default function FichaAnimal({ animal }) {
                                     gananciaPeso > 0 ? "text-emerald-700" :
                                     gananciaPeso < 0 ? "text-red-600"     : "text-gray-600"
                                 }`}>
-                                    {gananciaPeso != null ? `${gananciaPeso >= 0 ? "+" : ""}${gananciaPeso} kg` : "—"}
+                                    {gananciaPeso != null ? `${gananciaPeso >= 0 ? "+" : "-"}${formatWeight(Math.abs(gananciaPeso))}` : "—"}
                                 </p>
                             </div>
                             <p className="text-[10px] text-gray-400 mt-0.5">{pesajesOrden.length} pesaje(s)</p>
@@ -167,9 +193,9 @@ export default function FichaAnimal({ animal }) {
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                                     <XAxis dataKey="fecha" tick={{ fontSize: 10 }}
                                         tickFormatter={f => { const [,m,d] = f.split("-"); return `${d}/${m}`; }} />
-                                    <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}kg`} width={52} />
+                                    <YAxis tick={{ fontSize: 10 }} tickFormatter={v => formatWeight(v, { digits: 0 })} width={58} />
                                     <Tooltip
-                                        formatter={v => [`${Number(v).toFixed(2)} kg`, "Peso"]}
+                                        formatter={v => [formatWeight(v), "Peso"]}
                                         labelFormatter={l => `Fecha: ${l}`}
                                     />
                                     <Line type="monotone" dataKey="peso" stroke="#3b82f6" strokeWidth={2}
@@ -182,9 +208,8 @@ export default function FichaAnimal({ animal }) {
                     {/* Tabla completa */}
                     <MiniTabla
                         headers={["Fecha", "Peso", "Variación", "Notas"]}
-                        rows={[...pesajesOrden].reverse().map((p, i, arr) => {
-                            const sig   = arr[i + 1];
-                            const delta = sig ? Math.round((parseFloat(p.peso) - parseFloat(sig.peso)) * 100) / 100 : null;
+                        rows={[...pesajesOrden].reverse().map((p) => {
+                            const delta = variacionPesaje(p);
                             return (
                                 <tr key={p.id} className="border-t border-gray-100 hover:bg-blue-50/40">
                                     <td className="px-3 py-2 text-gray-500">{p.fecha}</td>
@@ -192,7 +217,7 @@ export default function FichaAnimal({ animal }) {
                                     <td className="px-3 py-2">
                                         {delta != null ? (
                                             <span className={`font-medium text-xs ${delta > 0 ? "text-emerald-600" : delta < 0 ? "text-red-500" : "text-gray-400"}`}>
-                                                {delta >= 0 ? "+" : ""}{delta} kg
+                                                {delta >= 0 ? "+" : "-"}{formatWeight(Math.abs(delta))}
                                             </span>
                                         ) : "—"}
                                     </td>
@@ -389,7 +414,7 @@ export default function FichaAnimal({ animal }) {
                                     <tr key={ev.id} className="border-t border-gray-100 hover:bg-rose-50/40">
                                         <td className="px-3 py-2"><Badge estado={ev.tipo_evento} /></td>
                                         <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
-                                        <td className="px-3 py-2">{ev.costo ? `$${ev.costo}` : "—"}</td>
+                                        <td className="px-3 py-2">{ev.costo ? formatCurrency(ev.costo) : "—"}</td>
                                         <td className="px-3 py-2 text-gray-400 max-w-[200px] truncate">{ev.observaciones ?? "—"}</td>
                                     </tr>
                                 ))}

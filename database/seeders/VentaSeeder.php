@@ -171,6 +171,7 @@ class VentaSeeder extends Seeder
 
         $animalesParaVenta = Animal::query()
             ->where('especie', 'Ovino')
+            ->whereNotIn('arete', ['B24-002', 'S24-001', 'B24-003', 'B25-001'])
             ->whereNotIn('estado_productivo', [
                 'vendido',
                 'sacrificado',
@@ -194,7 +195,7 @@ class VentaSeeder extends Seeder
         foreach ($animalesParaVenta as $index => $animal) {
             $precioUnitario = match ($animal->sexo) {
                 'M' => 3200.00,
-                'F' => 2800.00,
+                'H' => 2800.00,
                 default => 2500.00,
             };
 

@@ -1,9 +1,11 @@
 import { useForm, usePage, router } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 const DRAFT_KEY = 'raciones_form_draft_v2';
 
 export default function Raciones() {
+    const { formatCurrency } = usePreferences();
     // inventario siempre viene fresco de Inertia — si el controller lo pasa
     // correctamente, cualquier edición en Inventario se verá aquí al recargar
     // o navegar de vuelta.
@@ -313,13 +315,13 @@ export default function Raciones() {
                         <div>
                             <label className="mb-1 block text-xs font-medium text-gray-600">Precio total</label>
                             <div className={readonlyBlueClass}>
-                                {nutritionSummary.costoTotal !== '' ? `$${nutritionSummary.costoTotal}` : '—'}
+                                {nutritionSummary.costoTotal !== '' ? formatCurrency(nutritionSummary.costoTotal) : '—'}
                             </div>
                         </div>
                         <div>
                             <label className="mb-1 block text-xs font-medium text-gray-600">Precio por kilo</label>
                             <div className={readonlyBlueClass}>
-                                {nutritionSummary.costoPorKilo !== '' ? `$${nutritionSummary.costoPorKilo}` : '—'}
+                                {nutritionSummary.costoPorKilo !== '' ? formatCurrency(nutritionSummary.costoPorKilo) : '—'}
                             </div>
                         </div>
                     </div>
@@ -403,8 +405,8 @@ export default function Raciones() {
                                 <h5 className="text-xs font-semibold text-gray-700">Estado nutricional y costo</h5>
 
                                 <div className="flex flex-wrap gap-4 text-xs text-blue-700">
-                                    <span>Precio total: {nutritionSummary.costoTotal !== '' ? `$${nutritionSummary.costoTotal}` : '—'}</span>
-                                    <span>Por kilo: {nutritionSummary.costoPorKilo !== '' ? `$${nutritionSummary.costoPorKilo}` : '—'}</span>
+                                    <span>Precio total: {nutritionSummary.costoTotal !== '' ? formatCurrency(nutritionSummary.costoTotal) : '—'}</span>
+                                    <span>Por kilo: {nutritionSummary.costoPorKilo !== '' ? formatCurrency(nutritionSummary.costoPorKilo) : '—'}</span>
                                 </div>
 
                                 {/* Ninguno tiene valores → opción de registrar manualmente */}
@@ -536,7 +538,7 @@ export default function Raciones() {
                                     <td className="px-4 py-2">{racion.PB ?? '—'}</td>
                                     <td className="px-4 py-2">{racion.EM ?? '—'}</td>
                                     <td className="px-4 py-2">{racion.FDN ?? '—'}</td>
-                                    <td className="px-4 py-2">{racion.costo_total != null ? `$${racion.costo_total}` : '—'}</td>
+                                    <td className="px-4 py-2">{racion.costo_total != null ? formatCurrency(racion.costo_total) : '—'}</td>
                                     <td className="px-4 py-2">
                                         {racion.activo === false
                                             ? <span className="text-xs text-gray-400">Archivada</span>

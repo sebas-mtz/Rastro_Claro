@@ -1,8 +1,11 @@
 import React, { useMemo } from "react";
 import { useForm } from "@inertiajs/react";
 import { X } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function DiagnosticoModal({ show, onClose, hembras = [], eventos = [] }) {
+  const { preferences, currency } = usePreferences();
+  const diasGestacionPromedio = Number(preferences.gestation_days || 283);
 
   const { data, setData, post, processing, errors, reset } = useForm({
     hembra_id:                "",
@@ -126,7 +129,7 @@ export default function DiagnosticoModal({ show, onClose, hembras = [], eventos 
               >
                 <option value="positivo">Positivo — Gestante</option>
                 <option value="negativo">Negativo — Vacía</option>
-                <option value="repetir">Repetir diagnóstico</option>
+                <option value="repetir">Temprana </option>
               </select>
             </div>
 
@@ -139,7 +142,7 @@ export default function DiagnosticoModal({ show, onClose, hembras = [], eventos 
                   value={data.dias_gestacion_estimados}
                   onChange={e => setData("dias_gestacion_estimados", e.target.value)}
                   placeholder="Ej: 45"
-                  min={1} max={283}
+                  min={1} max={diasGestacionPromedio}
                   className="w-full border rounded-lg p-2 mt-1 text-sm"
                 />
               </div>
@@ -158,7 +161,7 @@ export default function DiagnosticoModal({ show, onClose, hembras = [], eventos 
 
             {/* COSTO */}
             <div>
-              <label className="text-sm font-medium">Costo</label>
+              <label className="text-sm font-medium">Costo ({currency})</label>
               <input
                 type="number"
                 value={data.costo}

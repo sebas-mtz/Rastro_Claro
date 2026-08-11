@@ -4,9 +4,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import { DollarSign, PlusCircle, Search, FileText, Calendar, Scale, User, Edit, Trash2, Eye, Package, TrendingUp } from 'lucide-react';
 import VentaModal from './VentasModal';
 import { ArrowLeft } from 'lucide-react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 export default function VentasIndex({ auth, ventas, estadisticas, animales, lotes, producciones,inventario_producciones,
     inventario_subproductos, faenas, compradores }) {
+    const { formatCurrency } = usePreferences();
     const [showModal, setShowModal] = useState(false);
     const [busqueda, setBusqueda] = useState('');
 
@@ -136,7 +138,7 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                             <div>
                                 <p className="text-sm text-gray-600">Ingreso Total</p>
                                 <p className="text-2xl font-bold text-gray-800">
-                                ${parseFloat(stats.ingreso_total || 0).toLocaleString()}
+                                {formatCurrency(stats.ingreso_total)}
                                 </p>
                                 <p className="text-xs text-green-600">
                                     {stats.total_ventas} ventas
@@ -151,7 +153,7 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                             <div>
                                 <p className="text-sm text-gray-600">Ingreso Mensual</p>
                                 <p className="text-2xl font-bold text-gray-800">
-                                ${parseFloat(stats.ingreso_mensual || 0).toLocaleString()}
+                                {formatCurrency(stats.ingreso_mensual)}
                                 </p>
                             </div>
                             <TrendingUp className="w-8 h-8 text-blue-500" />
@@ -213,7 +215,7 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                         <span>Mostrando {ventasFiltradas.length} de {ventasArray.length} ventas</span>
                         {ventasFiltradas.length > 0 && (
                             <span className="font-semibold text-green-600">
-                                Total filtrado: ${calcularTotalVentasFiltradas().toLocaleString()}
+                                Total filtrado: {formatCurrency(calcularTotalVentasFiltradas())}
                             </span>
                         )}
                     </div>
@@ -306,12 +308,12 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                                                     {venta.cantidad} {venta.unidad}
                                                 </div>
                                                 <div className="text-xs text-gray-500">
-                                                    ${venta.precio_unitario}/unidad
+                                                    {formatCurrency(venta.precio_unitario)}/unidad
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-lg font-semibold text-green-600">
-                                                    ${parseFloat(venta.precio_total || 0).toLocaleString()}
+                                                    {formatCurrency(venta.precio_total)}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">

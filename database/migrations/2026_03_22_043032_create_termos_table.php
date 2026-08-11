@@ -17,13 +17,14 @@ return new class extends Migration
             $table->string('codigo')->unique(); // TER-001
             $table->string('nombre')->nullable();
             $table->string('ubicacion')->nullable();
-            $table->integer('capacidad')->nullable();
-        
+            $table->decimal('capacidad')->nullable();
             $table->enum('estado', [
                 'activo',
                 'inactivo',
                 'mantenimiento'
             ])->default('activo');
+            $table->unsignedInteger('numero_canastillas')->default(1);
+            $table->unsignedInteger('capacidad_canastilla')->default(1);
         
             $table->text('descripcion')->nullable();
         

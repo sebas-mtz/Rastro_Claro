@@ -9,6 +9,8 @@ const EMPTY = {
     capacidad: '',
     estado: 'activo',
     descripcion: '',
+    numero_canastillas: '',
+    capacidad_canastilla: '',
 };
 
 function Field({ label, error, children }) {
@@ -44,6 +46,8 @@ export default function ModalTermo({ isOpen, onClose, termo = null }) {
                           nombre: termo.nombre ?? '',
                           ubicacion: termo.ubicacion ?? '',
                           capacidad: termo.capacidad ?? '',
+                        numero_canastillas: termo.numero_canastillas ?? '',
+                        capacidad_canastilla: termo.capacidad_canastilla ?? '',
                           estado: termo.estado ?? 'activo',
                           descripcion: termo.descripcion ?? '',
                       }
@@ -126,14 +130,43 @@ export default function ModalTermo({ isOpen, onClose, termo = null }) {
                             />
                         </Field>
 
-                        <Field label="Capacidad" error={errors?.capacidad}>
+                        <Field label="Capacidad (kg) *" error={errors?.capacidad}>
                             <input
                                 type="number"
-                                min="1"
+                                step="0.01"
+                                min="0"
                                 className={inputCls(errors?.capacidad)}
                                 value={form.capacidad}
                                 onChange={set('capacidad')}
-                                placeholder="500"
+                                placeholder="20"
+                            />
+                        </Field>
+
+                        <Field
+                            label="Número de canastillas *"
+                            error={errors?.numero_canastillas}
+                        >
+                            <input
+                                type="number"
+                                min="1"
+                                className={inputCls(errors?.numero_canastillas)}
+                                value={form.numero_canastillas}
+                                onChange={set('numero_canastillas')}
+                                placeholder="6"
+                            />
+                        </Field>
+
+                        <Field
+                            label="Capacidad por canastilla *"
+                            error={errors?.capacidad_canastilla}
+                        >
+                            <input
+                                type="number"
+                                min="1"
+                                className={inputCls(errors?.capacidad_canastilla)}
+                                value={form.capacidad_canastilla}
+                                onChange={set('capacidad_canastilla')}
+                                placeholder="10"
                             />
                         </Field>
 
@@ -150,7 +183,7 @@ export default function ModalTermo({ isOpen, onClose, termo = null }) {
                         </Field>
 
                         <div className="col-span-2">
-                            <Field label="Descripción" error={errors?.descripcion}>
+                            <Field label="Observaciones" error={errors?.descripcion}>
                                 <textarea
                                     rows={3}
                                     className={`${inputCls(errors?.descripcion)} resize-none`}

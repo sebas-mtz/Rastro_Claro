@@ -6,54 +6,58 @@ use App\Models\Animal;
 
 class EstadoProductivoService
 {
-    
+    // ── Catálogo manual por especie (etapa de vida / rol productivo) ──────
+    //
+    // El sistema actualmente solo maneja Ovinos. Se deja como arreglo con
+    // una sola clave (en vez de simplificar a una lista plana) para no
+    // romper el resto del código —AnimalController, LoteController y el
+    // frontend— que espera "especiesPorEspecie" como estructura clave/valor.
+    // Si en el futuro se reactiva otra especie, basta con agregar su clave
+    // aquí; es la única fuente de verdad de la que dependen las validaciones
+    // de especie en StoreAnimalRequest/UpdateAnimalRequest.
+    public static function estadosManualesPorEspecie(): array
+    {
+        return [
+            'Ovino' => ['Cordero', 'Vientre', 'Semental', 'N/A'],
+        ];
+    }
 
-// Lo que el sistema asigna automáticamente — NO aparece en el select
-public static function estadosAutomaticos(): array
-{
-    return ['empadre', 'gestante', 'lactancia', 'vacia'];
-}
-public static function estadosManualesPorEspecie(): array
-{
-    return [
-        'Bovino'  => ['Vaca seca', 'En crecimiento', 'Reproductor', 'Reemplazo', 'Mantenimiento', 'Desecho'],
-        'Caprino' => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Ovino'   => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Porcino' => ['En crecimiento', 'Reproductor', 'reemplazo', 'mantenimiento', 'desecho'],
-        'Equino'  => ['En entrenamiento', 'Reproductor', 'En descanso', 'reemplazo', 'desecho'],
-        'Aves de corral (gallinas y pollitos)' => ['Postura', 'En descanso', 'En crecimiento', 'desecho'],
-        'Gallos'  => ['En crecimiento', 'Reproductor', 'De pelea / exhibición', 'En entrenamiento', 'En descanso', 'desecho'],
-    ];
-}
-// El catálogo completo — para filtros, reportes, o validaciones internas
-public static function estadosPorEspecie(): array
-{
-    $automaticos = self::estadosAutomaticos();
+    public static function estadosPorEspecie(): array
+    {
+        return self::estadosManualesPorEspecie();
+    }
 
-    return array_map(
-        fn($estados) => array_merge($estados, $automaticos),
-        self::estadosManualesPorEspecie()
-    );
-}
+    public static function estadoInicial(string $especie): string
+    {
+        return match ($especie) {
+            'Ovino' => 'Cordero',
+            default => 'N/A',
+        };
+    }
+
+    // ── Estados automáticos de reproducción — NO aparecen en el select ────
+    public static function estadosAutomaticos(): array
+    {
+        return ['empadre', 'gestante', 'lactancia', 'vacia'];
+    }
+
     // ── Especies que tienen módulo reproductivo activo ────────────────────
-
     public static function especiesConReproduccion(): array
     {
-        return ['Bovino', 'Caprino', 'Ovino', 'Porcino'];
+        return ['Ovino'];
     }
 
     // ── Transición automática por evento reproductivo ─────────────────────
-
     /**
      * Actualiza el estado_productivo del animal según el evento ocurrido.
      *
-     * servicio            → empadre
+     * servicio             → empadre
      * diagnóstico positivo → gestante
      * diagnóstico negativo → vacia
      * diagnóstico repetir  → vacia
-     * parto               → lactancia
+     * parto                → lactancia
      *
-     * No toca equinos, gallos ni aves.
+     * No toca especies fuera de especiesConReproduccion().
      */
     public function transicionPorEvento(
         Animal $animal,
@@ -66,11 +70,11 @@ public static function estadosPorEspecie(): array
 
         $nuevoEstado = match(true) {
             $tipoEvento === 'servicio'                                            => 'empadre',
-            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'positivo' => 'gestante',
-            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'negativo' => 'vacia',
-            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'repetir'  => 'vacia',
-            $tipoEvento === 'parto'                                               => 'lactancia',
-            default                                                               => null,
+            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'positivo'  => 'gestante',
+            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'negativo'  => 'vacia',
+            $tipoEvento === 'diagnostico' && $resultadoDiagnostico === 'repetir'   => 'vacia',
+            $tipoEvento === 'parto'                                                => 'lactancia',
+            default                                                                => null,
         };
 
         if ($nuevoEstado && $animal->estado_productivo !== $nuevoEstado) {
@@ -78,31 +82,28 @@ public static function estadosPorEspecie(): array
         }
     }
 
-    // ── Estado inicial para crías nacidas vivas ───────────────────────────
-
-    /**
-     * Las crías siempre nacen en 'reemplazo' independientemente de la especie.
-     * El ganadero las mueve manualmente cuando crecen.
-     */
-    public static function estadoInicial(): string
+    // ── Estados de sistema (no reproductivos) ──────────────────────────────
+    //
+    // NOTA: 'muerto' va en minúscula a propósito — así se compara en
+    // Animal::booted() y en varios checks de AnimalController
+    // ($animal->estado_productivo === 'muerto'). Si el frontend necesita
+    // esta lista (por ejemplo para agrupar tarjetas), debe recibirla como
+    // prop desde el controlador en vez de hardcodearla, precisamente para
+    // evitar que se desincronice el casing como ya pasó una vez.
+    public static function estadosSistema(): array
     {
-        return 'reemplazo';
+        return ['Faeneado', 'Vendido', 'Sacrificado', 'muerto'];
     }
 
     // ── Todos los valores que el sistema puede escribir ───────────────────
-
-    /**
-     * Útil si en algún momento quieres agregar validación in: en el Request.
-     * Incluye los estados manuales de todas las especies + los que escribe
-     * código interno (reproducción, faenas, ventas).
-     */
     public static function todosLosValores(): array
     {
-        $manuales = array_unique(array_merge(...array_values(self::estadosPorEspecie())));
+        $manuales = array_unique(array_merge(...array_values(self::estadosManualesPorEspecie())));
 
-        $sistema = ['empadre', 'gestante', 'lactancia', 'vacia', 'reemplazo',
-                    'faeneado', 'vendido', 'sacrificado'];
-
-        return array_unique(array_merge($manuales, $sistema));
+        return array_unique(array_merge(
+            $manuales,
+            self::estadosAutomaticos(),
+            self::estadosSistema()
+        ));
     }
 }

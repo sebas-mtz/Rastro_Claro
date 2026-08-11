@@ -367,7 +367,7 @@ if ($pajillaId) {
         /* ── 5. Crías ─────────────────────────────────────────────────── */
         foreach ($p['crias'] as $cria) {
             $animalId = $animals[$cria['arete']] ?? null;
-        
+
             /*
              * AnimalSeeder creó previamente al animal.
              * Aquí completamos su genealogía según el servicio reproductivo.
@@ -379,10 +379,14 @@ if ($pajillaId) {
                         'madre_id' => $madreId,
                         'padre_id' => $padreId,
                         'padre_externo_id' => $padreExternoId,
+                        'fecha_nac' => $partoFecha->toDateString(),
+                        'peso' => $cria['peso'],
+                        'peso_inicial' => $cria['peso'],
+                        'fecha_peso_inicial' => $partoFecha->toDateString(),
                         'updated_at' => now(),
                     ]);
             }
-        
+
             DB::table('crias')->insert([
                 'parto_id' => $partoId,
                 'animal_id' => $animalId,

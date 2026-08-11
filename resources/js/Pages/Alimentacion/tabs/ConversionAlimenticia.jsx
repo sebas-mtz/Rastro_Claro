@@ -1,7 +1,9 @@
 import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 export default function ConversionAlimenticia() {
+    const { formatCurrency, formatWeight, currency, weightUnit } = usePreferences();
     const { porAnimal = [], porLote = [], fechaInicio='', fechaFin='', flash = {} } = usePage().props;
 
     const [tab, setTab]                   = useState('animal'); // 'animal' | 'lote'
@@ -19,8 +21,8 @@ export default function ConversionAlimenticia() {
 
     // ─── Helpers de formato ───────────────────────────────────────────────────
     const fmt     = (v, dec = 2) => (v != null ? Number(v).toFixed(dec) : '—');
-    const fmtPeso = (v)          => (v != null ? `${fmt(v)} kg` : '—');
-    const fmtCost = (v)          => (v != null ? `$${fmt(v)}` : '—');
+    const fmtPeso = (v)          => (v != null ? formatWeight(v) : '—');
+    const fmtCost = (v)          => (v != null ? formatCurrency(v) : '—');
 
     const badgeCA = (ca) => {
         if (ca == null) return 'bg-gray-100 text-gray-500 border-gray-200';
@@ -137,7 +139,7 @@ export default function ConversionAlimenticia() {
                                         <th className="px-4 py-3 font-medium text-right">Peso fin</th>
                                         <th className="px-4 py-3 font-medium text-right">Ganancia</th>
                                         <th className="px-4 py-3 font-medium text-center">CA</th>
-                                        <th className="px-4 py-3 font-medium text-right">$/kg ganancia</th>
+                                        <th className="px-4 py-3 font-medium text-right">{currency}/{weightUnit} ganancia</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100 bg-white">
@@ -174,7 +176,7 @@ export default function ConversionAlimenticia() {
                                             </td>
                                             <td className={`px-4 py-3 text-right font-medium ${badgeGanancia(row.ganancia_peso)}`}>
                                                 {row.ganancia_peso != null
-                                                    ? `${row.ganancia_peso >= 0 ? '+' : ''}${fmt(row.ganancia_peso)} kg`
+                                                    ? `${row.ganancia_peso >= 0 ? '+' : '-'}${formatWeight(Math.abs(row.ganancia_peso))}`
                                                     : <span className="text-gray-300 font-normal">Sin pesajes</span>
                                                 }
                                             </td>
@@ -199,7 +201,7 @@ export default function ConversionAlimenticia() {
 
                     {/* Leyenda CA */}
                     <div className="flex flex-wrap gap-3 text-[11px] text-gray-500">
-                        <span>CA = kg alimento / kg ganancia de peso</span>
+                        <span>CA = {weightUnit} alimento / {weightUnit} ganancia de peso</span>
                         <span className="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-green-700">≤ 6 Excelente</span>
                         <span className="rounded-full border border-yellow-200 bg-yellow-50 px-2 py-0.5 text-yellow-700">7–10 Aceptable</span>
                         <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-red-700"> 10 Revisar</span>
@@ -244,7 +246,7 @@ export default function ConversionAlimenticia() {
                                                 </span>
                                                 {row.ganancia_total !== 0 && (
                                                     <span className={badgeGanancia(row.ganancia_total)}>
-                                                        Ganancia total: <strong>{row.ganancia_total >= 0 ? '+' : ''}{fmt(row.ganancia_total)} kg</strong>
+                                                        Ganancia total: <strong>{row.ganancia_total >= 0 ? '+' : '-'}{formatWeight(Math.abs(row.ganancia_total))}</strong>
                                                     </span>
                                                 )}
                                             </div>
@@ -262,7 +264,7 @@ export default function ConversionAlimenticia() {
                                             )}
                                             {row.costo_kg_ganancia != null && (
                                                 <div className="text-center">
-                                                    <div className="text-[10px] text-gray-400 mb-0.5">$/kg ganancia</div>
+                                                    <div className="text-[10px] text-gray-400 mb-0.5">{currency}/{weightUnit} ganancia</div>
                                                     <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700">
                                                         {fmtCost(row.costo_kg_ganancia)}
                                                     </span>
@@ -291,7 +293,7 @@ export default function ConversionAlimenticia() {
                                                         <th className="px-4 py-2 font-medium text-right">Peso fin</th>
                                                         <th className="px-4 py-2 font-medium text-right">Ganancia</th>
                                                         <th className="px-4 py-2 font-medium text-center">CA</th>
-                                                        <th className="px-4 py-2 font-medium text-right">$/kg ganancia</th>
+                                                        <th className="px-4 py-2 font-medium text-right">{currency}/{weightUnit} ganancia</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100">
@@ -307,7 +309,7 @@ export default function ConversionAlimenticia() {
                                                             <td className="px-4 py-2 text-right text-gray-500">{fmtPeso(a.peso_fin)}</td>
                                                             <td className={`px-4 py-2 text-right font-medium ${badgeGanancia(a.ganancia)}`}>
                                                                 {a.ganancia != null
-                                                                    ? `${a.ganancia >= 0 ? '+' : ''}${fmt(a.ganancia)} kg`
+                                                                    ? `${a.ganancia >= 0 ? '+' : '-'}${formatWeight(Math.abs(a.ganancia))}`
                                                                     : <span className="text-gray-300 font-normal">Sin pesajes</span>
                                                                 }
                                                             </td>
@@ -334,7 +336,7 @@ export default function ConversionAlimenticia() {
 
                     {/* Leyenda */}
                     <div className="flex flex-wrap gap-3 text-[11px] text-gray-500">
-                        <span>CA = kg alimento / kg ganancia de peso</span>
+                        <span>CA = {weightUnit} alimento / {weightUnit} ganancia de peso</span>
                         <span className="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-green-700">≤ 6 Excelente</span>
                         <span className="rounded-full border border-yellow-200 bg-yellow-50 px-2 py-0.5 text-yellow-700">7-10 Aceptable</span>
                         <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-red-700"> 10 Revisar</span>

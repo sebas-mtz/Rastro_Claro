@@ -1,4 +1,16 @@
 <!DOCTYPE html>
+@php
+    $reportSettings = auth()->user()?->settings ?? [];
+    $reportCurrency = data_get($reportSettings, 'currency', 'MXN');
+    $currencyPrefixes = ['MXN' => '$', 'USD' => 'US$', 'EUR' => '€', 'COP' => 'COL$', 'ARS' => 'AR$'];
+    $formatCurrency = fn ($value) => ($currencyPrefixes[$reportCurrency] ?? $reportCurrency.' ')
+        .number_format((float) $value, 2);
+    $reportWeightUnit = data_get($reportSettings, 'weight_unit', 'kg');
+    $formatWeight = fn ($value) => number_format(
+        $reportWeightUnit === 'lb' ? (float) $value * 2.2046226218 : (float) $value,
+        2,
+    ).' '.$reportWeightUnit;
+@endphp
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -318,7 +330,7 @@
             </td>
             <td style="background:#ecfdf5; border:1px solid #6ee7b7; border-radius:4px; padding:6px 8px;">
                 <div style="font-size:13px; font-weight:700; color:#047857;">{{ $r['total_ventas'] ?? '—' }}</div>
-                <div style="font-size:7px; color:#6b7280;">Ventas<br><span style="color:#9ca3af;">${{ number_format($r['ingresos_ventas'] ?? 0, 2) }}</span></div>
+                <div style="font-size:7px; color:#6b7280;">Ventas<br><span style="color:#9ca3af;">{{ $formatCurrency($r['ingresos_ventas'] ?? 0) }}</span></div>
             </td>
             <td style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px; padding:6px 8px;">
                 <div style="font-size:13px; font-weight:700; color:#0284c7;">{{ $r['total_produccion'] ?? '—' }}</div>
@@ -360,7 +372,7 @@
                     </span>
                 </td>
                 <td class="gray">{{ $a->fecha_nac ?? '—' }}</td>
-                <td class="num">{{ $a->peso ? $a->peso.' kg' : '—' }}</td>
+                <td class="num">{{ $a->peso ? $formatWeight($a->peso) : '—' }}</td>
                 <td>{{ $a->BCS ?? '—' }}</td>
                 <td class="gray">{{ $a->estado_productivo ?? '—' }}</td>
                 <td class="gray">{{ $a->lote?->nombre ?? '—' }}</td>
@@ -488,7 +500,7 @@
 <div class="section">
     <div class="section-header hdr-green">
         <span class="title">⚖ Pesajes</span>
-        <span class="count">{{ $datos['pesajes']['total'] }} registros &nbsp;·&nbsp; Prom: {{ $datos['pesajes']['peso_promedio'] ?? '—' }} kg</span>
+        <span class="count">{{ $datos['pesajes']['total'] }} registros &nbsp;·&nbsp; Prom: {{ isset($datos['pesajes']['peso_promedio']) ? $formatWeight($datos['pesajes']['peso_promedio']) : '—' }}</span>
     </div>
     <table class="data">
         <thead>
@@ -500,9 +512,7 @@
         <tbody>
             @foreach($datos['pesajes']['registros'] as $i => $p)
             @php
-                $anterior   = $datos['pesajes']['registros'][$i + 1] ?? null;
-                $mismoAnim  = $anterior && $anterior->animal?->id === $p->animal?->id;
-                $variacion  = $mismoAnim ? round($p->peso - $anterior->peso, 2) : null;
+                $variacion = $p->variacion;
             @endphp
             <tr>
                 <td class="mono">{{ $p->animal?->arete ?? '—' }}</td>
@@ -510,11 +520,11 @@
                 <td>{{ $p->animal?->especie ?? '—' }}</td>
                 <td class="gray">{{ $p->animal?->lote?->nombre ?? '—' }}</td>
                 <td class="gray">{{ $p->fecha }}</td>
-                <td class="num">{{ $p->peso }} kg</td>
+                <td class="num">{{ $formatWeight($p->peso) }}</td>
                 <td>
                     @if($variacion !== null)
                         <span class="{{ $variacion >= 0 ? 'pos' : 'neg' }}">
-                            {{ $variacion >= 0 ? '+' : '' }}{{ $variacion }} kg
+                            {{ $variacion >= 0 ? '+' : '-' }}{{ $formatWeight(abs($variacion)) }}
                         </span>
                     @else
                         —
@@ -533,7 +543,7 @@
 <div class="section">
     <div class="section-header hdr-orange">
         <span class="title">🌾 Alimentación</span>
-        <span class="count">{{ $datos['alimentacion']['total'] }} registros &nbsp;·&nbsp; Total: {{ $datos['alimentacion']['total_kg'] }} kg</span>
+        <span class="count">{{ $datos['alimentacion']['total'] }} registros &nbsp;·&nbsp; Total: {{ $formatWeight($datos['alimentacion']['total_kg']) }}</span>
     </div>
     <table class="data">
         <thead>
@@ -590,7 +600,7 @@
                 <td class="gray">{{ $inv->unidad ?? '—' }}</td>
                 <td class="gray">{{ $inv->MS ?? '—' }}</td>
                 <td class="gray">{{ $inv->PB ?? '—' }}</td>
-                <td class="num">{{ $inv->costo_promedio ? '$'.number_format($inv->costo_promedio,2) : '—' }}</td>
+                <td class="num">{{ $inv->costo_promedio ? $formatCurrency($inv->costo_promedio) : '—' }}</td>
                 <td>
                     <span class="badge {{ $inv->activo ? 'badge-green' : 'badge-gray' }}">
                         {{ $inv->activo ? 'Sí' : 'No' }}
@@ -625,7 +635,7 @@
                 <td class="gray">{{ $ev->lote?->nombre ?? '—' }}</td>
                 <td><span class="badge badge-purple">{{ $ev->tipo_evento }}</span></td>
                 <td class="gray">{{ $ev->fecha }}</td>
-                <td class="num">{{ $ev->costo ? '$'.number_format($ev->costo,2) : '—' }}</td>
+                <td class="num">{{ $ev->costo ? $formatCurrency($ev->costo) : '—' }}</td>
                 <td class="gray">{{ \Illuminate\Support\Str::limit($ev->observaciones ?? '—', 40) }}</td>
             </tr>
             @endforeach
@@ -675,7 +685,7 @@
                     @endif
                 </td>
                 <td class="gray">{{ $srv?->tecnico?->name ?? $srv?->tecnico_externo ?? '—' }}</td>
-                <td class="num">{{ $ev->costo ? '$'.number_format($ev->costo,2) : '—' }}</td>
+                <td class="num">{{ $ev->costo ? $formatCurrency($ev->costo) : '—' }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -707,7 +717,7 @@
                 <td class="gray">{{ str_replace('_', ' ', $dx?->metodo ?? '—') }}</td>
                 <td>
                     @if($dx?->resultado)
-                        @php $rc = match($dx->resultado){ 'positivo'=>'badge-green','negativo'=>'badge-red','repetir'=>'badge-amber', default=>'badge-gray' }; @endphp
+                        @php $rc = match($dx->resultado){ 'positivo'=>'badge-green','negativo'=>'badge-red','temprana'=>'badge-amber', default=>'badge-gray' }; @endphp
                         <span class="badge {{ $rc }}">{{ $dx->resultado }}</span>
                     @else —
                     @endif
@@ -807,7 +817,7 @@
 <div class="section">
     <div class="section-header hdr-green">
         <span class="title">💰 Ventas</span>
-        <span class="count">{{ $datos['ventas']['total'] }} registros &nbsp;·&nbsp; Ingresos: ${{ number_format($datos['ventas']['total_ingresos'] ?? 0, 2) }}</span>
+        <span class="count">{{ $datos['ventas']['total'] }} registros &nbsp;·&nbsp; Ingresos: {{ $formatCurrency($datos['ventas']['total_ingresos'] ?? 0) }}</span>
     </div>
     <table class="data">
         <thead>
@@ -831,8 +841,8 @@
                 <td style="max-width:80px;">{{ \Illuminate\Support\Str::limit($v->producto, 20) }}</td>
                 <td class="num">{{ number_format($v->cantidad, 2) }}</td>
                 <td class="gray">{{ $v->unidad }}</td>
-                <td class="num">${{ number_format($v->precio_unitario, 2) }}</td>
-                <td class="num pos">${{ number_format($v->precio_total, 2) }}</td>
+                <td class="num">{{ $formatCurrency($v->precio_unitario) }}</td>
+                <td class="num pos">{{ $formatCurrency($v->precio_total) }}</td>
                 <td><span class="badge badge-gray">{{ str_replace('_',' ',$v->metodo_pago) }}</span></td>
                 <td><span class="badge {{ $ev }}">{{ $v->estado_venta }}</span></td>
                 <td><span class="badge {{ $ep }}">{{ $v->estado_pago }}</span></td>

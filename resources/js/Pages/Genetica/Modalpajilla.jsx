@@ -11,7 +11,8 @@ const EMPTY = {
     cantidad: 1,
     codigo: '',
     lote: '',
-    fecha_vencimiento: '',
+    fecha_colecta: '',
+    capacidad_pajilla: '',
     estado: 'disponible',
     observaciones: '',
 };
@@ -49,6 +50,15 @@ export default function ModalPajilla({
     const [processing, setProcessing] = useState(false);
     const [busquedaAnimal, setBusquedaAnimal] = useState('');
 
+    // Un termo inactivo/en mantenimiento no admite pajillas nuevas.
+    // Al editar dejamos pasar el termo actual de la pajilla aunque ya no
+    // esté activo, para no ocultarlo del select y perder el dato.
+    const termosDisponibles = useMemo(() => {
+        return termos.filter(
+            (t) => t.estado === 'activo' || (isEdit && String(t.id) === String(pajilla?.termo_id))
+        );
+    }, [termos, isEdit, pajilla]);
+
     const animalesFiltrados = useMemo(() => {
         const texto = busquedaAnimal.toLowerCase().trim();
 
@@ -74,7 +84,8 @@ export default function ModalPajilla({
                     cantidad: 1,
                     codigo: pajilla.codigo ?? '',
                     lote: pajilla.lote ?? '',
-                    fecha_vencimiento: pajilla.fecha_vencimiento?.slice(0, 10) ?? '',
+                    fecha_colecta: pajilla.fecha_colecta?.slice(0, 10) ?? '',
+                    capacidad_pajilla: pajilla.capacidad_pajilla ?? '',
                     estado: pajilla.estado ?? 'disponible',
                     observaciones: pajilla.observaciones ?? '',
                 });
@@ -94,6 +105,10 @@ export default function ModalPajilla({
     }, [onClose]);
 
     if (!isOpen) return null;
+
+    const termoSeleccionado = termosDisponibles.find(
+        (termo) => String(termo.id) === String(form.termo_id)
+    );
 
     const set = (field) => (e) => {
         setForm((current) => ({
@@ -126,7 +141,8 @@ export default function ModalPajilla({
             animal_id: form.origen === 'interno' ? form.animal_id : '',
             donador_externo_id: form.origen === 'externo' ? form.donador_externo_id : '',
             lote: form.lote,
-            fecha_vencimiento: form.fecha_vencimiento,
+            fecha_colecta: form.fecha_colecta,
+            capacidad_pajilla: form.capacidad_pajilla,
             observaciones: form.observaciones,
         };
 
@@ -189,16 +205,87 @@ export default function ModalPajilla({
                             >
                                 <option value="">Seleccionar termo…</option>
 
-                                {termos.map((termo) => (
+                                {termosDisponibles.map((termo) => (
                                     <option key={termo.id} value={termo.id}>
                                         {termo.codigo}
                                         {termo.nombre ? ` — ${termo.nombre}` : ''}
                                     </option>
                                 ))}
                             </select>
+
+                            {termosDisponibles.length === 0 && (
+                                <p className="mt-1 text-xs text-gray-400">
+                                    No hay termos activos disponibles en este momento.
+                                </p>
+                            )}
+
+                            {termoSeleccionado && (
+                                <div className="mt-2 rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600">
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <span className="block font-semibold text-gray-500">
+                                                Capacidad
+                                            </span>
+                                            {termoSeleccionado.capacidad} kg
+                                        </div>
+
+                                        <div>
+                                            <span className="block font-semibold text-gray-500">
+                                                Canastillas
+                                            </span>
+                                            {termoSeleccionado.numero_canastillas}
+                                        </div>
+
+                                        <div>
+                                            <span className="block font-semibold text-gray-500">
+                                                Pajillas/canastilla
+                                            </span>
+                                            {termoSeleccionado.capacidad_canastilla}
+                                        </div>
+                                    </div>
+
+                                    {termoSeleccionado.canastillas_detalle && (
+                                        <div className="mt-3 rounded-lg bg-white border border-gray-200 p-3">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-xs font-semibold text-gray-500">
+                                                    Espacio disponible
+                                                </span>
+                                                <span
+                                                    className={`text-xs font-semibold ${
+                                                        termoSeleccionado.espacios_libres_total === 0
+                                                            ? 'text-red-600'
+                                                            : 'text-emerald-600'
+                                                    }`}
+                                                >
+                                                    {termoSeleccionado.espacios_libres_total} espacio(s) libre(s)
+                                                </span>
+                                            </div>
+
+                                            <div className="grid grid-cols-4 gap-1.5">
+                                                {termoSeleccionado.canastillas_detalle.map((c) => (
+                                                    <div
+                                                        key={c.numero}
+                                                        className={`rounded-md px-2 py-1.5 text-center text-[11px] font-medium border ${
+                                                            c.libres === 0
+                                                                ? 'bg-red-50 border-red-200 text-red-500'
+                                                                : 'bg-white border-gray-200 text-gray-600'
+                                                        }`}
+                                                        title={`Canastilla ${c.numero}: ${c.ocupadas} ocupadas, ${c.libres} libres`}
+                                                    >
+                                                        C{c.numero}
+                                                        <div className="text-[10px] text-gray-400">
+                                                            {c.libres} libre{c.libres !== 1 ? 's' : ''}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </Field>
 
-                        <Field label="Origen de genética *" error={errors?.origen}>
+                        <Field label="Origen *" error={errors?.origen}>
                             <select
                                 className={inputCls(errors?.origen)}
                                 value={form.origen}
@@ -330,15 +417,21 @@ export default function ModalPajilla({
                                     />
                                 </Field>
 
-                                <Field label="Cantidad *" error={errors?.cantidad}>
+                                <Field label="Numero de dosis *" error={errors?.cantidad}>
                                     <input
                                         type="number"
                                         min="1"
                                         className={inputCls(errors?.cantidad)}
                                         value={form.cantidad}
                                         onChange={set('cantidad')}
-                                        placeholder="100"
+                                        placeholder="Cantidad de pajillas, ej: 10"
                                     />
+                                    {termoSeleccionado?.espacios_libres_total !== undefined &&
+                                        Number(form.cantidad) > termoSeleccionado.espacios_libres_total && (
+                                        <p className="text-xs text-amber-600 mt-1">
+                                            ⚠ Solo hay {termoSeleccionado.espacios_libres_total} espacio(s) libre(s) en este termo.
+                                        </p>
+                                    )}
                                 </Field>
                             </>
                         )}
@@ -352,12 +445,27 @@ export default function ModalPajilla({
                             />
                         </Field>
 
-                        <Field label="Fecha de vencimiento" error={errors?.fecha_vencimiento}>
+                        <Field label="Fecha de colecta" error={errors?.fecha_colecta}>
                             <input
                                 type="date"
-                                className={inputCls(errors?.fecha_vencimiento)}
-                                value={form.fecha_vencimiento}
-                                onChange={set('fecha_vencimiento')}
+                                className={inputCls(errors?.fecha_colecta)}
+                                value={form.fecha_colecta}
+                                onChange={set('fecha_colecta')}
+                            />
+                        </Field>
+
+                        <Field
+                            label="Capacidad de pajilla (ml) *"
+                            error={errors?.capacidad_pajilla}
+                        >
+                            <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                className={inputCls(errors?.capacidad_pajilla)}
+                                value={form.capacidad_pajilla}
+                                onChange={set('capacidad_pajilla')}
+                                placeholder="Ej. 0.25"
                             />
                         </Field>
 
@@ -371,7 +479,6 @@ export default function ModalPajilla({
                                     <option value="disponible">Disponible</option>
                                     <option value="utilizada">Utilizada</option>
                                     <option value="dañada">Dañada</option>
-                                    <option value="vencida">Vencida</option>
                                 </select>
                             </Field>
                         )}

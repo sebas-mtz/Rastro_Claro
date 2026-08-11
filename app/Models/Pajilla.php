@@ -16,15 +16,17 @@ class Pajilla extends Model
         'codigo',
         'lote',
         'fecha_ingreso',
-        'fecha_vencimiento',
+        'fecha_colecta',        
+        'capacidad_pajilla',
         'fecha_utilizacion',
         'estado',
         'observaciones',
+        'canastilla_numero'
     ];
 
     protected $casts = [
         'fecha_ingreso' => 'date',
-        'fecha_vencimiento' => 'date',
+        'fecha_colecta' => 'date',
         'fecha_utilizacion' => 'date',
     ];
 
@@ -49,16 +51,4 @@ class Pajilla extends Model
     // app/Models/Pajilla.php
 // app/Models/Pajilla.php
 
-protected static function booted()
-{
-    static::saving(function (Pajilla $pajilla) {
-        if (
-            $pajilla->estado === 'disponible'
-            && $pajilla->fecha_vencimiento
-            && $pajilla->fecha_vencimiento <= today()->toDateString()
-        ) {
-            $pajilla->estado = 'vencida';
-        }
-    });
-}
 }

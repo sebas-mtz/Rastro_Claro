@@ -1,5 +1,6 @@
 import React from "react";
 import { X, ClipboardList } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function HistorialPesajesModal({
     open,
@@ -9,6 +10,7 @@ export default function HistorialPesajesModal({
     round2,
     badgeGanancia,
 }) {
+    const { formatWeight } = usePreferences();
     if (!open || !animal) return null;
 
     const pesajesOrdenados = [...(animal.pesajes || [])].sort(
@@ -51,8 +53,12 @@ export default function HistorialPesajesModal({
                         <div className="space-y-3">
                             {pesajesOrdenados.map((pesaje, idx, arr) => {
                                 const siguiente = arr[idx + 1];
-                                const delta = siguiente
-                                    ? round2(pesaje.peso - siguiente.peso)
+                                const indiceCronologico = arr.length - 1 - idx;
+                                const pesoReferencia = indiceCronologico === 0
+                                    ? null
+                                    : siguiente?.peso;
+                                const delta = pesoReferencia != null
+                                    ? round2(pesaje.peso - pesoReferencia)
                                     : null;
 
                                 return (
@@ -71,7 +77,7 @@ export default function HistorialPesajesModal({
                                             <div>
                                                 <p className="text-xs text-gray-500">Peso</p>
                                                 <p className="text-sm font-semibold text-gray-800">
-                                                    {pesaje.peso} kg
+                                                    {formatWeight(pesaje.peso)}
                                                 </p>
                                             </div>
 
@@ -86,8 +92,8 @@ export default function HistorialPesajesModal({
                                                                 delta
                                                             )}`}
                                                         >
-                                                            {delta >= 0 ? "+" : ""}
-                                                            {delta} kg
+                                                            {delta >= 0 ? "+" : "-"}
+                                                            {formatWeight(Math.abs(delta))}
                                                         </span>
                                                     ) : (
                                                         <span className="text-sm text-gray-300">

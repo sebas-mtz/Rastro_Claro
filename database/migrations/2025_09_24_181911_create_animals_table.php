@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('raza')->nullable();
             $table->string('arete');
             $table->string('alias')->nullable();
-            $table->enum('sexo', ['M','F']);
+            $table->enum('sexo', ['M','H']);
             $table->date('fecha_nac')->nullable();
             $table->decimal('peso', 6, 2)->nullable();
             $table->decimal('BCS', 3, 1)->nullable();

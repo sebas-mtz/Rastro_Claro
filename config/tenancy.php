@@ -26,6 +26,9 @@ use App\Models\Termo;
 use App\Models\Tratamiento;
 use App\Models\Vacuna;
 use App\Models\Venta;
+use App\Models\Muerte;
+use App\Models\Destete;
+use App\Models\DesteteCria;
 
 return [
     /*
@@ -60,6 +63,9 @@ return [
         Tratamiento::class,
         Vacuna::class,
         Venta::class,
+        Muerte::class,
+        Destete::class,
+        DesteteCria::class,
     ],
 
     'tables' => [
@@ -89,5 +95,8 @@ return [
         'tratamientos',
         'vacunas',
         'ventas',
+        'muertes',
+        'destetes',
+        'destete_crias',
     ],
 ];
