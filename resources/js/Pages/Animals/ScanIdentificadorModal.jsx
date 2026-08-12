@@ -1,8 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { X, ScanLine, Search, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { X, ScanLine, Search, AlertTriangle, CheckCircle2, Usb, Info } from 'lucide-react';
 import { router, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { useKeyboardWedgeReader, normalizarCodigo } from '@/Services/identifierReader';
+import {
+    useKeyboardWedgeReader,
+    useSerialTagReader,
+    normalizarCodigo,
+    leerCodigoIso,
+} from '@/Services/identifierReader';
+
+/**
+ * Muestra qué se leyó del código electrónico: si cumple la norma, a qué país
+ * corresponde y cómo se separa. Sirve para detectar de inmediato un arete de
+ * otro origen o una lectura incompleta.
+ */
+function LecturaIso({ codigo }) {
+    const iso = leerCodigoIso(codigo);
+
+    if (!codigo) return null;
+
+    if (!iso) {
+        return (
+            <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-2">
+                No tiene la forma de un código electrónico ISO 11784 (15 dígitos).
+                Puede ser un arete visual, un alias o una lectura incompleta.
+            </p>
+        );
+    }
+
+    return (
+        <div className={
+            'text-xs rounded-lg p-2 border ' +
+            (iso.esMexico
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-amber-50 border-amber-200 text-amber-800')
+        }>
+            <span className="font-mono font-semibold">{iso.formateado}</span>
+            <span className="ml-2">· {iso.origen}</span>
+            {!iso.esMexico && (
+                <p className="mt-1">
+                    Este arete no proviene del padrón nacional. Se puede guardar igual.
+                </p>
+            )}
+        </div>
+    );
+}
 
 export default function ScanIdentificadorModal({ show, onClose, animales = [], modoDirecto = false, animalPreseleccionado = null }) {
     const [buscando, setBuscando] = useState(false);
@@ -26,10 +68,16 @@ export default function ScanIdentificadorModal({ show, onClose, animales = [], m
         onScan: (codigo) => buscar(codigo),
     });
 
+    // Lector conectado por puerto serie, para los equipos que no funcionan
+    // como teclado. Solo aparece si el navegador lo permite.
+    const serial = useSerialTagReader({ onScan: (codigo) => buscar(codigo) });
+
     const registroForm = useForm({
         animal_id: animalPreseleccionado ? String(animalPreseleccionado) : '',
-        tipo_identificador: 'microchip',
+        tipo_identificador: 'rfid',
         microchip_codigo: '',
+        siniiga_numero: '',
+        tecnologia_rfid: '',
         fecha_colocacion_microchip: new Date().toISOString().split('T')[0],
         estado_microchip: 'activo',
         observaciones_microchip: '',
@@ -109,9 +157,41 @@ export default function ScanIdentificadorModal({ show, onClose, animales = [], m
                 {!mostrarRegistro ? (
                     <div className="p-6 space-y-4">
                         <p className="text-sm text-gray-600">
-                            Coloca el cursor en el campo y escanea con el lector USB (microchip/RFID/QR),
-                            o escribe el arete/alias/código manualmente y presiona Enter.
+                            Coloca el cursor en el campo y pasa el lector por el arete, o escribe
+                            el número manualmente y presiona Enter. Busca por arete interno, número
+                            SINIIGA, código electrónico, alias o QR.
                         </p>
+
+                        {/* Lector por puerto serie: solo para equipos que no
+                            se comportan como teclado. */}
+                        {serial.soportado && (
+                            <div className="flex flex-wrap items-center gap-2 text-sm">
+                                <button
+                                    type="button"
+                                    onClick={serial.conectado ? serial.desconectar : serial.conectar}
+                                    className={
+                                        'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium ' +
+                                        (serial.conectado
+                                            ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                                            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50')
+                                    }
+                                >
+                                    <Usb className="w-4 h-4" />
+                                    {serial.conectado ? 'Lector conectado — desconectar' : 'Conectar lector por cable'}
+                                </button>
+                                {serial.conectado && (
+                                    <span className="text-xs text-emerald-700">
+                                        Esperando lectura…
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        {serial.error && (
+                            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-lg p-2">
+                                {serial.error}
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-2">
                             <input
@@ -139,6 +219,21 @@ export default function ScanIdentificadorModal({ show, onClose, animales = [], m
                                 <AlertTriangle className="w-4 h-4 shrink-0" /> {errorBusqueda}
                             </div>
                         )}
+
+                        {/* Lectura del código en cuanto se escanea, antes
+                            incluso de saber si el animal existe. */}
+                        {codigoBuscado && <LecturaIso codigo={codigoBuscado} />}
+
+                        <p className="text-xs text-slate-500">
+                            ¿El lector no responde o lee mal?{' '}
+                            <a
+                                href={route('herramientas.diagnostico-lector')}
+                                className="text-emerald-700 underline"
+                            >
+                                Pruébalo aquí
+                            </a>{' '}
+                            para ver qué está recibiendo el sistema.
+                        </p>
 
                         {resultado && !resultado.encontrado && (
                             <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-3 space-y-2">
@@ -186,27 +281,79 @@ export default function ScanIdentificadorModal({ show, onClose, animales = [], m
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
                                 disabled={registroForm.processing}
                             >
-                                <option value="microchip">Microchip</option>
-                                <option value="rfid">Arete RFID</option>
+                                <option value="rfid">Arete electrónico (SINIIGA)</option>
+                                <option value="microchip">Microchip o bolo ruminal</option>
                                 <option value="qr">Código QR</option>
-                                <option value="arete">Arete tradicional</option>
+                                <option value="arete">Arete visual sin electrónica</option>
                                 <option value="manual">Identificador manual</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Código</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Código electrónico
+                            </label>
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 value={registroForm.data.microchip_codigo}
                                 onChange={(e) => registroForm.setData('microchip_codigo', e.target.value)}
-                                className={`w-full border rounded-lg px-3 py-2 ${registroForm.errors.microchip_codigo ? 'border-red-300' : 'border-gray-300'}`}
+                                placeholder="484 000123456789"
+                                className={`w-full border rounded-lg px-3 py-2 font-mono ${registroForm.errors.microchip_codigo ? 'border-red-300' : 'border-gray-300'}`}
                                 disabled={registroForm.processing}
                             />
+                            <div className="mt-1">
+                                <LecturaIso codigo={registroForm.data.microchip_codigo} />
+                            </div>
                             {registroForm.errors.microchip_codigo && (
                                 <p className="mt-1 text-sm text-red-600">{registroForm.errors.microchip_codigo}</p>
                             )}
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Arete visual SINIIGA
+                                </label>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={registroForm.data.siniiga_numero}
+                                    onChange={(e) => registroForm.setData('siniiga_numero', e.target.value)}
+                                    placeholder="Número impreso"
+                                    className={`w-full border rounded-lg px-3 py-2 ${registroForm.errors.siniiga_numero ? 'border-red-300' : 'border-gray-300'}`}
+                                    disabled={registroForm.processing}
+                                />
+                                {registroForm.errors.siniiga_numero && (
+                                    <p className="mt-1 text-sm text-red-600">{registroForm.errors.siniiga_numero}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Tecnología del arete
+                                </label>
+                                <select
+                                    value={registroForm.data.tecnologia_rfid}
+                                    onChange={(e) => registroForm.setData('tecnologia_rfid', e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                    disabled={registroForm.processing}
+                                >
+                                    <option value="">Sin especificar</option>
+                                    <option value="FDX-B">FDX-B — plena duplicidad</option>
+                                    <option value="HDX">HDX — media duplicidad</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3 flex gap-2">
+                            <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                            <span>
+                                HDX y FDX-B son dos formas de transmisión del arete. El lector se
+                                encarga de distinguirlas; aquí se anota cuál trae el ejemplar para
+                                saber qué equipo hace falta en campo.
+                            </span>
+                        </p>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>

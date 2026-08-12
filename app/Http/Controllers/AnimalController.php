@@ -7,7 +7,10 @@ use App\Models\Raza;
 use App\Services\AnimalValuationService;
 use App\Services\EstadoProductivoService;
 use App\Services\EtapaVidaService;
+use App\Support\CodigoIso11784;
+use App\Support\NormalizadorLectura;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Models\DonadorExterno;
 use Illuminate\Support\Facades\DB;
@@ -339,7 +342,11 @@ public function buscarPorIdentificador(Request $request)
         'codigo' => 'required|string|max:255',
     ]);
 
-    $codigo = Animal::normalizarIdentificador($validated['codigo']);
+    // Los ajustes del rancho se aplican antes que nada: si su lector antepone
+    // caracteres al número, se descartan aquí y el resto del flujo trabaja
+    // con un código limpio sin saber que hubo nada que recortar.
+    $normalizador = NormalizadorLectura::delRancho();
+    $codigo = $normalizador->aplicar($validated['codigo']);
 
     if ($codigo === '') {
         return response()->json([
@@ -348,26 +355,47 @@ public function buscarPorIdentificador(Request $request)
         ], 422);
     }
 
+    // Los lectores presentan el código ISO de distintas formas: con espacios,
+    // con guiones o con el país separado. Se busca también por sus dígitos.
+    $iso = CodigoIso11784::desde($codigo);
+    $soloDigitos = preg_replace('/\D+/', '', $codigo);
+
     $animal = Animal::query()
-        ->where(function ($q) use ($codigo) {
+        ->where(function ($q) use ($codigo, $iso, $soloDigitos) {
             $q->whereRaw('UPPER(arete) = ?', [$codigo])
                 ->orWhereRaw('UPPER(alias) = ?', [$codigo])
                 ->orWhere('microchip_codigo', $codigo)
                 ->orWhere('qr_token', $codigo);
 
+            if ($iso) {
+                $q->orWhere('microchip_codigo', $iso->codigo);
+            }
+
+            // El arete visual oficial se guarda sin separadores.
+            if ($soloDigitos !== '') {
+                $q->orWhere('siniiga_numero', $soloDigitos);
+            }
+
             if (ctype_digit($codigo)) {
                 $q->orWhere('id', (int) $codigo);
             }
         })
-        ->first(['id', 'especie', 'alias', 'arete', 'microchip_codigo']);
+        ->first(['id', 'especie', 'alias', 'arete', 'microchip_codigo', 'siniiga_numero', 'tecnologia_rfid']);
 
     if (! $animal) {
-        return response()->json(['encontrado' => false]);
+        return response()->json([
+            'encontrado' => false,
+            // Se devuelve la lectura del código aunque no haya animal: así la
+            // interfaz puede decir si lo escaneado es un ISO válido y de dónde
+            // viene, en vez de un simple "no encontrado".
+            'iso' => $iso?->aArreglo(),
+        ]);
     }
 
     return response()->json([
         'encontrado' => true,
         'animal' => $animal,
+        'iso' => $iso?->aArreglo(),
     ]);
 }
 
@@ -380,13 +408,20 @@ public function registrarIdentificador(Request $request, Animal $animal)
     $validated = $request->validate([
         'tipo_identificador' => 'required|string|in:' . implode(',', Animal::TIPOS_IDENTIFICADOR),
         'microchip_codigo' => 'nullable|string|max:100',
+        'siniiga_numero' => 'nullable|string|max:20',
+        'tecnologia_rfid' => ['nullable', Rule::in(array_keys(Animal::TECNOLOGIAS_RFID))],
         'fecha_colocacion_microchip' => 'nullable|date',
         'estado_microchip' => 'nullable|string|in:' . implode(',', Animal::ESTADOS_MICROCHIP),
         'observaciones_microchip' => 'nullable|string|max:1000',
     ]);
 
+    $aviso = null;
+
     if (! empty($validated['microchip_codigo'])) {
-        $codigoNormalizado = Animal::normalizarIdentificador($validated['microchip_codigo']);
+        // Mismos ajustes del rancho que en la búsqueda: lo que se guarda tiene
+        // que ser exactamente lo que después se va a encontrar.
+        $codigoNormalizado = NormalizadorLectura::delRancho()->aplicar($validated['microchip_codigo']);
+        $validated['microchip_codigo'] = $codigoNormalizado;
 
         $yaAsignado = Animal::where('microchip_codigo', $codigoNormalizado)
             ->where('id', '!=', $animal->id)
@@ -397,13 +432,55 @@ public function registrarIdentificador(Request $request, Animal $animal)
                 'microchip_codigo' => 'Este identificador ya está asignado a otro animal.',
             ])->withInput();
         }
+
+        $iso = CodigoIso11784::desde($codigoNormalizado);
+
+        // La estructura ISO solo se exige al arete electrónico, que por norma
+        // la cumple siempre: si no da 15 dígitos, la lectura salió incompleta
+        // y guardarla dejaría al ejemplar imposible de encontrar.
+        //
+        // A los microchips NO se les exige: existen implantes anteriores a la
+        // norma, con formatos de 9 o 10 dígitos, que siguen siendo legítimos.
+        if ($validated['tipo_identificador'] === 'rfid' && ! $iso) {
+            return back()->withErrors([
+                'microchip_codigo' => 'Un arete electrónico debe tener 15 dígitos, según la norma ISO 11784. '
+                    . 'Revisa la lectura o corrige el tipo de identificador.',
+            ])->withInput();
+        }
+
+        $validated['pais_codigo'] = $iso?->pais;
+
+        // Un código que no es de México se acepta —puede ser un ejemplar
+        // importado— pero se avisa, para que nadie lo dé por registrado ante
+        // SINIIGA sin serlo.
+        if ($iso && ! $iso->esMexico()) {
+            $aviso = $iso->esDeFabricante()
+                ? 'El código empieza en ' . $iso->pais . ', que identifica al fabricante y no a un país. '
+                    . 'Este arete no proviene del padrón nacional.'
+                : 'El código corresponde al país ' . $iso->pais . ', no a México. Se guardó de todos modos.';
+        }
+    }
+
+    if (! empty($validated['siniiga_numero'])) {
+        $digitos = preg_replace('/\D+/', '', $validated['siniiga_numero']);
+
+        $duplicado = Animal::where('siniiga_numero', $digitos)
+            ->where('id', '!=', $animal->id)
+            ->exists();
+
+        if ($duplicado) {
+            return back()->withErrors([
+                'siniiga_numero' => 'Ese número de arete oficial ya está asignado a otro ejemplar.',
+            ])->withInput();
+        }
     }
 
     DB::transaction(function () use ($animal, $validated) {
         $animal->update($validated);
     });
 
-    return back()->with('success', 'Identificador registrado correctamente.');
+    return back()->with('success', 'Identificador registrado correctamente.')
+        ->with('aviso', $aviso);
 }
 
 /**

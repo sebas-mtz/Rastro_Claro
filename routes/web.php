@@ -10,6 +10,7 @@ use App\Http\Controllers\VentaController;
 use App\Http\Controllers\SacrificioController;
 use App\Http\Controllers\AlimentacionController;
 use App\Http\Controllers\InventarioInsumoController;
+use App\Http\Controllers\ConfiguracionLectorController;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
@@ -187,6 +188,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('animales.qr');
     Route::get('/escanear/{token}', [AnimalController::class, 'escanearQr'])
         ->name('animales.escanear');
+
+    // Diagnóstico del lector. Sin permiso de módulo a propósito: quien tiene
+    // que probar el equipo suele ser justamente quien todavía no puede entrar
+    // a nada, y la pantalla no consulta ni un solo dato del rancho.
+    Route::get('/herramientas/diagnostico-lector', function () {
+        return Inertia::render('Herramientas/DiagnosticoLector', [
+            // El navegador aplica las mismas reglas que el servidor, para que
+            // lo que muestra el diagnóstico sea lo que de verdad se guardaría.
+            'configuracion' => \App\Models\ConfiguracionLector::first()?->paraNavegador(),
+        ]);
+    })->name('herramientas.diagnostico-lector');
+
+    // Ajustes del lector: los edita el dueño del rancho, no el
+    // superadministrador. El controlador explica por qué.
+    Route::get('/herramientas/lector', [ConfiguracionLectorController::class, 'show'])
+        ->name('herramientas.lector');
+    Route::put('/herramientas/lector', [ConfiguracionLectorController::class, 'update'])
+        ->name('herramientas.lector.update');
+    Route::post('/herramientas/lector/probar', [ConfiguracionLectorController::class, 'probar'])
+        ->name('herramientas.lector.probar');
 
     /*
     |----------------------------------------------------------------------

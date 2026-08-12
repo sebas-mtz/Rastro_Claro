@@ -11,6 +11,7 @@ use App\Models\AnimalValuationDetalle;
 use App\Models\AnimalValuationHistorial;
 use App\Models\Comprador;
 use App\Models\CondicionCorporal;
+use App\Models\ConfiguracionLector;
 use App\Models\ConfiguracionValuacion;
 use App\Models\Costo;
 use App\Models\Cria;
@@ -59,6 +60,7 @@ return [
         AnimalValuationHistorial::class,
         Comprador::class,
         CondicionCorporal::class,
+        ConfiguracionLector::class,
         ConfiguracionValuacion::class,
         Costo::class,
         Cria::class,

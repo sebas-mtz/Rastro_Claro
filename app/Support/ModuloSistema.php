@@ -141,6 +141,9 @@ class ModuloSistema
         'dashboard', 'home', 'splash', 'welcome', 'profile', 'password', 'logout',
         'login', 'register', 'verification', 'admin', 'auth',
         'sanctum', 'ignition', 'storage', 'up',
+        // Probar el lector no revela ningún dato del rancho, y quien necesita
+        // probarlo suele ser quien todavía no tiene acceso a nada.
+        'herramientas',
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\EventoReproductivo;
 use App\Models\ServicioReproductivo;
+use App\Support\CodigoIso11784;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,11 +19,31 @@ class Animal extends Model
     public const TIPOS_IDENTIFICADOR = ['microchip', 'rfid', 'qr', 'arete', 'manual'];
     public const ESTADOS_MICROCHIP = ['activo', 'inactivo', 'perdido', 'dañado'];
 
+    /**
+     * Formas de transmisión que define la norma ISO 11785.
+     *
+     * Media duplicidad (HDX) y plena duplicidad (FDX-B) son dos maneras de que
+     * el arete le conteste al lector. La diferencia la resuelve el LECTOR: con
+     * cualquiera de las dos llega el mismo código ISO 11784.
+     *
+     * Se guarda porque en campo sí importa: un lector que solo lee FDX-B no
+     * detecta un arete HDX, y saber qué trae cada ejemplar evita pensar que el
+     * animal se perdió cuando lo que falla es el equipo.
+     */
+    public const TECNOLOGIA_HDX = 'HDX';
+    public const TECNOLOGIA_FDX_B = 'FDX-B';
+
+    public const TECNOLOGIAS_RFID = [
+        self::TECNOLOGIA_HDX => 'HDX — media duplicidad',
+        self::TECNOLOGIA_FDX_B => 'FDX-B — plena duplicidad',
+    ];
+
     protected $fillable = [
         'especie','alias','raza','arete','sexo','fecha_nac','peso','BCS','estado_productivo','lote_id',
         'madre_id', 'padre_id', 'padre_externo_id', 'imagen',
         'microchip_codigo', 'tipo_identificador', 'fecha_colocacion_microchip',
         'estado_microchip', 'observaciones_microchip', 'qr_token',
+        'siniiga_numero', 'tecnologia_rfid', 'pais_codigo',
         'tipo_origen', 'fecha_adquisicion', 'proveedor_origen',
         'raza_id', 'raza_secundaria_id', 'es_cruza', 'raza_original',
         'etapa_vida', 'etapa_vida_confirmada_at',
@@ -73,12 +94,44 @@ class Animal extends Model
     }
 
     /**
+     * El número del arete visual oficial: solo dígitos, sin separadores.
+     */
+    public function setSiniigaNumeroAttribute(?string $value): void
+    {
+        $digitos = preg_replace('/\D+/', '', (string) $value);
+
+        $this->attributes['siniiga_numero'] = $digitos !== '' ? $digitos : null;
+    }
+
+    /**
      * Normaliza cualquier identificador libre (arete/alias/microchip) recibido
      * desde un lector o input de búsqueda antes de compararlo en BD.
      */
     public static function normalizarIdentificador(string $valor): string
     {
         return strtoupper(preg_replace('/\s+/', '', trim($valor)));
+    }
+
+    /**
+     * Lectura del código electrónico, o null si el ejemplar no tiene uno o el
+     * guardado no cumple la estructura de la norma.
+     */
+    public function codigoIso(): ?CodigoIso11784
+    {
+        return CodigoIso11784::desde($this->microchip_codigo);
+    }
+
+    /** El código como se imprime en el arete: «484 000123456789». */
+    public function getCodigoIsoFormateadoAttribute(): ?string
+    {
+        return $this->codigoIso()?->formateado();
+    }
+
+    public function getTecnologiaLegibleAttribute(): ?string
+    {
+        return $this->tecnologia_rfid
+            ? (self::TECNOLOGIAS_RFID[$this->tecnologia_rfid] ?? $this->tecnologia_rfid)
+            : null;
     }
 
     public function asegurarQrToken(): string
