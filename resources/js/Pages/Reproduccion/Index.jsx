@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Head } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
-import { Activity, Baby, BarChart3, Plus, CalendarDays, Heart, ClipboardList, Scale } from "lucide-react";
+import { Activity, Baby, BarChart3, Plus, Heart, ClipboardList, Scale } from "lucide-react";
 
 import Eventos from "./Eventos";
 import Gestaciones from "./Gestaciones";
@@ -12,7 +12,24 @@ import Estadisticas from "./Estadisticas";
 import ServicioModal from "./ServicioModal";
 import DiagnosticoModal from "./DiagnosticoModal.jsx";
 import PartoModal from "./PartoModal";
-import CalendarioReproductivo from "./CalendarioReproductivo";
+import TopSementales from "./TopSementales";
+
+// El catálogo real de "sexo" en Animal usa "M"/"H" (StoreAnimalRequest:
+// 'sexo' => 'required|in:M,H'). Antes este archivo comparaba contra
+// "macho"/"hembra", que nunca coincide con esos valores — por lo que
+// `hembras` y `machos` probablemente venían vacíos, y con ellos los
+// selects de ServicioModal/DiagnosticoModal/PartoModal. Se tolera además
+// "macho"/"hembra" por si algún dato entra con esa otra convención, pero
+// lo ideal es homologar todo a M/H en la base de datos.
+function esHembra(animal) {
+  const sexo = (animal?.sexo || "").toString().toLowerCase();
+  return sexo === "h" || sexo === "hembra";
+}
+
+function esMacho(animal) {
+  const sexo = (animal?.sexo || "").toString().toLowerCase();
+  return sexo === "m" || sexo === "macho";
+}
 
 function ReproduccionIndex({
   auth,
@@ -31,8 +48,8 @@ function ReproduccionIndex({
   const [modalDiagnostico, setModalDiagnostico] = useState(false);
   const [modalParto, setModalParto]             = useState(false);
 
-  const hembras = animales.filter(a => a.sexo === "hembra");
-  const machos  = animales.filter(a => a.sexo === "macho");
+  const hembras = animales.filter(esHembra);
+  const machos  = animales.filter(esMacho);
 
   // ── Cards ──────────────────────────────────────────────────────────────
   const cards = useMemo(() => {
@@ -98,7 +115,7 @@ function ReproduccionIndex({
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">Reproducción</h1>
-            <p className="text-gray-500 text-sm">Gestión del ciclo reproductivo bovino</p>
+            <p className="text-gray-500 text-sm">Gestión del ciclo reproductivo ovino</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -138,14 +155,8 @@ function ReproduccionIndex({
           {/* IZQUIERDA */}
           <div className="lg:col-span-4 space-y-4">
 
-            {/* CALENDARIO */}
-            <div className="bg-white p-5 rounded-xl shadow-sm border">
-              <div className="flex items-center gap-2 font-semibold text-sm mb-4">
-                <CalendarDays size={16} />
-                Calendario reproductivo
-              </div>
-              <CalendarioReproductivo eventos={eventos} />
-            </div>
+            {/* SEMENTALES CON MÁS SERVICIOS (antes: calendario reproductivo) */}
+            <TopSementales eventos={eventos} animales={animales} />
 
             {/* PRÓXIMOS EVENTOS */}
             <div className="bg-white p-5 rounded-xl shadow-sm border">

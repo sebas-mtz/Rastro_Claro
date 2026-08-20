@@ -12,18 +12,6 @@ import { Badge, SectionHeader } from "./Tablas";
 import { usePreferences } from "@/Contexts/PreferencesContext";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const fmtFecha = (f) => f ? new Date(f).toLocaleDateString("es-MX") : "N/D";
-
-function calcularEdad(fechaNac) {
-    if (!fechaNac) return "N/D";
-    const nac = new Date(fechaNac);
-    const hoy = new Date();
-    let años = hoy.getFullYear() - nac.getFullYear();
-    const mes = hoy.getMonth() - nac.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) años--;
-    return `${años} año${años !== 1 ? "s" : ""}`;
-}
-
 // ─── Fila de dato ─────────────────────────────────────────────────────────────
 function Dato({ label, value, highlight }) {
     return (
@@ -69,7 +57,8 @@ function MiniTabla({ headers, rows, emptyMsg = "Sin registros." }) {
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function FichaAnimal({ animal }) {
-    const { formatWeight, formatCurrency } = usePreferences();
+    const { formatWeight, formatCurrency, formatDate, formatAnimalAge } = usePreferences();
+    const fmtFecha = formatDate;
     const fmtPeso = (v) => formatWeight(v);
     const pesajes        = animal.pesajes        ?? [];
     const alimentaciones = animal.alimentaciones ?? [];
@@ -129,7 +118,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                         <Dato label="Raza"              value={animal.raza || "—"} />
                         <Dato label="Sexo"              value={animal.sexo === "M" ? "Macho" : "Hembra"} />
                         <Dato label="Fecha Nacimiento"  value={fmtFecha(animal.fecha_nac)} />
-                        <Dato label="Edad"              value={calcularEdad(animal.fecha_nac)} />
+                        <Dato label="Edad"              value={formatAnimalAge(animal.fecha_nac)} />
                         <Dato label="Fecha de Registro" value={fmtFecha(animal.created_at)} />
                     </div>
                     {/* Columna der */}
@@ -156,13 +145,13 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                             <p className="text-[11px] text-gray-500 mb-1">Peso inicial</p>
                             <p className="text-base font-bold text-gray-800">{fmtPeso(pesoInicial)}</p>
                             <p className="text-[10px] text-gray-400 mt-0.5">
-                                    {fechaPesoInicial || "Sin fecha"}         
+                                    {fechaPesoInicial ? fmtFecha(fechaPesoInicial) : "Sin fecha"}
                            </p>
                         </div>
                         <div className="rounded-xl border border-blue-100 bg-blue-50 p-3 text-center">
                             <p className="text-[11px] text-blue-600 mb-1">Peso actual</p>
                             <p className="text-base font-bold text-blue-700">{fmtPeso(pesoActual)}</p>
-                            <p className="text-[10px] text-blue-400 mt-0.5">{pesajesOrden[pesajesOrden.length - 1]?.fecha}</p>
+                            <p className="text-[10px] text-blue-400 mt-0.5">{fmtFecha(pesajesOrden[pesajesOrden.length - 1]?.fecha)}</p>
                         </div>
                         <div className={`rounded-xl border p-3 text-center ${
                             gananciaPeso > 0  ? "border-emerald-100 bg-emerald-50" :
@@ -196,7 +185,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                                     <YAxis tick={{ fontSize: 10 }} tickFormatter={v => formatWeight(v, { digits: 0 })} width={58} />
                                     <Tooltip
                                         formatter={v => [formatWeight(v), "Peso"]}
-                                        labelFormatter={l => `Fecha: ${l}`}
+                                        labelFormatter={l => `Fecha: ${fmtFecha(l)}`}
                                     />
                                     <Line type="monotone" dataKey="peso" stroke="#3b82f6" strokeWidth={2}
                                         dot={{ r: 3, fill: "#3b82f6" }} activeDot={{ r: 5 }} />
@@ -212,7 +201,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                             const delta = variacionPesaje(p);
                             return (
                                 <tr key={p.id} className="border-t border-gray-100 hover:bg-blue-50/40">
-                                    <td className="px-3 py-2 text-gray-500">{p.fecha}</td>
+                                    <td className="px-3 py-2 text-gray-500">{fmtFecha(p.fecha)}</td>
                                     <td className="px-3 py-2 font-semibold">{fmtPeso(p.peso)}</td>
                                     <td className="px-3 py-2">
                                         {delta != null ? (
@@ -257,8 +246,8 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                             rows={eventossalud.map(ev => (
                                 <tr key={ev.id} className="border-t border-gray-100 hover:bg-teal-50/40">
                                     <td className="px-3 py-2"><Badge estado={ev.tipo} /></td>
-                                    <td className="px-3 py-2 text-gray-500">{ev.fecha_programada}</td>
-                                    <td className="px-3 py-2 text-gray-500">{ev.fecha_aplicacion ?? "—"}</td>
+                                    <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha_programada, { empty: "—" })}</td>
+                                    <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha_aplicacion, { empty: "—" })}</td>
                                     <td className="px-3 py-2"><Badge estado={ev.estado} /></td>
                                     <td className="px-3 py-2 text-gray-600 max-w-[180px] truncate">{ev.diagnostico ?? "—"}</td>
                                     <td className="px-3 py-2 text-gray-500">{ev.responsable ?? "—"}</td>
@@ -278,8 +267,8 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                     rows={eventossalud.filter(e => e.tipo === "vacunacion").map(ev => (
                         <tr key={ev.id} className="border-t border-gray-100 hover:bg-amber-50/40">
                             <td className="px-3 py-2 font-medium">{ev.vacuna?.nombre ?? "—"}</td>
-                            <td className="px-3 py-2 text-gray-500">{ev.fecha_programada}</td>
-                            <td className="px-3 py-2 text-gray-500">{ev.fecha_aplicacion ?? "—"}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha_programada, { empty: "—" })}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha_aplicacion, { empty: "—" })}</td>
                             <td className="px-3 py-2">{ev.dosis ?? "—"}</td>
                             <td className="px-3 py-2 text-gray-500">{ev.lote_vacuna ?? "—"}</td>
                             <td className="px-3 py-2"><Badge estado={ev.estado} /></td>
@@ -296,8 +285,8 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                     rows={tratamientos.map(tr => (
                         <tr key={tr.id} className="border-t border-gray-100 hover:bg-purple-50/40">
                             <td className="px-3 py-2 font-medium">{tr.nombre}</td>
-                            <td className="px-3 py-2 text-gray-500">{tr.fecha_inicio}</td>
-                            <td className="px-3 py-2 text-gray-500">{tr.fecha_fin ?? "—"}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(tr.fecha_inicio, { empty: "—" })}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(tr.fecha_fin, { empty: "—" })}</td>
                             <td className="px-3 py-2"><Badge estado={tr.estado} /></td>
                             <td className="px-3 py-2 text-gray-500">{tr.responsable ?? "—"}</td>
                             <td className="px-3 py-2 text-gray-400 max-w-[160px] truncate">{tr.notas ?? "—"}</td>
@@ -333,7 +322,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                     headers={["Fecha", "Hora", "Ración", "Cantidad", "Unidad", "MS%", "PB%", "Notas"]}
                     rows={alimentaciones.map(a => (
                         <tr key={a.id} className="border-t border-gray-100 hover:bg-orange-50/40">
-                            <td className="px-3 py-2 text-gray-500">{a.fecha}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(a.fecha)}</td>
                             <td className="px-3 py-2 text-gray-400">{a.hora ?? "—"}</td>
                             <td className="px-3 py-2 font-medium">{a.racion?.nombre ?? "—"}</td>
                             <td className="px-3 py-2 font-semibold">{a.cantidad}</td>
@@ -368,7 +357,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                     headers={["Fecha", "Tipo", "Valor", "Unidad"]}
                     rows={producciones.map(p => (
                         <tr key={p.id} className="border-t border-gray-100 hover:bg-teal-50/40">
-                            <td className="px-3 py-2 text-gray-500">{p.fecha}</td>
+                            <td className="px-3 py-2 text-gray-500">{fmtFecha(p.fecha)}</td>
                             <td className="px-3 py-2"><Badge estado={p.tipo} /></td>
                             <td className="px-3 py-2 font-semibold">{p.valor != null ? Number(p.valor).toLocaleString() : "—"}</td>
                             <td className="px-3 py-2 text-gray-500">{p.unidad ?? "—"}</td>
@@ -413,7 +402,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                                 rows={eventosRepro.map(ev => (
                                     <tr key={ev.id} className="border-t border-gray-100 hover:bg-rose-50/40">
                                         <td className="px-3 py-2"><Badge estado={ev.tipo_evento} /></td>
-                                        <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
+                                        <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha)}</td>
                                         <td className="px-3 py-2">{ev.costo ? formatCurrency(ev.costo) : "—"}</td>
                                         <td className="px-3 py-2 text-gray-400 max-w-[200px] truncate">{ev.observaciones ?? "—"}</td>
                                     </tr>
@@ -432,7 +421,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                                     const srv = ev.servicio;
                                     return (
                                         <tr key={ev.id} className="border-t border-gray-100 hover:bg-pink-50/40">
-                                            <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
+                                            <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha)}</td>
                                             <td className="px-3 py-2"><Badge estado={srv?.tipo_servicio} /></td>
                                             <td className="px-3 py-2 text-center">{srv?.numero_servicio ?? "—"}</td>
                                             <td className="px-3 py-2 font-mono text-gray-600">
@@ -456,11 +445,11 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                                     const dx = ev.diagnostico;
                                     return (
                                         <tr key={ev.id} className="border-t border-gray-100 hover:bg-purple-50/40">
-                                            <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
+                                            <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha)}</td>
                                             <td className="px-3 py-2 text-gray-500">{dx?.metodo?.replace(/_/g," ") ?? "—"}</td>
                                             <td className="px-3 py-2">{dx?.resultado ? <Badge estado={dx.resultado} /> : "—"}</td>
                                             <td className="px-3 py-2 text-center">{dx?.dias_gestacion_estimados ?? "—"}</td>
-                                            <td className="px-3 py-2 text-gray-500">{dx?.fecha_probable_parto ?? "—"}</td>
+                                            <td className="px-3 py-2 text-gray-500">{fmtFecha(dx?.fecha_probable_parto, { empty: "—" })}</td>
                                             <td className="px-3 py-2 text-gray-500">{dx?.veterinario?.name ?? dx?.veterinario_externo ?? "—"}</td>
                                         </tr>
                                     );
@@ -479,7 +468,7 @@ const fechaPesoInicial = primerPesaje?.fecha || null;
                                     const p = ev.parto;
                                     return (
                                         <tr key={ev.id} className="border-t border-gray-100 hover:bg-emerald-50/40">
-                                            <td className="px-3 py-2 text-gray-500">{ev.fecha}</td>
+                                            <td className="px-3 py-2 text-gray-500">{fmtFecha(ev.fecha)}</td>
                                             <td className="px-3 py-2"><Badge estado={p?.tipo_parto} /></td>
                                             <td className="px-3 py-2 text-center font-semibold">{p?.numero_crias ?? "—"}</td>
                                             <td className="px-3 py-2"><Badge estado={p?.asistencia_requerida} /></td>

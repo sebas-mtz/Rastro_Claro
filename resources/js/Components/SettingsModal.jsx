@@ -106,6 +106,8 @@ export default function SettingsModal({ isOpen, onClose, user, initialTab = 'acc
                     weight_unit: data.weight_unit,
                     currency: data.currency,
                     theme: data.theme,
+                    date_format: data.date_format,
+                    animal_age_format: data.animal_age_format,
                     gestation_days: Number(data.gestation_days),
                     monthly_financial_goal: Number(data.monthly_financial_goal || 0),
                     inventory_capacity_kg: Number(data.inventory_capacity_kg),
@@ -232,6 +234,18 @@ export default function SettingsModal({ isOpen, onClose, user, initialTab = 'acc
                                     <Field label="Moneda" error={errors.currency}>
                                         <select className={inputClass} value={data.currency} onChange={(event) => setData('currency', event.target.value)}>
                                             {currencies.map((currency) => <option key={currency.value} value={currency.value}>{currency.label}</option>)}
+                                        </select>
+                                    </Field>
+                                    <Field label="Formato de fecha" error={errors.date_format}>
+                                        <select className={inputClass} value={data.date_format} onChange={(event) => setData('date_format', event.target.value)}>
+                                            <option value="numeric">Todo numérico (20/07/26)</option>
+                                            <option value="named_month">Mes con nombre (09/Jun/25)</option>
+                                        </select>
+                                    </Field>
+                                    <Field label="Edad de los animales" error={errors.animal_age_format}>
+                                        <select className={inputClass} value={data.animal_age_format} onChange={(event) => setData('animal_age_format', event.target.value)}>
+                                            <option value="words">Años y meses (2 años 6 meses)</option>
+                                            <option value="decimal">Año.mes (2.6 años)</option>
                                         </select>
                                     </Field>
                                 </div>

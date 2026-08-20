@@ -1,6 +1,8 @@
 import { X, Pencil } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function ShowProduccionModal({ producciones = [], onClose, onEdit }) {
+    const { formatDate } = usePreferences();
     return (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-center">
             <div className="bg-white w-full max-w-3xl p-6 rounded-xl shadow-xl relative">
@@ -31,7 +33,7 @@ export default function ShowProduccionModal({ producciones = [], onClose, onEdit
                         <tbody>
                             {producciones.map((prod) => (
                                 <tr key={prod.id} className="border-t hover:bg-gray-50 text-center">
-                                    <td className="p-2">{new Date(prod.fecha).toLocaleDateString()}</td>
+                                    <td className="p-2">{formatDate(prod.fecha)}</td>
                                     <td className="p-2 capitalize">{prod.tipo}</td>
                                     <td className="p-2">{prod.valor ?? "N/D"}</td>
                                     <td className="p-2">{prod.unidad ?? "N/D"}</td>

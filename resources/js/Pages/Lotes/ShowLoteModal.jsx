@@ -1,7 +1,9 @@
 import React from "react";
 import { X, Eye } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function ShowLoteModal({ lote, onClose }) {
+  const { formatDate } = usePreferences();
   if (!lote) return null;
 
   return (
@@ -23,7 +25,7 @@ export default function ShowLoteModal({ lote, onClose }) {
           <InfoItem label="Responsable" value={lote.responsable?.name || "Sin responsable"} />
           <InfoItem
             label="Fecha de Registro"
-            value={new Date(lote.created_at).toLocaleDateString()}
+            value={formatDate(lote.created_at)}
           />
 
           <div>

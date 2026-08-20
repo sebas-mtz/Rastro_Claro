@@ -23,7 +23,7 @@ export default function ShowAnimal({
     estadosProductivos,
     estadoContextual = [],
 }) {
-    const { formatWeight } = usePreferences();
+    const { formatWeight, formatDate, formatAnimalAge } = usePreferences();
     const { data, setData, post, processing, reset } = useForm({
         imagen: null,
     });
@@ -56,17 +56,7 @@ export default function ShowAnimal({
     const [showMuerte, setShowMuerte] = useState(false);
     const bloqueado = animal.estado_productivo === "muerto" || Boolean(animal.muerte);
 
-    function calcularEdad(fechaNac) {
-        if (!fechaNac) return "N/D";
-        const nacimiento = new Date(fechaNac);
-        const hoy = new Date();
-        let años = hoy.getFullYear() - nacimiento.getFullYear();
-        const mes = hoy.getMonth() - nacimiento.getMonth();
-        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) años--;
-        return `${años} año${años !== 1 ? "s" : ""}`;
-    }
-
-    const fmtFecha = (f) => f ? new Date(f).toLocaleDateString("es-MX") : "N/D";
+    const fmtFecha = formatDate;
     const fmtPeso  = (v) => formatWeight(v);
 
     const pesajes        = animal.pesajes ?? [];
@@ -250,7 +240,7 @@ export default function ShowAnimal({
                             <Data label="Arete"               value={animal.arete} />
                             <Data label="Estado Productivo"   value={animal.estado_productivo || "N/D"} />
                             <Data label="Fecha de Nacimiento" value={fmtFecha(animal.fecha_nac)} />
-                            <Data label="Edad"                value={calcularEdad(animal.fecha_nac)} />
+                            <Data label="Edad"                value={formatAnimalAge(animal.fecha_nac)} />
                             <Data label="Peso actual"         value={pesoActual != null ? fmtPeso(pesoActual) : (animal.peso ? fmtPeso(animal.peso) : "N/D")} />
                             <Data label="BCS"                 value={animal.BCS || "N/D"} />
                             <Data label="Lote"                value={animal.lote?.nombre || "Sin lote"} />
@@ -318,12 +308,12 @@ export default function ShowAnimal({
                                     <p className="text-[11px] text-gray-500">Primer Pesaje</p>
                                     <p className="text-base font-semibold text-gray-800">{fmtPeso(pesoInicial)}</p>
                                     <p className="text-[10px] text-gray-400">
-                                         {pesajes.length > 0 ? [...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha))[0].fecha : "Sin fecha"}                                    </p>
+                                         {pesajes.length > 0 ? fmtFecha([...pesajes].sort((a, b) => a.fecha.localeCompare(b.fecha))[0].fecha) : "Sin fecha"}                                    </p>
                                 </div>
                                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-center">
                                     <p className="text-[11px] text-gray-500">Peso actual</p>
                                     <p className="text-base font-semibold text-blue-700">{fmtPeso(pesoActual)}</p>
-                                    <p className="text-[10px] text-gray-400">{pesajes[pesajes.length - 1].fecha}</p>
+                                    <p className="text-[10px] text-gray-400">{fmtFecha(pesajes[pesajes.length - 1].fecha)}</p>
                                 </div>
                                 <div className={`rounded-xl border p-3 text-center ${
                                     gananciaPeso > 0 ? "border-emerald-100 bg-emerald-50" :
@@ -353,7 +343,7 @@ export default function ShowAnimal({
                                             <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatWeight(v, { digits: 0 })} width={60} />
                                             <Tooltip
                                                 formatter={(v) => [formatWeight(v), "Peso"]}
-                                                labelFormatter={(l) => `Fecha: ${l}`}
+                                                labelFormatter={(l) => `Fecha: ${fmtFecha(l)}`}
                                             />
                                             <Line type="monotone" dataKey="peso" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                                         </LineChart>
@@ -378,7 +368,7 @@ export default function ShowAnimal({
                                             const delta = variacionPesaje(p);
                                             return (
                                                 <tr key={p.id} className="border-t border-gray-100 hover:bg-gray-50">
-                                                    <td className="p-2 text-gray-700">{p.fecha}</td>
+                                                    <td className="p-2 text-gray-700">{fmtFecha(p.fecha)}</td>
                                                     <td className="p-2 text-right font-medium text-gray-800">{fmtPeso(p.peso)}</td>
                                                     <td className="p-2 text-right">
                                                         {delta != null ? (
@@ -455,7 +445,7 @@ export default function ShowAnimal({
                                 <tbody>
                                     {alimentaciones.map((a) => (
                                         <tr key={a.id} className="border-t border-gray-100 hover:bg-gray-50">
-                                            <td className="p-2 text-gray-700">{a.fecha}</td>
+                                            <td className="p-2 text-gray-700">{fmtFecha(a.fecha)}</td>
                                             <td className="p-2 text-gray-800 font-medium">
                                                 {a.racion?.nombre ?? <span className="text-gray-400 text-xs">Sin ración</span>}
                                             </td>
@@ -524,7 +514,7 @@ export default function ShowAnimal({
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                     <p className="font-semibold text-gray-800">{nota.titulo}</p>
                                     {nota.fecha && (
-                                        <span className="text-xs text-gray-500">{nota.fecha}</span>
+                                        <span className="text-xs text-gray-500">{fmtFecha(nota.fecha)}</span>
                                     )}
                                 </div>
                                 <p className="mt-1 text-sm text-gray-600">{nota.detalle}</p>

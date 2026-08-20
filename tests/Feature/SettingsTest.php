@@ -26,7 +26,9 @@ class SettingsTest extends TestCase
                 'weight_unit' => 'lb',
                 'currency' => 'USD',
                 'theme' => 'dark',
-                'gestation_days' => 150,
+                'date_format' => 'named_month',
+                'animal_age_format' => 'decimal',
+                'gestation_days' => 280,
                 'monthly_financial_goal' => 125000,
                 'inventory_capacity_kg' => 5000,
                 'daily_feed_kg' => 275,
@@ -44,6 +46,8 @@ class SettingsTest extends TestCase
         $this->assertSame('lb', $user->settings['weight_unit']);
         $this->assertSame('USD', $user->settings['currency']);
         $this->assertSame('dark', $user->settings['theme']);
+        $this->assertSame('named_month', $user->settings['date_format']);
+        $this->assertSame('decimal', $user->settings['animal_age_format']);
         $this->assertSame(280, $user->settings['gestation_days']);
     }
 
@@ -59,6 +63,8 @@ class SettingsTest extends TestCase
                 'weight_unit' => 'stone',
                 'currency' => 'BTC',
                 'theme' => 'neon',
+                'date_format' => 'long',
+                'animal_age_format' => 'weeks',
                 'gestation_days' => 500,
                 'monthly_financial_goal' => -1,
                 'inventory_capacity_kg' => 0,
@@ -69,6 +75,8 @@ class SettingsTest extends TestCase
             'weight_unit',
             'currency',
             'theme',
+            'date_format',
+            'animal_age_format',
             'gestation_days',
             'monthly_financial_goal',
             'inventory_capacity_kg',

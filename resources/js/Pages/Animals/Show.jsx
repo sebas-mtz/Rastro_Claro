@@ -1,18 +1,10 @@
 import React from "react";
 import { Edit, X } from "lucide-react";
+import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function ShowModal({ animal, onClose, onEdit }) {
+    const { formatDate, formatAnimalAge, formatWeight } = usePreferences();
     if (!animal) return null;
-
-    function calcularEdad(fechaNac) {
-        if (!fechaNac) return "N/D";
-        const nacimiento = new Date(fechaNac);
-        const hoy = new Date();
-        let años = hoy.getFullYear() - nacimiento.getFullYear();
-        const mes = hoy.getMonth() - nacimiento.getMonth();
-        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) años--;
-        return `${años} año${años !== 1 ? "s" : ""}`;
-    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -50,20 +42,20 @@ export default function ShowModal({ animal, onClose, onEdit }) {
                             <InfoItem label="Sexo" value={animal.sexo === "M" ? "Macho" : "Hembra"} />
                             <InfoItem
                                 label="Fecha de Nacimiento"
-                                value={animal.fecha_nac ? new Date(animal.fecha_nac).toLocaleDateString() : "N/D"}
+                                value={formatDate(animal.fecha_nac)}
                             />
-                            <InfoItem label="Edad" value={calcularEdad(animal.fecha_nac)} />
+                            <InfoItem label="Edad" value={formatAnimalAge(animal.fecha_nac)} />
                         </div>
 
                         {/* Columna 2 */}
                         <div className="space-y-4">
-                            <InfoItem label="Peso" value={animal.peso ? `${animal.peso} kg` : "N/D"} />
+                            <InfoItem label="Peso" value={formatWeight(animal.peso, { empty: "N/D" })} />
                             <InfoItem label="BCS" value={animal.BCS || "N/D"} />
                             <InfoItem label="Estado Productivo" value={animal.estado_productivo || "N/D"} />
                             <InfoItem label="Lote" value={animal.lote?.nombre || "Sin lote"} />
                             <InfoItem
                                 label="Fecha de Registro"
-                                value={new Date(animal.created_at).toLocaleDateString()}
+                                value={formatDate(animal.created_at)}
                             />
                         </div>
                     </div>
@@ -97,4 +89,4 @@ export default function ShowModal({ animal, onClose, onEdit }) {
                     <dd className="mt-1 text-sm text-gray-900">{value}</dd>
               </div>
                  );
-            } 
+            }

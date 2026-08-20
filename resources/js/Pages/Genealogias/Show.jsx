@@ -1,6 +1,7 @@
 // resources/js/Pages/Genealogias/Show.jsx
 import { Head, Link } from '@inertiajs/react'
 import { useState } from 'react'
+import { usePreferences } from '@/Contexts/PreferencesContext'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,6 +17,7 @@ function sexClasses(sexo) {
 // ─── AnimalCard ───────────────────────────────────────────────────────────────
 
 function AnimalCard({ animal, root = false }) {
+    const { formatDate } = usePreferences()
     if (!animal) {
         return (
             <div className="border border-dashed border-gray-200 rounded-lg px-3 py-2 w-[130px] bg-white/40">
@@ -53,7 +55,7 @@ function AnimalCard({ animal, root = false }) {
             {/* Fecha */}
             {animal.fecha_nac && (
                 <div className="text-[10px] text-gray-300 mt-0.5 leading-none">
-                    {animal.fecha_nac}
+                    {formatDate(animal.fecha_nac)}
                 </div>
             )}
         </Link>
@@ -182,6 +184,7 @@ function PedigreeChart({ animal, ancestros }) {
 
 function DescendantNode({ nodo, nivel = 0 }) {
     const [expanded, setExpanded] = useState(nivel === 0)
+    const { formatDate } = usePreferences()
     const tieneHijos = Array.isArray(nodo.hijos) && nodo.hijos.length > 0
     const c = sexClasses(nodo.sexo)
 
@@ -226,7 +229,7 @@ function DescendantNode({ nodo, nivel = 0 }) {
                     )}
                     <span className="text-xs text-gray-400">{nodo.raza}</span>
                     {nodo.fecha_nac && (
-                        <span className="text-xs text-gray-300">{nodo.fecha_nac}</span>
+                        <span className="text-xs text-gray-300">{formatDate(nodo.fecha_nac)}</span>
                     )}
                 </Link>
 
@@ -276,6 +279,7 @@ function DescendantTree({ descendientes }) {
 
 export default function Show({ animal, arbol_ancestros, descendientes }) {
     const [tab, setTab] = useState('ancestros')
+    const { formatDate } = usePreferences()
     const c = sexClasses(animal.sexo)
 
     const totalDescendientes = countDescendientes(descendientes)
@@ -321,7 +325,7 @@ export default function Show({ animal, arbol_ancestros, descendientes }) {
                             )}
                             <div className="text-xs text-gray-400 mt-1 space-x-2">
                                 <span>{animal.sexo === 'M' ? '♂ Macho' : '♀ Hembra'}</span>
-                                {animal.fecha_nac && <span>· {animal.fecha_nac}</span>}
+                                {animal.fecha_nac && <span>· {formatDate(animal.fecha_nac)}</span>}
                             </div>
                         </div>
                     </div>

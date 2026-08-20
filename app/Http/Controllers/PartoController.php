@@ -8,7 +8,9 @@ use App\Models\EventoReproductivo;
 use App\Models\Parto;
 use App\Models\Pesaje;
 use App\Services\EstadoProductivoService;
-use Carbon\Carbon; // <-- 1. IMPORTAR CARBON AQUÍ
+use App\Services\PaternidadProbableService;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +18,49 @@ use Throwable;
 
 class PartoController extends Controller
 {
-    public function store(Request $request, EstadoProductivoService $estadoService): RedirectResponse
-    {
+    /**
+     * GET — devuelve los servicios candidatos (posibles orígenes) de un
+     * parto, dados hembra_id y fecha. El frontend debe llamar a este
+     * endpoint antes de mostrar el paso de "confirmar padre" del
+     * formulario, para que la persona usuaria elija cuál fue el servicio
+     * real cuando hay más de un candidato plausible (ej. dos montas casi
+     * el mismo día).
+     */
+    public function serviciosCandidatos(
+        Request $request,
+        PaternidadProbableService $paternidadService
+    ): JsonResponse {
+        $datos = $request->validate([
+            'hembra_id' => 'required|exists:animals,id',
+            'fecha' => 'required|date|before_or_equal:today',
+        ]);
+
+        $hembra = Animal::findOrFail($datos['hembra_id']);
+        $fechaParto = Carbon::parse($datos['fecha']);
+
+        // Mismo origen que usa DiagnosticoGestacionController: días de
+        // gestación configurables por usuario, con 150 como valor por
+        // defecto si no se ha configurado nada.
+        $diasGestacionPromedio = (int) data_get(
+            $request->user()->settings,
+            'gestation_days',
+            150,
+        );
+
+        $candidatos = $paternidadService->candidatosParaParto(
+            $hembra,
+            $fechaParto,
+            $diasGestacionPromedio
+        );
+
+        return response()->json(['candidatos' => $candidatos]);
+    }
+
+    public function store(
+        Request $request,
+        EstadoProductivoService $estadoService,
+        PaternidadProbableService $paternidadService
+    ): RedirectResponse {
         $datos = $request->validate([
             'hembra_id' => 'required|exists:animals,id',
             'lote_id' => 'nullable|exists:lotes,id',
@@ -55,89 +98,48 @@ class PartoController extends Controller
         $madre = Animal::findOrFail($datos['hembra_id']);
         $fechaParto = Carbon::parse($datos['fecha']);
 
-        // 2. NUEVO: Verificar que sea hembra
-        if (!$madre->esHembra()) {
-            return back()->withErrors(['hembra_id' => 'El animal seleccionado no es una hembra.'])->withInput();
-        }
-
-        // 3. NUEVO: Validar edad mínima reproductiva de la madre a la fecha del parto
-        if (!$madre->esAptoParaReproduccion($fechaParto)) {
-            return back()->withErrors([
-                'hembra_id' => "La madre '{$madre->alias}' no cumple con la edad mínima requerida para reproducción."
-            ])->withInput();
+        // Antes esto eran dos checks separados (esHembra + edad mínima).
+        // puedeRegistrarParto() los consolida y además valida que la
+        // hembra respete el intervalo mínimo desde su último parto —
+        // validación que antes no existía en este controlador.
+        [$aptaParaParto, $mensajeParto] = $madre->puedeRegistrarParto($fechaParto);
+        if (!$aptaParaParto) {
+            return back()->withErrors(['hembra_id' => $mensajeParto])->withInput();
         }
 
         $padreId = null;
         $padreExternoId = null;
         $servicioEventoIdResuelto = null;
 
-        /*
-         * Si el formulario manda una gestación, servicio_evento_id puede contener:
-         * - El ID del evento de servicio.
-         * - El ID del evento de diagnóstico.
-         *
-         * Si es diagnóstico, se obtiene desde él el servicio original.
-         */
+        // ── Resolución del padre desde el servicio confirmado ───────────
+        // Ya NO se busca automáticamente "el servicio más reciente" ni se
+        // acepta un evento de diagnóstico como origen: el frontend debe
+        // pedir los candidatos a serviciosCandidatos() (arriba) y mandar
+        // aquí el servicio_evento_id que la persona usuaria confirmó como
+        // el real, porque puede haber más de un servicio plausible dentro
+        // de la ventana de gestación (ej. dos montas casi el mismo día) y
+        // el sistema no puede decidir eso por sí solo.
         if (!empty($datos['servicio_evento_id'])) {
-            $eventoRelacionado = EventoReproductivo::with([
-                'servicio.pajilla',
-                'diagnostico',
-            ])->findOrFail($datos['servicio_evento_id']);
+            $eventoServicio = EventoReproductivo::with('servicio.pajilla')
+                ->where('id', $datos['servicio_evento_id'])
+                ->where('hembra_id', $datos['hembra_id'])
+                ->where('tipo_evento', 'servicio')
+                ->first();
 
-            if ($eventoRelacionado->tipo_evento === 'servicio') {
-                $eventoServicio = $eventoRelacionado;
-            } elseif ($eventoRelacionado->tipo_evento === 'diagnostico' && $eventoRelacionado->diagnostico?->servicio_evento_id) {
-                $eventoServicio = EventoReproductivo::with('servicio.pajilla')
-                    ->findOrFail($eventoRelacionado->diagnostico->servicio_evento_id);
-            } else {
+            if (!$eventoServicio || !$eventoServicio->servicio) {
                 return back()->withErrors([
-                    'servicio_evento_id' => 'No se pudo localizar el servicio reproductivo que originó la gestación.',
+                    'servicio_evento_id' => 'El servicio seleccionado no es válido para esta hembra.',
                 ])->withInput();
             }
 
             $servicioEventoIdResuelto = $eventoServicio->id;
-            $servicio = $eventoServicio->servicio;
-
-            if (!$servicio) {
-                return back()->withErrors([
-                    'servicio_evento_id' => 'El evento seleccionado no tiene un servicio reproductivo asociado.',
-                ])->withInput();
-            }
-
-            if (in_array($servicio->tipo_servicio, ['monta_natural','monta_controlada'])) {
-                if (empty($servicio->macho_id)) {
-                    return back()->withErrors([
-                        'servicio_evento_id' => 'La monta seleccionada no tiene un semental asociado.',
-                    ])->withInput();
-                }
-
-                $padreId = $servicio->macho_id;
-            }
-
-            if (in_array($servicio->tipo_servicio, ['inseminacion_artificial', 'iatf', 'transferencia_embriones','fiv'])) {
-                $pajilla = $servicio->pajilla;
-
-                if (!$pajilla) {
-                    return back()->withErrors([
-                        'servicio_evento_id' => 'El servicio de inseminación no tiene una pajilla asociada.',
-                    ])->withInput();
-                }
-
-                if (!empty($pajilla->animal_id)) {
-                    $padreId = $pajilla->animal_id;
-                } elseif (!empty($pajilla->donador_externo_id)) {
-                    $padreExternoId = $pajilla->donador_externo_id;
-                } else {
-                    return back()->withErrors([
-                        'servicio_evento_id' => 'La pajilla no tiene un donador interno o externo asociado.',
-                    ])->withInput();
-                }
-            }
+            [$padreId, $padreExternoId] = $paternidadService->resolverPadre($eventoServicio->servicio);
         }
 
         /*
-         * Si no se pudo obtener un padre desde un servicio,
-         * utiliza el seleccionado manualmente.
+         * Si no se confirmó un servicio (por ejemplo, porque no hubo
+         * ningún candidato dentro de la ventana de gestación esperada),
+         * se permite asignar el padre manualmente.
          */
         if (empty($padreId) && empty($padreExternoId)) {
             $padreId = $datos['padre_id'] ?? null;
@@ -145,7 +147,8 @@ class PartoController extends Controller
         }
 
         /*
-         * Verificar el padre interno seleccionado manualmente.
+         * Verificar el padre interno (ya sea resuelto desde el servicio o
+         * asignado manualmente).
          */
         if (!empty($padreId)) {
             $padre = Animal::findOrFail($padreId);
@@ -157,7 +160,6 @@ class PartoController extends Controller
                 ])->withInput();
             }
 
-            // 4. NUEVO: Validar edad mínima del padre si fue ingresado manualmente
             if (!$padre->esAptoParaReproduccion($fechaParto)) {
                 return back()->withErrors([
                     'padre_id' => "El semental '{$padre->alias}' no cumple con la edad mínima requerida para reproducción."

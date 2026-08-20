@@ -4,9 +4,11 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Scissors, PlusCircle, Search, AlertTriangle, Calculator, Scale, Edit, Trash2, Eye } from 'lucide-react';
 import SacrificioModal from './SacrificioModal';
 import { ArrowLeft } from 'lucide-react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 
 export default function SacrificiosIndex({ auth, sacrificios, estadisticas, animales, lotes }) {
+    const { formatDate } = usePreferences();
     const [showModal, setShowModal] = useState(false);
     const [busqueda, setBusqueda] = useState('');
 
@@ -204,7 +206,7 @@ export default function SacrificiosIndex({ auth, sacrificios, estadisticas, anim
                                     {sacrificiosFiltrados.map((sacrificio) => (
                                         <tr key={sacrificio.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {new Date(sacrificio.fecha).toLocaleDateString()}
+                                                {formatDate(sacrificio.fecha)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div>

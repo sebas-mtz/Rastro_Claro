@@ -7,6 +7,7 @@ use App\Models\EventoReproductivo;
 use App\Models\Pajilla;
 use App\Models\ServicioReproductivo;
 use App\Services\EstadoProductivoService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,12 +40,26 @@ class ServicioReproductivoController extends Controller
 
         $hembraIds = array_values(array_unique($datos['hembra_ids']));
         $hembras   = Animal::whereIn('id', $hembraIds)->get()->keyBy('id');
+        $fechaServicio = Carbon::parse($datos['fecha']);
 
-        // Validar que todas las seleccionadas sean hembra
+        // Antes solo se validaba esHembra(). puedeRecibirServicio()
+        // consolida esa verificación con la edad mínima, que la hembra no
+        // esté ya gestante, y que respete el descanso mínimo desde su
+        // último parto — ninguna de esas tres validaciones existía antes
+        // en este controlador.
         foreach ($hembraIds as $hembraId) {
-            if (!$hembras->get($hembraId)?->esHembra()) {
+            $hembra = $hembras->get($hembraId);
+
+            if (!$hembra) {
                 return redirect()->back()
-                    ->withErrors(['hembra_ids' => 'Uno de los animales seleccionados no es hembra.'])
+                    ->withErrors(['hembra_ids' => 'Uno de los animales seleccionados no existe.'])
+                    ->withInput();
+            }
+
+            [$apta, $mensaje] = $hembra->puedeRecibirServicio($fechaServicio);
+            if (!$apta) {
+                return redirect()->back()
+                    ->withErrors(['hembra_ids' => $mensaje])
                     ->withInput();
             }
         }

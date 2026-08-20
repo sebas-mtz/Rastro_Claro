@@ -4,8 +4,10 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Drumstick, PlusCircle, Search, Calculator, Scale, Package, Edit, Trash2, Eye } from 'lucide-react';
 import FaenaModal from './FaenaModal';
 import { ArrowLeft } from 'lucide-react';
+import { usePreferences } from '@/Contexts/PreferencesContext';
 
 export default function FaenasIndex({ auth, faenas, estadisticas, animales, lotes }) {
+    const { formatDate } = usePreferences();
     const [showModal, setShowModal] = useState(false);
     const [busqueda, setBusqueda] = useState('');
 
@@ -192,7 +194,7 @@ export default function FaenasIndex({ auth, faenas, estadisticas, animales, lote
                                     {faenasFiltradas.map((faena) => (
                                         <tr key={faena.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {new Date(faena.fecha).toLocaleDateString()}
+                                                {formatDate(faena.fecha)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div>

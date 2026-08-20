@@ -8,7 +8,7 @@ import { usePreferences } from '@/Contexts/PreferencesContext';
 
 export default function VentasIndex({ auth, ventas, estadisticas, animales, lotes, producciones,inventario_producciones,
     inventario_subproductos, faenas, compradores }) {
-    const { formatCurrency } = usePreferences();
+    const { formatCurrency, formatDate } = usePreferences();
     const [showModal, setShowModal] = useState(false);
     const [busqueda, setBusqueda] = useState('');
 
@@ -261,7 +261,7 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                                     {ventasFiltradas.map((venta) => (
                                         <tr key={venta.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {new Date(venta.fecha_venta).toLocaleDateString()}
+                                                {formatDate(venta.fecha_venta)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                                                 {venta.numero_factura}

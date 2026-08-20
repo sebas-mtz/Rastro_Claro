@@ -266,6 +266,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('reproduccion.alertas');
     Route::get('/api/reproduccion/calendario', [EventoReproductivoController::class, 'calendario'])
         ->name('reproduccion.calendario');
+        Route::get('/reproduccion/partos/servicios-candidatos', [PartoController::class, 'serviciosCandidatos'])
+    ->name('reproduccion.partos.candidatos');
 
     /*
     |----------------------------------------------------------------------
