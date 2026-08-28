@@ -9,27 +9,33 @@ use App\Models\Tratamiento;
 
 class EstadoActualAnimalService
 {
+    private const TERMINALES = [
+        'muerto' => ['Fallecido', 'El animal está dado de baja por fallecimiento.'],
+        'vendido' => ['Vendido', 'El animal fue vendido y ya no está disponible.'],
+        'faeneado' => ['Faenado', 'El animal fue dado de baja por faena.'],
+        'sacrificado' => ['Sacrificado', 'El animal fue dado de baja por sacrificio.'],
+        'descarte_reproductivo' => ['Descarte reproductivo', 'El animal fue descartado del programa reproductivo.'],
+        'robado' => ['Robado', 'El animal fue reportado como robado.'],
+        'extraviado' => ['Extraviado', 'El animal fue reportado como extraviado.'],
+        'donado' => ['Donado', 'El animal fue donado.'],
+        'trasladado' => ['Trasladado', 'El animal fue trasladado fuera del rancho.'],
+        'baja_otra' => ['Baja registrada', 'El animal fue dado de baja del rebaño.'],
+    ];
+
     public function obtener(Animal $animal): array
-    {
-        $terminales = [
-            'muerto' => ['Fallecido', 'El animal está dado de baja por fallecimiento.'],
-            'vendido' => ['Vendido', 'El animal fue vendido y ya no está disponible.'],
-            'faeneado' => ['Faenado', 'El animal fue dado de baja por faena.'],
-            'sacrificado' => ['Sacrificado', 'El animal fue dado de baja por sacrificio.'],
-        ];
+{
+    if (isset(self::TERMINALES[$animal->estado_productivo])) {
+        [$titulo, $detalle] = self::TERMINALES[$animal->estado_productivo];
 
-        if (isset($terminales[$animal->estado_productivo])) {
-            [$titulo, $detalle] = $terminales[$animal->estado_productivo];
+        return [[
+            'tipo' => 'terminal',
+            'titulo' => $titulo,
+            'detalle' => $detalle,
+            'fecha' => $this->fechaTerminal($animal),
+        ]];
+    }
 
-            return [[
-                'tipo' => 'terminal',
-                'titulo' => $titulo,
-                'detalle' => $detalle,
-                'fecha' => $animal->muerte?->fecha?->format('Y-m-d'),
-            ]];
-        }
-
-        $notas = [];
+    $notas = [];
         $tratamiento = Tratamiento::where('animal_id', $animal->id)
             ->where('estado', Tratamiento::ESTADO_ACTIVO)
             ->whereDate('fecha_inicio', '<=', today())
@@ -120,4 +126,19 @@ class EstadoActualAnimalService
 
         return $notas;
     }
+
+    private function fechaTerminal(Animal $animal): ?string
+{
+    return match ($animal->estado_productivo) {
+        'vendido' => $animal->ventas()
+            ->where('tipo_venta', 'animal')
+            ->where('estado_venta', 'completada')
+            ->latest('fecha_venta')
+            ->value('fecha_venta')
+            ?->format('Y-m-d'),
+        'faeneado' => $animal->faenas()->latest('fecha')->value('fecha')?->format('Y-m-d'),
+        'sacrificado' => $animal->sacrificios()->latest('fecha')->value('fecha')?->format('Y-m-d'),
+        default => $animal->bajaActual?->fecha?->format('Y-m-d'),
+    };
+}
 }

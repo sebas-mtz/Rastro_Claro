@@ -91,8 +91,26 @@ class EstadoProductivoService
     // prop desde el controlador en vez de hardcodearla, precisamente para
     // evitar que se desincronice el casing como ya pasó una vez.
     public static function estadosSistema(): array
+{
+    return [
+        'faeneado', 'vendido', 'sacrificado', 'muerto',
+        'descarte_reproductivo', 'robado', 'extraviado',
+        'donado', 'trasladado', 'baja_otra',
+    ];
+}
+
+// EstadoProductivoService
+    public static function esTerminal(?string $estado): bool
     {
-        return ['Faeneado', 'Vendido', 'Sacrificado', 'muerto'];
+        if ($estado === null) {
+            return false;
+        }
+
+        return in_array(
+            strtolower($estado),
+            array_map('strtolower', self::estadosSistema()),
+            true
+        );
     }
 
     // ── Todos los valores que el sistema puede escribir ───────────────────

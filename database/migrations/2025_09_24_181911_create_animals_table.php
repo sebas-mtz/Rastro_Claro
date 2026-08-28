@@ -18,16 +18,14 @@ return new class extends Migration {
             $table->decimal('BCS', 3, 1)->nullable();
             $table->string('estado_productivo')->nullable();
             $table->foreignId('lote_id')->nullable()->constrained('lotes')->onDelete('set null');
-            $table->foreignId('madre_id')
-          ->nullable()
-          ->constrained('animals')
-          ->nullOnDelete();
+            $table->foreignId('madre_id')->nullable()->constrained('animals')->nullOnDelete();
 
-    $table->foreignId('padre_id')
-          ->nullable()
-          ->constrained('animals')
-          ->nullOnDelete();
-            $table->timestamps();
+    $table->foreignId('padre_id')->nullable()->constrained('animals')->nullOnDelete();
+
+            $table->string('tipo_origen')->nullable();
+            $table->date('fecha_adquisicion')->nullable();
+            $table->string('proveedor_origen')->nullable();
+    $table->timestamps();
             $table->string('imagen')->nullable();
         });
     }

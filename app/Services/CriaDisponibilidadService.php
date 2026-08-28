@@ -78,6 +78,21 @@ class CriaDisponibilidadService
             );
         }
 
+        // Red de seguridad: cualquier otro estado terminal (los 6 tipos
+        // administrativos de Baja — descarte reproductivo, robo, extravío,
+        // donación, traslado, otra — y cualquiera que se agregue después)
+        // que no tenga ya su propia rama arriba.
+        if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
+            return $this->resultado(
+                disponible: false,
+                situacion: $animal->estado_productivo,
+                fecha: $animal->bajaActual?->fecha?->format('Y-m-d'),
+                causa: $animal->bajaActual?->causa
+                    ?? ucfirst(str_replace('_', ' ', $animal->estado_productivo)),
+                observacion: $animal->bajaActual?->observaciones ?: $cria->observaciones,
+            );
+        }
+
         return $this->resultado(
             disponible: true,
             situacion: 'disponible',

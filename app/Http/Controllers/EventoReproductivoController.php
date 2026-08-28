@@ -51,7 +51,7 @@ class EventoReproductivoController extends Controller
 
         // Todos los animales con su lote para los selectores del modal
         $animales = Animal::with('lote:id,nombre')
-            ->whereNotIn('estado_productivo', ['faeneado', 'vendido', 'sacrificado', 'muerto'])
+->whereNotIn('estado_productivo', EstadoProductivoService::estadosSistema())
             ->get()
             ->map(fn($a) => [
                 'id'          => $a->id,
@@ -157,14 +157,18 @@ class EventoReproductivoController extends Controller
         $partos = EventoReproductivo::where('tipo_evento', 'parto')->count();
 
         $fertilidad = $totalServicios > 0
-            ? round(($gestantes / $totalServicios) * 100, 1)
+            ? round(($partos / $totalServicios) * 100, 1)
             : 0;
+$porcentajeGestacion = $totalServicios > 0
+    ? round(($gestantes / $totalServicios) * 100, 1)
+    : 0;
 
         return response()->json([
             'total_servicios' => $totalServicios,
             'gestantes'       => $gestantes,
             'partos'          => $partos,
             'fertilidad'      => $fertilidad,
+            'porcentaje_gestacion' => $porcentajeGestacion,
         ]);
     }
 

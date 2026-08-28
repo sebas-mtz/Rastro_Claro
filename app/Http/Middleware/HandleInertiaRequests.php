@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -31,13 +30,19 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => fn () => $request->user()
                     ? array_merge(
-                        $request->user()->only('id', 'name', 'email', 'role', 'plan', 'activo'),
+                        $request->user()->only('id', 'name', 'email', 'role', 'puesto', 'activo'),
                         [
-                            'settings' => array_merge(
-                                User::defaultSettings(),
-                                $request->user()->settings ?? [],
-                            ),
-                        ],
+                            'rol_legible' => $request->user()->rolLegible(),
+                            // Banderas para pintar la interfaz. La autorización
+                            // real la hacen el middleware y las policies: esto
+                            // solo evita mostrar botones que no funcionarían.
+                            'es_super_admin' => $request->user()->isSuperAdmin(),
+                            'puede_gestionar_usuarios' => $request->user()->canManageUsers(),
+                            'es_dueno' => $request->user()->esDuenoDeCuenta(),
+                            // Permisos por módulo, para armar el menú.
+                            'permisos' => $request->user()->permisos(),
+                            'modulos' => $request->user()->modulosVisibles(),
+                        ]
                     )
                     : null,
             ],

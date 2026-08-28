@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sacrificio;
 use App\Services\HaciendaService;
+use App\Services\EstadoProductivoService;
 use Inertia\Inertia;
 use App\Models\Animal;
 
@@ -62,9 +63,14 @@ class SacrificioController extends Controller
             $validated['plumas'] = true;
         }
 
-        $sacrificio = Sacrificio::create($validated);
+        // SacrificioController::store()
+            $sacrificio = Sacrificio::create($validated);
 
-        $animal->update(['estado_productivo' => 'sacrificado']);
+            $animal->update([
+                'estado_productivo' => 'sacrificado',
+                'activo' => false,
+                'fecha_baja' => $validated['fecha'],
+            ]);
 
         return redirect()->route('sacrificios.index')->with([
             'message' => 'Sacrificio registrado exitosamente',
@@ -106,16 +112,15 @@ class SacrificioController extends Controller
             'type' => 'success'
         ]);
     }
+public function destroy(Sacrificio $sacrificio)
+{
+    $sacrificio->delete();
 
-    public function destroy(Sacrificio $sacrificio)
-    {
-        $sacrificio->delete();
-
-        return redirect()->route('sacrificios.index')->with([
-            'message' => 'Sacrificio eliminado exitosamente',
-            'type' => 'success'
-        ]);
-    }
+    return redirect()->route('sacrificios.index')->with([
+        'message' => 'Sacrificio eliminado exitosamente',
+        'type' => 'success',
+    ]);
+}
 
     // Métodos API
     public function porMotivo($motivo)

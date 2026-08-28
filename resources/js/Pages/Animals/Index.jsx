@@ -21,15 +21,18 @@ const LABELS_TIPO_PARTO = {
   distocico: "Distócico",
   cesarea: "Cesárea",
 };
+// Si esta prop no llega, es un error de configuración del controller
+// (AnimalController::index() dejó de pasar 'estadosSistema'), no un
+// caso normal que debamos tolerar silenciosamente con una lista
+// hardcodeada que puede desincronizarse de EstadoProductivoService.
+const estadosSistema = props.estadosSistema ?? [];
 
-// Antes esta lista vivía hardcodeada aquí ("Muerto" con mayúscula) y no
-// coincidía con el valor real que guarda el backend ('muerto', minúscula,
-// definido en EstadoProductivoService::estadosSistema()). Por eso esos
-// animales nunca caían en la sección de historial. Ahora se recibe como
-// prop desde AnimalController::index(); este arreglo solo queda como
-// respaldo por si algún día se renderiza la página sin esa prop.
-const ESTADOS_SISTEMA_FALLBACK = ["Faeneado", "Vendido", "Sacrificado", "muerto"];
-
+if (import.meta.env.DEV && estadosSistema.length === 0) {
+  console.warn(
+    "AnimalController::index() no envió 'estadosSistema' — " +
+    "la sección de historial no va a detectar animales dados de baja."
+  );
+}
 // ── Color de viñeta ──────────────────────────────────────────────────────
 function colorViñeta(animal) {
   return "bg-gray-100 text-gray-700";

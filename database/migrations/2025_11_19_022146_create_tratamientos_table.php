@@ -21,6 +21,7 @@ return new class extends Migration
 // En tratamientos: vincular a la consulta que lo originó
 $table->foreignId('salud_id')->nullable()->constrained('eventos_salud')->nullOnDelete();
 $table->string('responsable')->nullable();
+ $table->decimal('costo', 10, 2)->nullable();
             $table->text('notas')->nullable();
             $table->timestamps();
             $table->foreignId('user_id')

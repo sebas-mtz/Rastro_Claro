@@ -37,7 +37,10 @@ return new class extends Migration
 
             // Cuántas crías nacieron — cada una tiene su fila en offspring
             $table->tinyInteger('numero_crias')->default(1);
-
+$table->foreignId('veterinario_id')->nullable() ->constrained('users')
+                ->nullOnDelete();
+            $table->foreignId('responsable_id')->nullable() ->constrained('users')
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

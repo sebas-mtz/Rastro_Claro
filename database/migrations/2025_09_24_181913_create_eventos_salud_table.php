@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('tratamiento')->nullable();
             $table->foreignId('vacuna_id')->nullable()->constrained('vacunas')->cascadeOnDelete();
             $table->string('dosis')->nullable();
+             $table->decimal('costo', 10, 2)->nullable();
 $table->string('tipo')->default('consulta'); // consulta|vacunacion|revision|emergencia
 $table->string('responsable')->nullable();
 $table->string('lote_vacuna')->nullable(); 

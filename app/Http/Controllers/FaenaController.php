@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Faena;
 use App\Services\HaciendaService;
+use App\Services\EstadoProductivoService;
 use Inertia\Inertia;
 use App\Models\Animal;
 
@@ -64,10 +65,15 @@ class FaenaController extends Controller
 
         $validated['rendimiento'] = round(($validated['peso_carne'] / $validated['peso_canal']) * 100, 2);
 
+        // FaenaController::store()
         Faena::create($validated);
 
         $animal = Animal::find($validated['animal_id']);
-        $animal->estado_productivo = 'faeneado';
+        $animal->update([
+                    'estado_productivo' => 'faeneado',
+                    'activo' => false,
+                    'fecha_baja' => $validated['fecha'],
+                ]);
         $animal->save();
 
         return redirect()->route('faenas.index')->with([
@@ -111,15 +117,15 @@ class FaenaController extends Controller
         ]);
     }
 
-    public function destroy(Faena $faena)
-    {
-        $faena->delete();
+  public function destroy(Faena $faena)
+{
+    $faena->delete();
 
-        return redirect()->route('faenas.index')->with([
-            'message' => 'Faena eliminada exitosamente',
-            'type' => 'success'
-        ]);
-    }
+    return redirect()->route('faenas.index')->with([
+        'message' => 'Faena eliminada exitosamente',
+        'type' => 'success',
+    ]);
+}
 
     // Métodos API: Puedes moverlos al service si los usas mucho, pero por ahora quédate con ellos aquí.
     public function porLote($loteId)

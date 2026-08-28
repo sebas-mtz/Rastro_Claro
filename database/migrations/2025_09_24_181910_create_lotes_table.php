@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('corral_potrero')->nullable();
+             $table->string('tipo')->nullable();
             $table->foreignId('responsable_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
-        
     }
 
     /**

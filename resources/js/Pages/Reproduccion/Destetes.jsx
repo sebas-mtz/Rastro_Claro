@@ -26,11 +26,7 @@ const situacionTerminalLocal = (cria, animal) => {
   if (cria.condicion === "nacido_muerto") return "nacido_muerto";
   if (cria.condicion === "murio_al_nacer") return "murio_al_nacer";
   if (!animal) return "sin_animal";
-  if (animal.muerte || animal.estado_productivo === "muerto") return "muerto";
-  if (animal.venta || animal.estado_productivo === "vendido") return "vendido";
-  if (["faeneado", "sacrificado"].includes(animal.estado_productivo)) {
-    return animal.estado_productivo;
-  }
+  if (animal.es_terminal) return animal.estado_productivo;
   return null;
 };
 

@@ -20,6 +20,7 @@ class Tratamiento extends Model
         'notas',
         'responsable',
         'user_id',
+        'costo',
     ];
 
     protected $casts = [

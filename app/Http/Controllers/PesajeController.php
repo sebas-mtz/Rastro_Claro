@@ -108,12 +108,14 @@ class PesajeController extends Controller
     }
 
     public function update(Request $request, Pesaje $pesaje)
-    {
-        if ($pesaje->animal?->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se pueden modificar pesajes de un animal muerto.',
-            ]);
-        }
+{
+    $animal = $pesaje->animal;
+
+    if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
+        return back()->withErrors([
+            'animal_id' => 'No se pueden modificar pesajes de un animal no disponible.',
+        ]);
+    }
 
         $data = $request->validate([
             'fecha' => ['required', 'date', 'before_or_equal:today'],

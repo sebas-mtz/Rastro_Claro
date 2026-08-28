@@ -27,6 +27,7 @@ class EventoSalud extends Model
         'estado',
         'responsable',
         'user_id',
+        'costo',
     ];
 
     protected $casts = [

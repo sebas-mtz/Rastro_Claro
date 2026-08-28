@@ -78,11 +78,11 @@ const observacionesAnimal = (cria) => {
     ].filter(Boolean).join(" · ");
   }
 
-  if (animal.muerte || animal.estado_productivo === "muerto") {
-    return [
+if (animal.es_terminal) {
+      return [
       "Estado: Muerto",
       animal.muerte?.causa ? `Causa: ${animal.muerte.causa}` : null,
-      animal.muerte?.observaciones,
+animal.muerte?.observaciones ?? null,
       cria.observaciones,
     ].filter(Boolean).join(" · ");
   }
@@ -196,10 +196,7 @@ const tipoNacimiento = evento.parto.tipo_nacimiento;
                   const animal = cria?.animal;
                   const estado = animal?.estado_productivo;
                   const bloqueado =
-                    !animal ||
-                    Boolean(animal.muerte) ||
-                    Boolean(animal.venta) ||
-                    ["muerto", "vendido"].includes(estado);
+                    !animal ||Boolean(animal.es_terminal) 
                   const pesajes = animal?.pesajes ?? [];
                   const detalleDestete = evento.parto.destete?.detalles?.find(
                     (detalle) => String(detalle.cria_id) === String(cria?.id),

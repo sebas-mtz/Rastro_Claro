@@ -54,7 +54,7 @@ export default function ShowAnimal({
     const [showProduccionList, setShowProduccionList] = useState(false);
     const [editProduccion, setEditProduccion] = useState(null);
     const [showMuerte, setShowMuerte] = useState(false);
-    const bloqueado = animal.estado_productivo === "muerto" || Boolean(animal.muerte);
+const bloqueado = animal.es_terminal;
 
     const fmtFecha = formatDate;
     const fmtPeso  = (v) => formatWeight(v);

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Produccion;
+use App\Services\EstadoProductivoService;
 use App\Models\Animal;
 use App\Models\Lote;
 
@@ -137,33 +138,110 @@ class VentaController extends Controller
             ])->withInput();
         }
     }
+public function update(Request $request, Venta $venta)
+{
+    $validated = $request->validate([
+        'estado_venta' => 'required|in:pendiente,completada,cancelada',
+        'estado_pago' => 'required|in:pendiente,parcial,completado',
+        'observaciones' => 'nullable|string|max:500',
+        // agrega aquí el resto de campos editables que ya manejes
+    ]);
 
+    DB::transaction(function () use ($venta, $validated) {
+        $venta->update($validated);
+        $this->actualizarEstadoPostVenta(array_merge($venta->toArray(), $validated), $venta);
+    });
+
+    return back()->with(['message' => 'Venta actualizada exitosamente', 'type' => 'success']);
+}
     /**
      * Actualiza estado de animal/lote después de la venta
      */
-    private function actualizarEstadoPostVenta(array $data, Venta $venta): void
-    {
-        // Solo aplica para venta de animal o lote
-        if ($data['tipo_venta'] === 'animal' && $venta->vendible_type === Animal::class) {
-            /** @var \App\Models\Animal $animal */
-            $animal = Animal::find($venta->vendible_id);
-            if ($animal) {
-                $animal->estado_productivo = 'vendido';
-                $animal->save();
-            }
-        }
-
-        if ($data['tipo_venta'] === 'lote' && $venta->vendible_type === Lote::class) {
-            /** @var \App\Models\Lote $lote */
-            $lote = Lote::with('animales')->find($venta->vendible_id);
-            if ($lote) {
-                foreach ($lote->animales as $animal) {
-                    $animal->estado_productivo = 'vendido';
-                    $animal->save();
-                }
-            }
-        }
-
-        // Para produccion y subproducto_faena no cambiamos estados de animales
+   private function actualizarEstadoPostVenta(array $data, Venta $venta): void
+{
+    if ($data['estado_venta'] === 'cancelada') {
+        return;
     }
+
+    $completada = $data['estado_venta'] === 'completada';
+
+    if ($data['tipo_venta'] === 'animal' && $venta->vendible_type === Animal::class) {
+        $animal = Animal::find($venta->vendible_id);
+        if ($animal) {
+            $this->marcarVendido($animal, $data['fecha_venta'], $completada);
+        }
+    }
+
+    if ($data['tipo_venta'] === 'lote' && $venta->vendible_type === Lote::class) {
+        $lote = Lote::with('animales')->find($venta->vendible_id);
+        if ($lote) {
+            foreach ($lote->animales as $animal) {
+                $this->marcarVendido($animal, $data['fecha_venta'], $completada);
+            }
+        }
+    }
+}
+
+/**
+ * Pendiente: se marca estado_productivo='vendido' (reserva el animal,
+ * ya no puede recibir otra venta ni editarse) pero sigue activo en el
+ * rebaño hasta que la venta se confirme.
+ *
+ * Completada: además se desactiva y se fija fecha_baja.
+ */
+private function marcarVendido(Animal $animal, string $fechaVenta, bool $completada): void
+{
+    $cambios = ['estado_productivo' => 'vendido'];
+
+    if ($completada) {
+        $cambios['activo'] = false;
+        $cambios['fecha_baja'] = $fechaVenta;
+    }
+
+    Animal::conEdicionTerminalPermitida(function () use ($animal, $cambios) {
+        $animal->update($cambios);
+    });
+}
+public function updateEstado(Request $request, Venta $venta)
+{
+    $validated = $request->validate([
+        'estado_venta' => 'required|in:pendiente,completada,cancelada',
+        'estado_pago' => 'required|in:pendiente,parcial,completado',
+    ]);
+
+    DB::transaction(function () use ($venta, $validated) {
+        $venta->update($validated);
+        $this->actualizarEstadoPostVenta(array_merge($venta->toArray(), $validated), $venta);
+    });
+
+    return back()->with(['message' => 'Estado de venta actualizado', 'type' => 'success']);
+}
+public function destroy(Venta $venta)
+{
+    DB::transaction(function () use ($venta) {
+        $animales = match (true) {
+            $venta->tipo_venta === 'animal' && $venta->vendible_type === Animal::class =>
+                Animal::whereKey($venta->vendible_id)->get(),
+            $venta->tipo_venta === 'lote' && $venta->vendible_type === Lote::class =>
+                Lote::with('animales')->find($venta->vendible_id)?->animales ?? collect(),
+            default => collect(),
+        };
+
+        $venta->delete();
+
+        foreach ($animales as $animal) {
+            if ($animal->estado_productivo === 'vendido') {
+                Animal::conEdicionTerminalPermitida(function () use ($animal) {
+                    $animal->update([
+                        'activo' => true,
+                        'fecha_baja' => null,
+                        'estado_productivo' => EstadoProductivoService::estadoInicial($animal->especie),
+                    ]);
+                });
+            }
+        }
+    });
+
+    return back()->with(['message' => 'Venta eliminada exitosamente', 'type' => 'success']);
+}
 }

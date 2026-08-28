@@ -177,13 +177,11 @@ class AnimalController extends Controller
     }
 
 
-    public function update(
-        UpdateAnimalRequest $request,
-        Animal $animal,
-        HistorialNacimientoService $historialNacimientoService
+    public function update(UpdateAnimalRequest $request,Animal $animal,HistorialNacimientoService $historialNacimientoService
     )
-{
-    if ($animal->estado_productivo === 'muerto') {
+
+    {
+    if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
         return back()->withErrors([
             'animal' => 'Un animal registrado como muerto no puede modificarse.',
         ]);
@@ -297,7 +295,7 @@ class AnimalController extends Controller
    
 public function destroy(Animal $animal)
     {
-        if ($animal->estado_productivo === 'muerto') {
+        if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
             return back()->withErrors([
                 'animal' => 'Un animal registrado como muerto no puede eliminarse.',
             ]);
@@ -309,7 +307,7 @@ public function destroy(Animal $animal)
 
 public function imagen(Request $request, Animal $animal)
 {
-    if ($animal->estado_productivo === 'muerto') {
+    if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
         return back()->withErrors([
             'animal' => 'Un animal registrado como muerto no puede modificarse.',
         ]);
@@ -333,7 +331,7 @@ public function imagen(Request $request, Animal $animal)
 
 public function guardarImagen(Request $request, Animal $animal)
 {
-    if ($animal->estado_productivo === 'muerto') {
+    if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
         return back()->withErrors([
             'animal' => 'Un animal registrado como muerto no puede modificarse.',
         ]);
@@ -354,7 +352,7 @@ public function guardarImagen(Request $request, Animal $animal)
 
 public function eliminarImagen(Animal $animal)
 {
-    if ($animal->estado_productivo === 'muerto') {
+    if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
         return back()->withErrors([
             'animal' => 'Un animal registrado como muerto no puede modificarse.',
         ]);

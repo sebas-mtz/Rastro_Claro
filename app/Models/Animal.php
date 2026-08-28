@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\EventoReproductivo;
 use App\Models\ServicioReproductivo;
+use App\Services\EstadoProductivoService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +22,7 @@ protected $fillable = [
     'numero_registro',
     'grado_pureza',
     'lectura_microchip',
-    'color',
+    'color', 'tipo_origen', 'fecha_adquisicion', 'proovedor_origen'
     ];
 
 protected $casts = [
@@ -29,26 +30,72 @@ protected $casts = [
     'peso' => 'float',
 ];
 
+// Animal.php
+
+protected $appends = ['es_terminal'];
+
+public function getEsTerminalAttribute(): bool
+{
+    return EstadoProductivoService::esTerminal($this->estado_productivo);
+}
 protected static function booted(): void
 {
     static::updating(function (Animal $animal) {
+        if (static::$permitirEdicionTerminal) {
+            return;
+        }
 
-if (strcasecmp((string) $animal->getOriginal('estado_productivo'), 'muerto') === 0) {
-                throw ValidationException::withMessages([
+        if (EstadoProductivoService::esTerminal($animal->getOriginal('estado_productivo'))) {
+            throw ValidationException::withMessages([
                 'animal' => 'Un animal dado de baja no puede modificarse.',
             ]);
         }
-
     });
 }
-    public function lote() {
-        return $this->belongsTo(Lote::class);
-    }
 
-    public function muerte(): HasOne
-    {
-        return $this->hasOne(Muerte::class);
+protected static bool $permitirEdicionTerminal = false;
+
+public static function conEdicionTerminalPermitida(callable $callback)
+{
+    static::$permitirEdicionTerminal = true;
+
+    try {
+        return $callback();
+    } finally {
+        static::$permitirEdicionTerminal = false;
     }
+}
+
+public function lote()
+{
+    return $this->belongsTo(Lote::class);
+}
+
+    public function faenas(): HasMany
+{
+    return $this->hasMany(Faena::class);
+}
+
+public function sacrificios(): HasMany
+{
+    return $this->hasMany(Sacrificio::class);
+}
+
+  public function muerte(): HasOne
+{
+    return $this->hasOne(Baja::class)
+        ->where('tipo_salida', Baja::FALLECIMIENTO);
+}
+
+/**
+ * Cualquier baja del animal, sin importar el tipo — para casos donde
+ * necesitas la fecha/causa de la salida en general (ver
+ * EstadoActualAnimalService), no específicamente si murió.
+ */
+public function bajaActual(): HasOne
+{
+    return $this->hasOne(Baja::class)->latestOfMany('fecha');
+}
 
     public function salud() {
         return $this->hasMany(EventoSalud::class);

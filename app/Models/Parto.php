@@ -24,6 +24,8 @@ class Parto extends Model
         'observaciones_leche',
         'facilidad_materna',
         'observaciones_maternas',
+        'veterinario_id',
+        'responsable_id'
     ];
 
     protected $casts = [

@@ -24,7 +24,7 @@ use App\Http\Controllers\DiagnosticoGestacionController;
 use App\Http\Controllers\PartoController;
 use App\Http\Controllers\CriaController;
 use App\Http\Controllers\DesteteController;
-use App\Http\Controllers\MuerteController;
+use App\Http\Controllers\BajaController;
 use App\Http\Controllers\RacionController;
 use App\Http\Controllers\ProgramacionAlimentacionController;
 use App\Http\Controllers\PesajeController;
@@ -119,6 +119,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('tratamientos', TratamientoController::class);
     Route::get('/salud/estadisticas', EstadisticasSaludController::class)
     ->name('salud.estadisticas');
+
+    /*
+    |----------------------------------------------------------------------
+    | Bajas y salidas del rebaño
+    |----------------------------------------------------------------------
+    */
+    Route::get('/bajas', [BajaController::class, 'index'])->name('bajas.index');
+    Route::post('/bajas', [BajaController::class, 'store'])->name('bajas.store');
+    Route::delete('/bajas/{baja}', [BajaController::class, 'destroy'])->name('bajas.destroy');
 
     /*
     |----------------------------------------------------------------------
@@ -222,9 +231,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('faenas', FaenaController::class);
     Route::resource('ventas', VentaController::class);
     Route::resource('sacrificios', SacrificioController::class);
-    Route::put('/ventas/{venta}/estados', [VentaController::class, 'updateEstado'])
-        ->name('ventas.update-estados');
-
+Route::resource('ventas', VentaController::class);
+Route::put('/ventas/{venta}/estados', [VentaController::class, 'updateEstado'])
+    ->name('ventas.update-estados');
     Route::get('/api/faenas/estadisticas', [FaenaController::class, 'estadisticas']);
     Route::get('/api/ventas/estadisticas', [VentaController::class, 'estadisticas']);
     Route::get('/api/sacrificios/estadisticas', [SacrificioController::class, 'estadisticas']);
@@ -257,8 +266,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('reproduccion.crias.asignar-arete');
     Route::patch('/reproduccion/crias/{cria}/observaciones', [CriaController::class, 'actualizarObservaciones'])
         ->name('reproduccion.crias.observaciones');
-    Route::post('/animales/{animal}/muerte', [MuerteController::class, 'store'])
-        ->name('animales.muerte.store');
 
     Route::get('/api/reproduccion/estadisticas', [EventoReproductivoController::class, 'estadisticas'])
         ->name('reproduccion.estadisticas');

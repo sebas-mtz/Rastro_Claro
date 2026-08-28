@@ -26,9 +26,21 @@ use App\Models\Termo;
 use App\Models\Tratamiento;
 use App\Models\Vacuna;
 use App\Models\Venta;
-use App\Models\Muerte;
+use App\Models\Baja;
 use App\Models\Destete;
 use App\Models\DesteteCria;
+
+use App\Models\ActividadTrabajador;
+use App\Models\AnimalValuation;
+use App\Models\AnimalValuationDetalle;
+use App\Models\AnimalValuationHistorial;
+use App\Models\Auditoria;
+use App\Models\ConfiguracionValuacion;
+use App\Models\Costo;
+use App\Models\Documento;
+use App\Models\MovimientoLote;
+use App\Models\PuestoTrabajador;
+use App\Models\Trabajador;
 
 return [
     /*
@@ -63,9 +75,20 @@ return [
         Tratamiento::class,
         Vacuna::class,
         Venta::class,
-        Muerte::class,
+        Baja::class,
         Destete::class,
         DesteteCria::class,
+        ActividadTrabajador::class,
+        AnimalValuation::class,
+        AnimalValuationDetalle::class,
+        AnimalValuationHistorial::class,
+        Auditoria::class,
+        ConfiguracionValuacion::class,
+        Costo::class,
+        Documento::class,
+        MovimientoLote::class,
+        PuestoTrabajador::class,
+        Trabajador::class,
     ],
 
     'tables' => [
@@ -95,7 +118,7 @@ return [
         'tratamientos',
         'vacunas',
         'ventas',
-        'muertes',
+        'bajas',
         'destetes',
         'destete_crias',
     ],

@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Lote extends Model
 {
-    protected $fillable = ['nombre','corral_potrero','descripcion','responsable_id'];
-
+    protected $fillable = ['nombre','corral_potrero','descripcion','tipo','responsable_id']; 
+    
     public function animales() {
         return $this->hasMany(Animal::class);
     }
@@ -25,4 +25,4 @@ class Lote extends Model
         return $this->belongsTo(User::class,'responsable_id');
     } /** @use HasFactory<\Database\Factories\LoteFactory> */
     use HasFactory;
-}
+} 

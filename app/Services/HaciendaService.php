@@ -29,8 +29,7 @@ class HaciendaService
      */
     public function getAvailableAnimals(bool $forMap = true)
     {
-        $query = Animal::whereNotIn('estado_productivo', ['sacrificado', 'faenado', 'vendido', 'muerto']);
-
+$query = Animal::whereNotIn('estado_productivo', EstadoProductivoService::estadosSistema());
         if ($forMap) {
             return $query->get()->map(function ($animal) {
                 return [
@@ -54,8 +53,7 @@ class HaciendaService
      */
     public function getLotes(bool $forMap = true)
     {
-        $estadosNoDisponibles = ['sacrificado', 'faenado', 'vendido', 'muerto'];
-
+$estadosNoDisponibles = EstadoProductivoService::estadosSistema();
         $query = Lote::with([
                 'animales' => function ($q) use ($estadosNoDisponibles) {
                     $q->whereNotIn('estado_productivo', $estadosNoDisponibles);

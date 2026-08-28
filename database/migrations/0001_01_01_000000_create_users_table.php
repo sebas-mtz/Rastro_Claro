@@ -6,23 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // Rancho/cuenta a la que pertenece el usuario.
+            // El dueño puede apuntarse a sí mismo después de crearse.
+            $table->foreignId('cuenta_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->string('name');
             $table->string('email')->unique();
-            $table->enum('rol', ['admin','veterinario','cuidador'])->default('cuidador');
-            $table->string('plan')->nullable(); 
+
+            // Jerarquía general de acceso.
+            $table->string('role')->default('worker');
+
+            // Se conserva porque tu sistema sí utiliza planes.
+            $table->string('plan')->nullable();
+
             $table->boolean('activo')->default(true);
+            $table->timestamp('last_login_at')->nullable();
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -41,13 +52,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

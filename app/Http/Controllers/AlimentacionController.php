@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Alimentacion;
 use App\Models\Animal;
+use App\Models\Costo;
 use App\Models\Lote;
 use App\Models\Racion;
 use App\Models\InventarioInsumo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -148,7 +150,7 @@ class AlimentacionController extends Controller
                 $snapshotComposicion = $racion->generarSnapshotComposicion();
                 $snapshotNutricion   = $racion->generarSnapshotNutricion();
 
-                Alimentacion::create([
+                $consumo = Alimentacion::create([
                     'fecha'                => $data['fecha'],
                     'hora'                 => $data['hora'] ?? null,
                     'racion_id'            => $data['racion_id'],
@@ -164,6 +166,10 @@ class AlimentacionController extends Controller
                 ]);
 
                 $this->descontarInventarioPorRacion($racion, (float) $data['cantidad']);
+
+                // El gasto se refleja en el módulo de Costos sin volver a
+                // capturarlo: el monto sale del precio de la ración.
+                $this->sincronizarCosto($consumo);
             });
 
             return back()->with('success', 'Consumo registrado correctamente.');
@@ -204,6 +210,12 @@ class AlimentacionController extends Controller
                     (float) $alimentacion->cantidad
                 );
             }
+
+            // El costo generado por este consumo se va con él, para no dejar
+            // gastos huérfanos en el módulo de Costos.
+            Costo::where('origen_tipo', Alimentacion::class)
+                ->where('origen_id', $alimentacion->id)
+                ->delete();
 
             $alimentacion->delete();
         });
@@ -273,5 +285,59 @@ class AlimentacionController extends Controller
                 'activa'     => false,
                 'updated_at' => now(),
             ]);
+    }
+
+    /**
+     * Refleja el consumo como una fila de la tabla `costos`, ligada al registro
+     * de alimentación mediante origen_tipo/origen_id.
+     *
+     * A diferencia de salud o tratamientos, aquí el monto no se captura a mano:
+     * sale de Alimentacion::costoTotal() (cantidad × precio por kg de la ración,
+     * o el snapshot guardado al momento del consumo). Si no hay forma de conocer
+     * el precio no se inventa un monto: simplemente no se registra el costo.
+     *
+     * Los consumos de lote se guardan con lote_id y sin animal_id; la valuación
+     * de cada animal prorratea ese consumo por su cuenta, así que no se duplica.
+     */
+    private function sincronizarCosto(Alimentacion $consumo): void
+    {
+        $existente = Costo::where('origen_tipo', Alimentacion::class)
+            ->where('origen_id', $consumo->id)
+            ->first();
+
+        $monto = $consumo->costoTotal();
+
+        if ($monto === null || $monto <= 0) {
+            $existente?->delete();
+
+            return;
+        }
+
+        $atributos = [
+            'concepto' => $consumo->racion?->nombre
+                ? 'Alimentación — ' . $consumo->racion->nombre
+                : 'Alimentación',
+            'descripcion' => $consumo->notas,
+            'categoria' => 'alimentacion',
+            'tipo_costo' => 'directo',
+            'monto' => $monto,
+            'cantidad' => $consumo->cantidad,
+            'unidad_medida' => $consumo->unidad,
+            'fecha' => $consumo->fecha,
+            'animal_id' => $consumo->animal_id,
+            'lote_id' => $consumo->lote_id,
+            'observaciones' => 'Registrado automáticamente desde el módulo de Alimentación.',
+            'user_id' => Auth::id(),
+            'origen_tipo' => Alimentacion::class,
+            'origen_id' => $consumo->id,
+        ];
+
+        if ($existente) {
+            $existente->update($atributos);
+
+            return;
+        }
+
+        Costo::create($atributos);
     }
 }

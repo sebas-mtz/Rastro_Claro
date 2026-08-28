@@ -17,6 +17,7 @@ class StoreTratamientoRequest extends FormRequest
             'fecha_inicio' => ['required', 'date'],
             'fecha_fin'   => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
             'estado'      => ['nullable', 'in:activo,completado'],
+            'costo'       => ['nullable', 'numeric', 'min:0'],
             'notas'       => ['nullable', 'string'],
             'responsable' => ['nullable', 'string', 'max:150'],
         ];
