@@ -19,6 +19,8 @@ return new class extends Migration
             ->constrained('lotes')
             ->nullOnDelete();
             $table->date('fecha_programada');
+              $table->unsignedSmallInteger('periodo_retiro_dias')->nullable();
+            $table->date('fecha_fin_retiro')->nullable();
             $table->string('diagnostico');
             $table->string('tratamiento')->nullable();
             $table->foreignId('vacuna_id')->nullable()->constrained('vacunas')->cascadeOnDelete();

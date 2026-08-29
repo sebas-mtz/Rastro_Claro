@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventoSaludRequest;
 use App\Http\Requests\UpdateEventoSaludRequest;
 use App\Models\Animal;
+use App\Models\Costo;
 use App\Models\EventoSalud;
 use App\Models\Lote;
 use App\Models\Vacuna;
@@ -12,15 +13,31 @@ use App\Models\Tratamiento;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class EventoSaludController extends Controller
 {
+    /**
+     * A qué categoría de Costo pertenece cada tipo de evento sanitario.
+     * Cualquier tipo que no aparezca aquí cae en 'medicamentos' por defecto
+     * (ver categoriaParaTipo()) — ajusta este mapa si quieres una división
+     * más fina para mastitis, problemas respiratorio/digestivo/reproductivo
+     * o lesión.
+     */
+    private const CATEGORIA_POR_TIPO = [
+        EventoSalud::TIPO_VACUNACION => 'vacunas',
+        EventoSalud::TIPO_CONSULTA   => 'consultas_veterinarias',
+        EventoSalud::TIPO_REVISION   => 'consultas_veterinarias',
+        EventoSalud::TIPO_EMERGENCIA => 'consultas_veterinarias',
+    ];
+
     public function index(Request $request): Response
     {
         Tratamiento::sincronizarVencidos();
-    EventoSalud::sincronizarVencidos(); // ver punto 5
+        EventoSalud::sincronizarVencidos(); // ver punto 5
+
         $mesParam = $request->get('month', now()->format('Y-m'));
         $fecha    = Carbon::createFromFormat('Y-m', $mesParam)->startOfMonth();
         $year     = $fecha->year;
@@ -55,7 +72,7 @@ class EventoSaludController extends Controller
         $dueSoon = EventoSalud::proximas(7)->count();
 
         // Vacunaciones del mes: pendientes/vencidas y aplicadas por separado
-        $vacunacionesMes = $eventosMes->where('tipo', 'vacunacion');
+        $vacunacionesMes = $eventosMes->where('tipo', EventoSalud::TIPO_VACUNACION);
 
         $pending = $vacunacionesMes
             ->whereIn('estado', ['pendiente', 'vencida'])
@@ -93,47 +110,56 @@ class EventoSaludController extends Controller
 
         // Tratamientos activos (todos los meses)
         $treatments = Tratamiento::with(['animal', 'lote'])
-    ->whereIn('estado', [Tratamiento::ESTADO_ACTIVO, Tratamiento::ESTADO_VENCIDO])
-    ->orderBy('fecha_inicio', 'desc')
-    ->get()
-    ->map(fn($t) => [
-        'id'             => $t->id,
-        'nombre'         => $t->nombre,
-        'animal'         => $t->animal_id
-            ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
-                    ($t->animal->alias ? "- {$t->animal->alias}" : ''))
-               ?: "Animal #{$t->animal_id}")
-            : null,
-        'lote'           => $t->lote_id
-            ? ($t->lote?->nombre ?? "Lote #{$t->lote_id}")
-            : null,
-        'estado'         => $t->estado,
-        'dias_restantes' => $t->diasRestantes(),
-        'rango'          => $t->fecha_inicio->format('d/m/Y') .
-                            ($t->fecha_fin ? ' → ' . $t->fecha_fin->format('d/m/Y') : ' → en curso'),
-        'notas'          => $t->notas,
-    ]);
+            ->whereIn('estado', [Tratamiento::ESTADO_ACTIVO, Tratamiento::ESTADO_VENCIDO])
+            ->orderBy('fecha_inicio', 'desc')
+            ->get()
+            ->map(fn($t) => [
+                'id'             => $t->id,
+                'nombre'         => $t->nombre,
+                'animal'         => $t->animal_id
+                    ? (trim(($t->animal->arete ? "#{$t->animal->arete}" : '') . ' ' .
+                            ($t->animal->alias ? "- {$t->animal->alias}" : ''))
+                       ?: "Animal #{$t->animal_id}")
+                    : null,
+                'lote'           => $t->lote_id
+                    ? ($t->lote?->nombre ?? "Lote #{$t->lote_id}")
+                    : null,
+                'estado'         => $t->estado,
+                'dias_restantes' => $t->diasRestantes(),
+                'rango'          => $t->fecha_inicio->format('d/m/Y') .
+                                    ($t->fecha_fin ? ' → ' . $t->fecha_fin->format('d/m/Y') : ' → en curso'),
+                'notas'          => $t->notas,
+            ]);
 
-        // Consultas, revisiones y emergencias pendientes/vencidas (todos los meses)
+        // Todo lo que no sea vacunación, pendiente o vencido (todos los meses).
+        // Antes solo cubría 'consulta','revision','emergencia' — con los 16
+        // tipos activos, esto se generaliza contra el catálogo real para no
+        // dejar ciega la sección a mastitis, cirugía, etc en un futuro.
+        $tiposNoVacunacion = array_diff(
+            array_keys(EventoSalud::TIPOS),
+            [EventoSalud::TIPO_VACUNACION]
+        );
+
         $eventos = EventoSalud::with(['animal', 'lote'])
-            ->whereIn('tipo', ['consulta', 'revision', 'emergencia'])
+            ->whereIn('tipo', $tiposNoVacunacion)
             ->whereIn('estado', [EventoSalud::ESTADO_PENDIENTE, EventoSalud::ESTADO_VENCIDA])
             ->orderBy('fecha_programada')
             ->get()
             ->map(fn($e) => [
-                'id'          => $e->id,
-                'tipo'        => $e->tipo,
-                'estado'      => $e->estado,
-                'diagnostico' => $e->diagnostico,
-                'animal'      => $e->animal_id
+                'id'           => $e->id,
+                'tipo'         => $e->tipo,
+                'tipo_legible' => $e->tipo_legible,
+                'estado'       => $e->estado,
+                'diagnostico'  => $e->diagnostico,
+                'animal'       => $e->animal_id
                     ? (trim(($e->animal?->arete ? "#{$e->animal->arete}" : '') . ' ' .
                             ($e->animal?->alias ? "- {$e->animal->alias}" : ''))
                        ?: "Animal #{$e->animal_id}")
                     : null,
-                'lote'        => $e->lote_id
+                'lote'         => $e->lote_id
                     ? ($e->lote?->nombre ?? "Lote #{$e->lote_id}")
                     : null,
-                'fecha'       => $e->fecha_programada->format('d/m/Y'),
+                'fecha'        => $e->fecha_programada->format('d/m/Y'),
             ]);
 
         // Catálogos para formularios
@@ -168,34 +194,30 @@ class EventoSaludController extends Controller
             'animales'  => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
             'lotes'     => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'   => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
-            'tipos'     => [
-                EventoSalud::TIPO_CONSULTA,
-                EventoSalud::TIPO_VACUNACION,
-                EventoSalud::TIPO_REVISION,
-                EventoSalud::TIPO_EMERGENCIA,
-            ],
+            'tipos'     => array_keys(EventoSalud::TIPOS),
         ]);
     }
 
     public function store(StoreEventoSaludRequest $request): RedirectResponse
     {
-        $data            = $request->validated();
+        $data = $request->validated();
+
         if ($data['tipo'] === EventoSalud::TIPO_VACUNACION && empty($data['diagnostico'])) {
             $vacuna = Vacuna::find($data['vacuna_id'] ?? null);
-
             $data['diagnostico'] = 'Vacunación programada' . ($vacuna ? ': ' . $vacuna->nombre : '');
         }
+
         $data['user_id'] = $request->user()->id;
         $data['estado']  = $data['estado'] ?? EventoSalud::ESTADO_PENDIENTE;
 
         $evento = EventoSalud::create($data);
 
-        // Si se crea directamente como aplicado, registrar fecha de aplicación
         if ($evento->estado === EventoSalud::ESTADO_APLICADA && !$evento->fecha_aplicacion) {
             $evento->update(['fecha_aplicacion' => Carbon::today()]);
         }
 
-        // Programar refuerzo automático si es vacunación con refuerzo configurado
+        $this->sincronizarCosto($evento);
+
         if ($evento->tipo === EventoSalud::TIPO_VACUNACION && $evento->vacuna_id) {
             $this->programarRefuerzo($evento);
         }
@@ -220,12 +242,7 @@ class EventoSaludController extends Controller
             'animales' => Animal::orderBy('alias')->get(['id', 'alias', 'arete', 'especie']),
             'lotes'    => Lote::orderBy('nombre')->get(['id', 'nombre']),
             'vacunas'  => Vacuna::orderBy('nombre')->get(['id', 'nombre', 'refuerzo_dias', 'especie_objetivo']),
-            'tipos'    => [
-                EventoSalud::TIPO_CONSULTA,
-                EventoSalud::TIPO_VACUNACION,
-                EventoSalud::TIPO_REVISION,
-                EventoSalud::TIPO_EMERGENCIA,
-            ],
+            'tipos'    => array_keys(EventoSalud::TIPOS),
         ]);
     }
 
@@ -233,12 +250,18 @@ class EventoSaludController extends Controller
     {
         $eventoSalud->update($request->validated());
 
+        $this->sincronizarCosto($eventoSalud);
+
         return redirect()->route('salud.index')
             ->with('success', 'Evento actualizado correctamente.');
     }
 
     public function destroy(EventoSalud $eventoSalud): RedirectResponse
     {
+        Costo::where('origen_tipo', EventoSalud::class)
+            ->where('origen_id', $eventoSalud->id)
+            ->delete();
+
         $eventoSalud->delete();
 
         return redirect()->route('salud.index')
@@ -246,9 +269,52 @@ class EventoSaludController extends Controller
     }
 
     /**
-     * Marca una vacunación como aplicada.
-     * PATCH /eventos-salud/{eventoSalud}/aplicar
+     * Refleja el costo capturado en el evento de salud como una fila de la
+     * tabla `costos`, ligada al evento mediante origen_tipo/origen_id.
      */
+    private function sincronizarCosto(EventoSalud $evento): void
+    {
+        $existente = Costo::where('origen_tipo', EventoSalud::class)
+            ->where('origen_id', $evento->id)
+            ->first();
+
+        if (blank($evento->costo) || (float) $evento->costo <= 0 || ! $evento->animal_id) {
+            $existente?->delete();
+            return;
+        }
+
+        $atributos = [
+            'concepto' => $evento->vacuna?->nombre
+                ?? $evento->diagnostico
+                ?? ucfirst((string) $evento->tipo),
+            'descripcion' => $evento->observaciones,
+            'categoria' => $this->categoriaParaTipo($evento->tipo),
+            'tipo_costo' => 'directo',
+            'monto' => $evento->costo,
+            'cantidad' => 1,
+            'fecha' => $evento->fecha_aplicacion ?? $evento->fecha_programada,
+            'animal_id' => $evento->animal_id,
+            'lote_id' => $evento->lote_id,
+            'proveedor' => $evento->responsable,
+            'observaciones' => 'Registrado automáticamente desde el módulo de Salud.',
+            'user_id' => $evento->user_id ?? Auth::id(),
+            'origen_tipo' => EventoSalud::class,
+            'origen_id' => $evento->id,
+        ];
+
+        if ($existente) {
+            $existente->update($atributos);
+            return;
+        }
+
+        Costo::create($atributos);
+    }
+
+    private function categoriaParaTipo(string $tipo): string
+    {
+        return self::CATEGORIA_POR_TIPO[$tipo] ?? 'medicamentos';
+    }
+
     public function aplicar(Request $request, EventoSalud $eventoSalud): RedirectResponse
     {
         if ($eventoSalud->estado === EventoSalud::ESTADO_APLICADA) {
@@ -261,7 +327,6 @@ class EventoSaludController extends Controller
 
         $eventoSalud->marcarAplicada($fechaAplicacion);
 
-        // Programar refuerzo si no existe uno futuro pendiente
         if ($eventoSalud->tipo === EventoSalud::TIPO_VACUNACION && $eventoSalud->vacuna_id) {
             $yaExisteRefuerzo = EventoSalud::where(function ($q) use ($eventoSalud) {
                     $q->where('animal_id', $eventoSalud->animal_id)
@@ -280,11 +345,6 @@ class EventoSaludController extends Controller
         return back()->with('success', 'Vacunación marcada como aplicada.');
     }
 
-    /**
-     * Registra el resultado de una consulta, revisión o emergencia.
-     * Opcionalmente crea un tratamiento vinculado.
-     * PATCH /eventos-salud/{eventoSalud}/completar
-     */
     public function completar(Request $request, EventoSalud $eventoSalud): RedirectResponse
     {
         if ($eventoSalud->tipo === EventoSalud::TIPO_VACUNACION) {
@@ -311,7 +371,6 @@ class EventoSaludController extends Controller
             'fecha_aplicacion' => Carbon::today(),
         ]);
 
-        // Crear tratamiento vinculado si se solicitó
         if (!empty($validated['crear_tratamiento']) && !empty($validated['tratamiento_nombre'])) {
             Tratamiento::create([
                 'animal_id'    => $eventoSalud->animal_id,
@@ -329,18 +388,12 @@ class EventoSaludController extends Controller
         return back()->with('success', 'Evento registrado correctamente.');
     }
 
-    /**
-     * Marca como vencidos todos los eventos pendientes con fecha pasada.
-     * POST /eventos-salud/marcar-vencidos
-     */
     public function marcarVencidos(): RedirectResponse
-{
-    $cantidad = EventoSalud::sincronizarVencidos();
+    {
+        $cantidad = EventoSalud::sincronizarVencidos();
 
-    return back()->with('success', "$cantidad evento(s) marcados como vencidos.");
-}
-
-    // ─── Helper privado ───────────────────────────────────────────────────────
+        return back()->with('success', "$cantidad evento(s) marcados como vencidos.");
+    }
 
     private function programarRefuerzo(EventoSalud $evento, ?Carbon $fechaBase = null): ?EventoSalud
     {

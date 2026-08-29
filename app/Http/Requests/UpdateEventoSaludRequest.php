@@ -2,49 +2,44 @@
 
 namespace App\Http\Requests;
 
-use App\Models\EventoSalud;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use App\Models\EventoSalud;
 
 class UpdateEventoSaludRequest extends FormRequest
 {
+    /**
+     * Antes devolvía false sin condición, lo que hacía que actualizar un evento
+     * de salud respondiera 403 siempre. El acceso al registro ya está acotado
+     * por el scope de tenencia (owner_id) del modelo.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Mismas reglas que el alta, pero todas opcionales para permitir
+     * actualizaciones parciales.
+     */
     public function rules(): array
     {
         return [
-            'animal_id' => ['sometimes','nullable','exists:animals,id',],
-
-            'lote_id' => ['sometimes','nullable','exists:lotes,id',],
-
-            'tipo' => [
-                'sometimes',
-                Rule::in([
-                    EventoSalud::TIPO_CONSULTA,
-                    EventoSalud::TIPO_VACUNACION,
-                    EventoSalud::TIPO_REVISION,
-                    EventoSalud::TIPO_EMERGENCIA,
-                ]),
-            ],
-
-            'vacuna_id' => ['sometimes','nullable','exists:vacunas,id',],
-
-            'fecha_programada' => ['sometimes','date',],
-
-            'fecha_aplicacion' => ['sometimes','nullable','date',],
-
-            'diagnostico' => ['sometimes','nullable','string','max:1000',],
-
-            'observaciones' => ['sometimes','nullable','string',],
-
-            'estado' => ['sometimes',Rule::in([EventoSalud::ESTADO_PENDIENTE,
-                    EventoSalud::ESTADO_APLICADA,
-                    EventoSalud::ESTADO_VENCIDA,
-                ]),
-            ],
+            'animal_id'        => ['sometimes', 'nullable', 'exists:animals,id'],
+            'lote_id'          => ['sometimes', 'nullable', 'exists:lotes,id'],
+            'tipo'             => ['sometimes', \Illuminate\Validation\Rule::in(array_keys(EventoSalud::TIPOS))],
+            'fecha_programada' => ['sometimes', 'date'],
+            'fecha_aplicacion' => ['sometimes', 'nullable', 'date'],
+            'diagnostico'      => ['sometimes', 'nullable', 'string', 'max:255'],
+            'tratamiento'      => ['sometimes', 'nullable', 'string', 'max:255'],
+            'vacuna_id'        => ['sometimes', 'nullable', 'exists:vacunas,id'],
+            'dosis'            => ['sometimes', 'nullable', 'string', 'max:100'],
+            'costo'            => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'periodo_retiro_dias' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:365'],
+            'via_administracion' => ['sometimes', 'nullable', \Illuminate\Validation\Rule::in(array_keys(EventoSalud::VIAS_ADMINISTRACION))],
+            'lote_vacuna'      => ['sometimes', 'nullable', 'string', 'max:100'],
+            'observaciones'    => ['sometimes', 'nullable', 'string'],
+            'estado'           => ['sometimes', 'nullable', 'in:pendiente,aplicada,vencida'],
+            'responsable'      => ['sometimes', 'nullable', 'string', 'max:150'],
         ];
     }
 

@@ -33,6 +33,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Fecha del último acceso, para que el superadministrador pueda ver
+        // qué cuentas siguen en uso. Sin timestamps para no ensuciar updated_at.
+        Auth::user()?->forceFill(['last_login_at' => now()])->saveQuietly();
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
