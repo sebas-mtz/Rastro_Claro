@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-
+use Illuminate\Support\Facades\Cache;
 class Venta extends Model
 {
     protected $fillable = [
@@ -93,7 +93,12 @@ class Venta extends Model
         return $this->estado_pago === 'completado';
     }
 
-    
+    // Faena.php
+protected static function booted(): void
+{
+    static::saved(fn () => Cache::forget('faena_statistics'));
+    static::deleted(fn () => Cache::forget('faena_statistics'));
+}
     public function getEstadoVentaLabelAttribute(): string
     {
         return [

@@ -19,6 +19,7 @@ export default function Index({
     especies = [],
     razasPorEspecie = {},
     estadosProductivos = {},
+    tiposLote = {}
 }) {
     const [showModal, setShowModal] = useState(false);
     const [isShowOpen, setIsShowOpen] = useState(false);
@@ -134,6 +135,7 @@ export default function Index({
                 usuarios={usuarios}
                 especies={especies}
                 razasPorEspecie={razasPorEspecie}
+                tiposLote={tiposLote}
                 estadosProductivos={estadosProductivos}
             />
 

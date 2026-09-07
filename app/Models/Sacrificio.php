@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Sacrificio extends Model
 {
@@ -68,6 +69,13 @@ class Sacrificio extends Model
             'autoconsumo' => 'Auto-consumo'
         ][$this->motivo] ?? $this->motivo;
     }
+
+    // Faena.php
+protected static function booted(): void
+{
+    static::saved(fn () => Cache::forget('faena_statistics'));
+    static::deleted(fn () => Cache::forget('faena_statistics'));
+}
 
     public function getSubproductosAttribute()
     {

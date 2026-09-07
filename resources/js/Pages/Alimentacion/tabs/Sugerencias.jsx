@@ -1,13 +1,10 @@
-import { usePreferences } from '@/Contexts/PreferencesContext';
-
 export default function Sugerencias() {
-    const { formatCurrency } = usePreferences();
     const sugerencias = [
         {
             titulo: "Reducir Costo",
-            especie: "Bovino",
-            detalle: `Cambiar a concentrado local puede ahorrar ${formatCurrency(25)}/día.`,
-            mejora: `Ahorro mensual: ${formatCurrency(750)}`,
+            especie: "Ovino",
+            detalle: "Cambiar a concentrado local puede reducir el costo por kg de ración.",
+            mejora: "Ahorro mensual: $750",
         },
         {
             titulo: "Aumentar Proteína",
@@ -17,8 +14,8 @@ export default function Sugerencias() {
         },
         {
             titulo: "Optimizar Horarios",
-            especie: "Porcino",
-            detalle: "Dividir raciones en 3 tomas reduce desperdicio.",
+            especie: "Ovino",
+            detalle: "Dividir la ración en varias tomas reduce el desperdicio en el comedero.",
             mejora: "-8% desperdicio",
         },
     ];

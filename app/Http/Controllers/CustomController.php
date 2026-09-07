@@ -136,7 +136,7 @@ class CustomController extends Controller
         if ($animalsDiff > 0) {
             $alerts[] = [
                 'type'     => 'success',
-                'title'    => "Tu hato creció en +{$animalsDiff} animales este mes",
+                'title'    => "Tu Rebaño creció en +{$animalsDiff} animales este mes",
                 'subtitle' => 'Buen manejo reproductivo 👏',
                 'badge'    => 'Buenas noticias',
             ];

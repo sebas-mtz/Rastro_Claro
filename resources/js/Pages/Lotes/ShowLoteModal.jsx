@@ -20,6 +20,7 @@ export default function ShowLoteModal({ lote, onClose }) {
         {/* Contenido scrollable */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)] space-y-4 text-gray-700">
           <InfoItem label="Nombre" value={lote.nombre} />
+          <InfoItem label="Tipo de Lote" value={lote.tipo_legible || "N/D"} />
           <InfoItem label="Descripción" value={lote.descripcion || "N/D"} />
           <InfoItem label="Corral/Potrero" value={lote.corral_potrero || "N/D"} />
           <InfoItem label="Responsable" value={lote.responsable?.name || "Sin responsable"} />

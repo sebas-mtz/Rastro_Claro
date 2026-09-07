@@ -16,6 +16,7 @@ class Pesaje extends Model
         'fecha',
         'peso',
         'notas',
+        'responsable',
     ];
 
     protected $casts = [

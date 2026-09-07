@@ -12,25 +12,11 @@ return new class extends Migration
             $table->id();
         
             // ✅ RELACIÓN CORRECTA
-            $table->foreignId('parto_id')
-                ->constrained('partos')
-                ->cascadeOnDelete();
-        
-            $table->foreignId('animal_id')
-                ->nullable()
-                ->unique()
-                ->constrained('animals')
-                ->nullOnDelete();
-        
-            $table->enum('sexo', ['macho', 'hembra']);
-        
+            $table->foreignId('parto_id')->constrained('partos')->cascadeOnDelete();
+            $table->foreignId('animal_id')->nullable()->unique()->constrained('animals')->nullOnDelete();
+            $table->enum('sexo', ['macho', 'hembra']);    
             $table->decimal('peso_nacimiento', 5, 2)->nullable();
-        
-            $table->enum('condicion', [
-                'vivo',
-                'nacido_muerto',
-                'murio_al_nacer',
-            ]);
+            $table->enum('condicion', ['vivo','nacido_muerto','murio_al_nacer',]);
             $table->string('arete_temporal', 50)->nullable();
         
             $table->text('observaciones')->nullable();

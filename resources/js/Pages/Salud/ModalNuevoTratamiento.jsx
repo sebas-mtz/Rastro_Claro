@@ -25,6 +25,7 @@ export default function ModalNuevoTratamiento({ isOpen, onClose, animals = [], s
         fecha_fin:    '',
         notas:        '',
         responsable:  '',
+        costo:        '',   // se refleja solo en el módulo de Costos
         estado:       'activo',
     });
 
@@ -254,6 +255,24 @@ export default function ModalNuevoTratamiento({ isOpen, onClose, animals = [], s
                             placeholder="Ej: MVZ García, encargado del rancho…"
                             style={css.input} />
                         {errors.responsable && <span style={css.error}>{errors.responsable}</span>}
+                    </label>
+
+                    {/* ── Costo ── */}
+                    <label style={css.label}>
+                        Costo <span style={css.hint}>(opcional, en pesos)</span>
+                        <input type="number"
+                            step="0.01"
+                            min="0"
+                            value={data.costo}
+                            onChange={e => setData('costo', e.target.value)}
+                            placeholder="Ej: 100.00"
+                            style={css.input} />
+                        {errors.costo && <span style={css.error}>{errors.costo}</span>}
+                        <span style={{ ...css.hint, marginTop: 4 }}>
+                            {data.animal_id
+                                ? 'Se registrará solo una vez: aparecerá en el módulo de Costos y en la valuación del animal.'
+                                : 'Para que el costo se registre necesitas seleccionar un animal (los tratamientos de lote se capturan desde el módulo de Costos).'}
+                        </span>
                     </label>
 
                     {/* Indicador de evento vinculado (solo informativo, viene por prop) */}

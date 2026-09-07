@@ -455,7 +455,7 @@ class ReproduccionDesteteTest extends TestCase
             'sexo' => 'macho',
             'peso_nacimiento' => 31,
             'condicion' => 'vivo',
-            'observaciones' => 'La cría salió del hato antes del destete.',
+            'observaciones' => 'La cría salió del Rebaño antes del destete.',
         ]);
 
         $this->from(route('reproduccion.index'))

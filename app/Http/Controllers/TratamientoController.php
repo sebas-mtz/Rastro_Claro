@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTratamientoRequest;
 use App\Models\Animal;
+use App\Models\Costo;
 use App\Models\EventoSalud;
 use App\Models\Lote;
 use App\Models\Tratamiento;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -74,7 +76,11 @@ class TratamientoController extends Controller
         $data['user_id'] = $request->user()->id;
         $data['estado']  = $data['estado'] ?? Tratamiento::ESTADO_ACTIVO;
 
-        Tratamiento::create($data);
+        $tratamiento = Tratamiento::create($data);
+
+        // Un solo registro: el costo capturado aquí se refleja en el módulo de
+        // Costos sin volver a escribirlo.
+        $this->sincronizarCosto($tratamiento);
 
         return back()->with('success', 'Tratamiento registrado correctamente.');
     }
@@ -115,11 +121,14 @@ class TratamientoController extends Controller
             'fecha_inicio' => ['sometimes', 'date'],
             'fecha_fin'    => ['nullable', 'date', 'after_or_equal:fecha_inicio'],
             'estado' => ['nullable', 'in:activo,vencido,completado'],
+            'costo'        => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'notas'        => ['nullable', 'string'],
             'responsable'  => ['nullable', 'string', 'max:150'],
         ]);
 
         $tratamiento->update($validated);
+
+        $this->sincronizarCosto($tratamiento);
 
         return redirect()->route('tratamientos.show', $tratamiento)
             ->with('success', 'Tratamiento actualizado.');
@@ -127,6 +136,12 @@ class TratamientoController extends Controller
 
     public function destroy(Tratamiento $tratamiento): RedirectResponse
     {
+        // El costo generado por este tratamiento se va con él, para no dejar
+        // gastos huérfanos en el módulo de Costos.
+        Costo::where('origen_tipo', Tratamiento::class)
+            ->where('origen_id', $tratamiento->id)
+            ->delete();
+
         $tratamiento->delete();
 
         return redirect()->route('tratamientos.index')
@@ -158,5 +173,52 @@ class TratamientoController extends Controller
 
     return back()->with('success', "$cantidad tratamiento(s) marcados como vencidos.");
 }
-    
+
+    /**
+     * Refleja el costo capturado en el tratamiento como una fila de la tabla
+     * `costos`, ligada al tratamiento mediante origen_tipo/origen_id.
+     *
+     * Así el gasto se captura una sola vez: aparece en el módulo de Costos y
+     * en la valuación del animal, y la deduplicación de AnimalValuationService
+     * impide que se cuente dos veces.
+     */
+    private function sincronizarCosto(Tratamiento $tratamiento): void
+    {
+        $existente = Costo::where('origen_tipo', Tratamiento::class)
+            ->where('origen_id', $tratamiento->id)
+            ->first();
+
+        // Sin monto, o sin animal concreto, no hay costo individual que registrar.
+        // (Los tratamientos de lote se capturan desde el módulo de Costos.)
+        if (blank($tratamiento->costo) || (float) $tratamiento->costo <= 0 || ! $tratamiento->animal_id) {
+            $existente?->delete();
+
+            return;
+        }
+
+        $atributos = [
+            'concepto' => $tratamiento->nombre,
+            'descripcion' => $tratamiento->notas,
+            'categoria' => 'medicamentos',
+            'tipo_costo' => 'directo',
+            'monto' => $tratamiento->costo,
+            'cantidad' => 1,
+            'fecha' => $tratamiento->fecha_inicio,
+            'animal_id' => $tratamiento->animal_id,
+            'lote_id' => $tratamiento->lote_id,
+            'proveedor' => $tratamiento->responsable,
+            'observaciones' => 'Registrado automáticamente desde el módulo de Tratamientos.',
+            'user_id' => $tratamiento->user_id ?? Auth::id(),
+            'origen_tipo' => Tratamiento::class,
+            'origen_id' => $tratamiento->id,
+        ];
+
+        if ($existente) {
+            $existente->update($atributos);
+
+            return;
+        }
+
+        Costo::create($atributos);
+    }
 }

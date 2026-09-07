@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import { X, Save } from "lucide-react";
 
-export default function LoteModal({ show, onClose, lote = {}, usuarios = [], especies, razasPorEspecie, estadosProductivos }) {
+export default function LoteModal({ show, onClose, lote = {}, usuarios = [], especies, razasPorEspecie, estadosProductivos,tiposLote = {} }) {
   const [animalData, setAnimalData] = useState({
     especie: "",
     raza: "",
@@ -177,6 +177,25 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required 
               />
+            </div>
+          
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de lote *
+                </label>
+                <select
+                    value={data.tipo}
+                    onChange={(e) => setData("tipo", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    required
+                >
+                    <option value="">Selecciona tipo de lote</option>
+                    {Object.entries(tiposLote).map(([valor, nombre]) => (
+                        <option key={valor} value={valor}>
+                            {nombre}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div>

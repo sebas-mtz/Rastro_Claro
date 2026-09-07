@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
+
 class Animal extends Model
 {
     use HasFactory;
@@ -29,11 +30,19 @@ protected $casts = [
     'fecha_nac' => 'date',
     'peso' => 'float',
 ];
-
+public ?string $motivoMovimientoLote = null;
 // Animal.php
 
 protected $appends = ['es_terminal'];
+ public const ORIGEN_NACIDO = 'nacido';
+public const ORIGEN_COMPRADO = 'comprado';
+public const ORIGEN_DESCONOCIDO = 'desconocido';
 
+public const TIPOS_ORIGEN = [
+    self::ORIGEN_NACIDO,
+    self::ORIGEN_COMPRADO,
+    self::ORIGEN_DESCONOCIDO,
+];
 public function getEsTerminalAttribute(): bool
 {
     return EstadoProductivoService::esTerminal($this->estado_productivo);
@@ -86,7 +95,10 @@ public function sacrificios(): HasMany
     return $this->hasOne(Baja::class)
         ->where('tipo_salida', Baja::FALLECIMIENTO);
 }
-
+public function tratamientos(): HasMany
+{
+    return $this->hasMany(Tratamiento::class);
+}
 /**
  * Cualquier baja del animal, sin importar el tipo — para casos donde
  * necesitas la fecha/causa de la salida en general (ver
@@ -114,7 +126,14 @@ public function bajaActual(): HasOne
     {
         return $this->morphMany(Venta::class, 'vendible');
     }
-
+public function documentos(): \Illuminate\Database\Eloquent\Relations\MorphMany
+{
+    return $this->morphMany(Documento::class, 'documentable')->orderByDesc('created_at');
+}
+public function movimientosLote(): HasMany
+{
+    return $this->hasMany(MovimientoLote::class)->orderByDesc('fecha');
+}
     /**
      * Verificar si el animal está vendido
      */
@@ -440,5 +459,15 @@ public function puedeRegistrarParto(?Carbon $fecha = null): array
     }
 
     return [true, null];
+}
+public function valuaciones(): HasMany
+{
+    return $this->hasMany(AnimalValuation::class)->orderByDesc('created_at');
+}
+public function valuacionActiva(): HasOne
+{
+    return $this->hasOne(AnimalValuation::class)
+                ->where('estado', AnimalValuation::ESTADO_ACTIVA)
+                ->latestOfMany();
 }
 }

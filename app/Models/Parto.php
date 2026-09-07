@@ -94,4 +94,13 @@ class Parto extends Model
         default => "{$this->numero_crias} crías",
     };
 }
+ public function veterinario(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'veterinario_id');
+    }
+
+    public function responsable(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
 }

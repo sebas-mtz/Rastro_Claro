@@ -66,11 +66,7 @@ function ModalAnimalSelect({
 
     const avatarColor = (especie) => {
         const map = {
-            'Bovino': 'bg-blue-100 text-blue-700',
-            'Porcino': 'bg-pink-100 text-pink-700',
             'Ovino': 'bg-amber-100 text-amber-700',
-            'Caprino': 'bg-green-100 text-green-700',
-            'Equino': 'bg-purple-100 text-purple-700',
         };
         return map[especie] ?? 'bg-gray-100 text-gray-600';
     };

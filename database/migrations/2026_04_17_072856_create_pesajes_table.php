@@ -14,6 +14,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->decimal('peso', 8, 2); // kg
             $table->string('notas')->nullable();
+            $table->string('responsable')->nullable();
             $table->timestamps();
         });
     }

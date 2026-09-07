@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Cache;
 class Faena extends Model
 {
     use HasFactory;
@@ -83,7 +84,12 @@ class Faena extends Model
     {
         return $this->morphMany(Venta::class, 'vendible');
     }
-
+// Faena.php
+protected static function booted(): void
+{
+    static::saved(fn () => Cache::forget('faena_statistics'));
+    static::deleted(fn () => Cache::forget('faena_statistics'));
+}
     /**
      * Obtener subproductos disponibles para venta
      */

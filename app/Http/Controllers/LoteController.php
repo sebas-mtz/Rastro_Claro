@@ -70,7 +70,8 @@ class LoteController extends Controller
     public function index()
     {
         $lotes = Lote::with(['responsable', 'animales'])->get();
-        $usuarios = User::whereKey(Auth::id())->get();
++        $usuarios = $this->responsablesDisponibles();
+        $tiposLote = \App\Models\Lote::TIPOS;
 
         return Inertia::render('Lotes/Index', [
             'lotes' => $lotes,
@@ -82,6 +83,7 @@ class LoteController extends Controller
             // real. Ahora se usa la misma fuente de verdad en todo el
             // sistema.
             'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(),
+            'tiposLote'
         ]);
     }
 
@@ -93,7 +95,7 @@ class LoteController extends Controller
             'corral_potrero' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:255',
             'responsable_id' => 'nullable',
-
+ 'tipo' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(Lote::TIPOS))],
             // Campos del ganado — la especie se valida contra el mismo
             // catálogo que usan StoreAnimalRequest/UpdateAnimalRequest.
             'animal.especie' => ['required', 'string', 'in:' . implode(',', $this->especiesDisponibles())],
@@ -111,6 +113,7 @@ class LoteController extends Controller
             'nombre' => $validated['nombre'],
             'corral_potrero' => $validated['corral_potrero'],
             'descripcion' => $validated['descripcion'] ?? null,
+            'tipo' => $validated['tipo'] ?? null,
             'responsable_id' => Auth::id(),
         ]);
 
@@ -151,7 +154,7 @@ class LoteController extends Controller
     // Editar lote
     public function edit(Lote $lote)
     {
-        $usuarios = User::whereKey(Auth::id())->get();
+         $usuarios = $this->responsablesDisponibles();
 
         return Inertia::render('Lotes/Edit', [
             'lote' => $lote->load('responsable', 'animales'),
@@ -182,5 +185,22 @@ class LoteController extends Controller
     {
         $lote->delete();
         return redirect()->route('lotes.index')->with('success', 'Lote eliminado correctamente');
+    }
+
+    
+    /**
+     * Personas que pueden quedar como responsables de un lote.
+     *
+     * Antes devolvía únicamente al propio usuario, porque cada cuenta era un
+     * rancho de una sola persona. Ahora lista a quienes trabajan en el mismo
+     * rancho, que es lo que el desplegable siempre quiso decir.
+     */
+    private function responsablesDisponibles()
+    {
+        $cuentaId = Auth::user()?->cuentaId();
+        return User::where('cuenta_id', $cuentaId)
+            ->where('activo', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 }

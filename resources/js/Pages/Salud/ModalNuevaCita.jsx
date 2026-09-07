@@ -30,6 +30,7 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [],   lotes 
         vacuna_id:        '',   // FK al catálogo de Vacunas
         dosis:            '',
         lote_vacuna:      '',
+        costo:            '',//se refleja solo en el modulo de costos
         observaciones:    '',
         responsable:      '',
         estado:           'pendiente',
@@ -435,8 +436,27 @@ const loteLabel = selectedLote
                                     style={css.input} />
                                 {errors.responsable && <span style={css.error}>{errors.responsable}</span>}
                             </label>
+                            
+                            <label style={css.label}>
+                            Costo <span style={css.labelHint}>(opcional, en pesos)</span>
+                          <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={data.costo} onChange={e => setData('costo', e.target.value)}
+                               placeholder="Ej: 95.00"
+                                style={css.input}
+                            />
+                            {errors.costo && <span style={css.error}>{errors.costo}</span>}
+                            <span style={{ ...css.labelHint, marginTop: 4}}>
+                               {data.animal_id
+                                    ? 'Se registrará solo una vez: aparecerá en el módulo de Costos y en la valuación del animal.'
+                                   : 'Para que el costo se registre necesitas seleccionar un animal (los eventos de lote se capturan desde el módulo de Costos).'}
+                            </span>
+                        </label>
+                        
                         </div>
-
+                        
                         <label style={css.label}>
                             Observaciones <span style={css.labelHint}>(opcional)</span>
                             <textarea
@@ -452,13 +472,13 @@ const loteLabel = selectedLote
                     {/* Errores sin campo específico */}
                     {Object.keys(errors).some(k =>
                         !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna','diagnostico',
-                          'tratamiento','fecha_programada','responsable','observaciones'].includes(k)
+                          'tratamiento','fecha_programada','costo','responsable','observaciones'].includes(k)
                     ) && (
                         <div style={css.error}>
                             {Object.entries(errors)
                                 .filter(([k]) => !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna',
                                     'diagnostico','tratamiento','fecha_programada',
-                                    'responsable','observaciones'].includes(k))
+                                    'responsable','costo','observaciones'].includes(k))
                                 .map(([, v]) => v).join(' · ')}
                         </div>
                     )}

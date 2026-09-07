@@ -7,6 +7,7 @@ use App\Models\Produccion;
 use App\Models\Animal;
 use App\Services\HaciendaService;
 use Inertia\Inertia;
+use App\Services\EstadoProductivoService;
 
 class ProduccionController extends Controller
 {
@@ -56,11 +57,11 @@ class ProduccionController extends Controller
             'unidad' => 'nullable|string|max:50',
         ]);
 
-        if (Animal::findOrFail($validated['animal_id'])->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se puede registrar producción para un animal muerto.',
-            ]);
-        }
+        if (EstadoProductivoService::esTerminal(Animal::findOrFail($validated['animal_id'])->estado_productivo)) {
+    return back()->withErrors([
+        'animal_id' => 'No se puede registrar producción para un animal no disponible.',
+    ]);
+}
 
         // ✅ AGREGAR: Unidad por defecto según el tipo
         if (empty($validated['unidad'])) {
@@ -95,26 +96,26 @@ class ProduccionController extends Controller
     }
 
     public function update(Request $request, Produccion $produccion)
-    {
-        if ($produccion->animal?->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se puede modificar la producción de un animal muerto.',
-            ]);
-        }
-
-        $validated = $request->validate([
-            'animal_id' => 'required|exists:animals,id',
-            'fecha' => 'required|date',
-            'tipo' => 'required|in:leche,lana,huevo',
-            'valor' => 'required|numeric|min:0',
-            'unidad' => 'nullable|string|max:50',
+{
+    if (EstadoProductivoService::esTerminal($produccion->animal?->estado_productivo)) {
+        return back()->withErrors([
+            'animal_id' => 'No se puede modificar la producción de un animal no disponible.',
         ]);
+    }
 
-        if (Animal::findOrFail($validated['animal_id'])->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se puede mover producción a un animal muerto.',
-            ]);
-        }
+    $validated = $request->validate([
+        'animal_id' => 'required|exists:animals,id',
+        'fecha' => 'required|date',
+        'tipo' => 'required|in:leche,lana,huevo',
+        'valor' => 'required|numeric|min:0',
+        'unidad' => 'nullable|string|max:50',
+    ]);
+
+    if (EstadoProductivoService::esTerminal(Animal::findOrFail($validated['animal_id'])->estado_productivo)) {
+        return back()->withErrors([
+            'animal_id' => 'No se puede mover producción a un animal no disponible.',
+        ]);
+    }
 
         // ✅ AGREGAR: Unidad por defecto si está vacía
         if (empty($validated['unidad'])) {
@@ -135,12 +136,12 @@ class ProduccionController extends Controller
     }
 
     public function destroy(Produccion $produccion)
-    {
-        if ($produccion->animal?->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se puede eliminar la producción de un animal muerto.',
-            ]);
-        }
+{
+    if (EstadoProductivoService::esTerminal($produccion->animal?->estado_productivo)) {
+        return back()->withErrors([
+            'animal_id' => 'No se puede eliminar la producción de un animal no disponible.',
+        ]);
+    }
 
         $produccion->delete();
 

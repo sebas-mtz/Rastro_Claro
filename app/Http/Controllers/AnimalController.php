@@ -5,6 +5,7 @@ use App\Models\Animal;
 use App\Models\Lote;
 use App\Services\EstadoProductivoService;
 use App\Services\EstadoActualAnimalService;
+use App\Services\AnimalValuationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\DonadorExterno;
@@ -71,6 +72,7 @@ class AnimalController extends Controller
                         'padre_externo_id' => $a->padre_externo_id,
                         'created_at' => $a->created_at,'tipo_parto_origen' => $a->tipo_parto_origen,
                     ]),
+            'animales'           => Animal::with('lote')->get(),
             'lotes'              => Lote::all(),
             'especies'           => $this->especiesDisponibles(),
             'razasPorEspecie'    => $this->razasPorEspecie,

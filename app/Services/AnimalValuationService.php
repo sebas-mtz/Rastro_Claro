@@ -244,7 +244,7 @@ class AnimalValuationService
      */
     private function detallesGestacion(Animal $animal, array &$vistos): array
     {
-        $cria = $animal->cria()->with('parto.evento')->first();
+        $cria = $animal->criaOrigen()->with('parto.evento')->first();
         $parto = $cria?->parto;
         $eventoParto = $parto?->evento;
 

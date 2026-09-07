@@ -10,7 +10,6 @@ const TIPOS = [
     { key: 'carne',  label: 'Carne',  color: '#EF4444' },
     { key: 'grasa',  label: 'Grasa',  color: '#F97316' },
     { key: 'cuero',  label: 'Cuero',  color: '#8B5CF6' },
-    { key: 'plumas', label: 'Plumas', color: '#EC4899' },
     { key: 'canal',  label: 'Canal',  color: '#6B7280' },
 ];
 

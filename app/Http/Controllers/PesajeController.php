@@ -72,11 +72,12 @@ class PesajeController extends Controller
             'fecha'     => ['required', 'date', 'before_or_equal:today'],
             'peso'      => ['required', 'numeric', 'min:0.01'],
             'notas'     => ['nullable', 'string', 'max:500'],
+            'responsable' => ['nullable', 'string', 'max:150'],
         ]);
 
         $animal = Animal::findOrFail($data['animal_id']);
     if (in_array($animal->estado_productivo,EstadoProductivoService::estadosSistema(),true)) {            return back()->withErrors([
-                'animal_id' => 'No se pueden agregar pesajes a un animal muerto.',
+                'animal_id' => 'No se pueden agregar pesajes a un animal no disponible.',
             ]);
         }
 
@@ -121,6 +122,7 @@ class PesajeController extends Controller
             'fecha' => ['required', 'date', 'before_or_equal:today'],
             'peso'  => ['required', 'numeric', 'min:0.01'],
             'notas' => ['nullable', 'string', 'max:500'],
+            'responsable' => ['nullable', 'string', 'max:150'],
         ]);
 
         // Evitar duplicado en otra fila (misma fecha, mismo animal, distinto id)
@@ -149,26 +151,25 @@ class PesajeController extends Controller
         return back()->with('success', 'Pesaje actualizado correctamente.');
     }
 
-    public function destroy(Pesaje $pesaje)
-    {
-        if ($pesaje->animal?->estado_productivo === 'muerto') {
-            return back()->withErrors([
-                'animal_id' => 'No se pueden eliminar pesajes de un animal dado de baja.',
-            ]);
-        }
-
-        $animalId = $pesaje->animal_id;
-        $pesaje->delete();
-
-        // Sincronizar peso actual del animal con el pesaje más reciente restante
-        $ultimoPeso = Pesaje::where('animal_id', $animalId)
-            ->orderByDesc('fecha')
-            ->value('peso');
-
-        Animal::where('id', $animalId)->update([
-    'peso' => $ultimoPeso,
-]);
-
-        return back()->with('success', 'Pesaje eliminado correctamente.');
+   public function destroy(Pesaje $pesaje)
+{
+    if (EstadoProductivoService::esTerminal($pesaje->animal?->estado_productivo)) {
+        return back()->withErrors([
+            'animal_id' => 'No se pueden eliminar pesajes de un animal no disponible.',
+        ]);
     }
+
+    $animalId = $pesaje->animal_id;
+    $pesaje->delete();
+
+    $ultimoPeso = Pesaje::where('animal_id', $animalId)
+        ->orderByDesc('fecha')
+        ->value('peso');
+
+    Animal::where('id', $animalId)->update([
+        'peso' => $ultimoPeso,
+    ]);
+
+    return back()->with('success', 'Pesaje eliminado correctamente.');
+}
 }

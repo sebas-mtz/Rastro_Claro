@@ -35,9 +35,9 @@ function formatFechaLegible(fechaStr) {
 function TabPesajes({ animales = [], setTab }) {
     const { formatWeight, weightUnit, toKilograms } = usePreferences();
 
-    const formRef     = useRef(null);
+    const formRef      = useRef(null);
     const pesoInputRef = useRef(null);
-    const animalesRef = useRef(animales);
+    const animalesRef  = useRef(animales);
     useEffect(() => { animalesRef.current = animales; }, [animales]);
 
     const [busqueda, setBusqueda]             = useState("");
@@ -48,17 +48,17 @@ function TabPesajes({ animales = [], setTab }) {
     const hoy = new Date().toISOString().split("T")[0];
 
     const { data, setData, post, processing, errors, reset, transform, delete: destroy } = useForm({
-        animal_id: "",
-        fecha:     hoy,
-        peso:      "",
-        notas:     "",
+        animal_id:   "",
+        fecha:       hoy,
+        peso:        "",
+        responsable: "",
+        notas:       "",
     });
 
     const inputClass = "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring focus:ring-blue-100";
 
-    const fmtPeso        = (v) => formatWeight(v);
-    const fmtPesoDiario  = (v) => v == null ? "—" : `${formatWeight(v)}/día`;
-    const round2         = (n) => Math.round(Number(n) * 100) / 100;
+    const fmtPeso = (v) => formatWeight(v);
+    const round2  = (n) => Math.round(Number(n) * 100) / 100;
     const preventWheelChange = (e) => e.target.blur();
 
     const badgeGanancia = (valor) => {
@@ -73,18 +73,18 @@ function TabPesajes({ animales = [], setTab }) {
     );
 
     // ── Siguiente pesaje pendiente para el animal seleccionado ────────────────
-    // Se recalcula solo con lo que ya trae `animales`, así que cuando Inertia
-    // recarga los props tras guardar un pesaje, esto avanza automáticamente.
+    // Ya no depende de "peso_inicial"/"fecha_peso_inicial" (no existen en el
+    // controller): la base es simplemente el pesaje con la fecha más reciente.
+    // Si el animal no tiene ningún pesaje todavía, no hay "siguiente" que sugerir.
     const proximaFechaInfo = useMemo(() => {
         if (!animalSeleccionado) return null;
 
         const pesajesOrdenados = [...(animalSeleccionado.pesajes || [])]
             .sort((a, b) => a.fecha.localeCompare(b.fecha));
 
-        let fechaBase = null;
-         if (pesajesOrdenados.length) {
-        fechaBase = pesajesOrdenados[pesajesOrdenados.length - 1].fecha;
-    }
+        if (!pesajesOrdenados.length) return null;
+
+        const fechaBase = pesajesOrdenados[pesajesOrdenados.length - 1].fecha;
         const siguiente = sumarDias(fechaBase, 1);
         if (!siguiente || siguiente > hoy) return { alDia: true, fecha: null };
 
@@ -120,6 +120,7 @@ function TabPesajes({ animales = [], setTab }) {
             animal_id: "",
             fecha: new Date().toISOString().split("T")[0],
             peso: "",
+            responsable: "",
             notas: "",
         });
     };
@@ -133,9 +134,9 @@ function TabPesajes({ animales = [], setTab }) {
         post(route("pesajes.store"), {
             preserveScroll: true,
             onSuccess: () => {
-                // Mantenemos el animal seleccionado y solo limpiamos peso/notas,
-                // así el usuario puede seguir registrando día por día sin
-                // volver a buscar el animal en el desplegable.
+                // Mantenemos animal y responsable seleccionados y solo
+                // limpiamos peso/notas, para poder seguir capturando
+                // días seguidos sin volver a buscar el animal.
                 setData((prev) => ({
                     ...prev,
                     peso: "",
@@ -219,7 +220,7 @@ function TabPesajes({ animales = [], setTab }) {
                             value={data.animal_id}
                             onChange={(e) => handleSelectAnimal(e.target.value)}
                         >
-                            <option value="">Selecciona un animal</option>
+                            <option value="">Selecciona un ejemplar</option>
                             {animales.map((a) => (
                                 <option key={a.id} value={a.id}>
                                     {a.arete}
@@ -272,6 +273,22 @@ function TabPesajes({ animales = [], setTab }) {
 
                     <div>
                         <label className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
+                            Responsable
+                        </label>
+                        <input
+                            type="text"
+                            className={inputClass}
+                            placeholder="Quién realizó el pesaje"
+                            value={data.responsable}
+                            onChange={(e) => setData("responsable", e.target.value)}
+                        />
+                        {errors.responsable && (
+                            <p className="mt-1 text-xs text-red-500">{errors.responsable}</p>
+                        )}
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
                             <StickyNote size={14} className="text-blue-600" /> Notas
                         </label>
                         <input
@@ -281,6 +298,9 @@ function TabPesajes({ animales = [], setTab }) {
                             value={data.notas}
                             onChange={(e) => setData("notas", e.target.value)}
                         />
+                        {errors.notas && (
+                            <p className="mt-1 text-xs text-red-500">{errors.notas}</p>
+                        )}
                     </div>
 
                     {animalSeleccionado && (
@@ -310,7 +330,7 @@ function TabPesajes({ animales = [], setTab }) {
                                     <span>
                                         GDP:{" "}
                                         <strong>
-                                            {fmtPesoDiario(animalSeleccionado.ganancia_diaria)}
+                                            {formatWeight(animalSeleccionado.ganancia_diaria)}/día
                                         </strong>
                                     </span>
                                 )}
@@ -440,7 +460,7 @@ function TabPesajes({ animales = [], setTab }) {
                                             <p className="text-[11px] text-gray-500">GDP</p>
                                             <p className="text-sm font-medium text-gray-800">
                                                 {animal.ganancia_diaria != null
-                                                    ? fmtPesoDiario(animal.ganancia_diaria)
+                                                    ? `${formatWeight(animal.ganancia_diaria)}/día`
                                                     : "—"}
                                             </p>
                                         </div>
@@ -499,7 +519,7 @@ function TabPesajes({ animales = [], setTab }) {
                         <p className="text-sm text-gray-400">
                             {busqueda
                                 ? "No se encontraron animales con esa búsqueda."
-                                : "No hay animales registrados."}
+                                : "No hay ejemplares registrados."}
                         </p>
                     </div>
                 )}
