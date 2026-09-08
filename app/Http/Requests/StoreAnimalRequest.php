@@ -39,7 +39,7 @@ class StoreAnimalRequest extends FormRequest
 
             'peso' => 'nullable|numeric',
             'BCS' => 'nullable|numeric',
-
+'motivo_movimiento_lote' => 'nullable|string|max:255',
         'concepcion_historica' => 'required_with:madre_id|in:monta_natural,monta_controlada,inseminacion_artificial,iatf,transferencia_embriones,fiv',
 'tipo_nacimiento_historico' => 'required_with:madre_id|in:simple,gemelar,triple,cuadruple,quintuple',
 'tipo_parto_origen' => 'required_with:madre_id|in:normal,distocico,cesarea',

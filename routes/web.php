@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomController;
+use App\Http\Controllers\Admin\PermisoController as AdminPermisoController;
 use App\Http\Controllers\EventoSaludController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\LoteController;
@@ -38,6 +39,13 @@ use App\Http\Controllers\PajillaController;
 use App\Http\Controllers\DonadorExternoController;
 use App\Http\Controllers\EstadisticasSaludController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\CostoController;
+use App\Http\Controllers\AnimalValuationController;
+use App\Http\Controllers\TrabajadorController;
+use App\Http\Controllers\ActividadTrabajadorController;
+use App\Http\Controllers\CalendarioSanitarioController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\ReporteOvinoController;
 
 
 /*
@@ -67,14 +75,40 @@ Route::get('/splash', [CustomController::class, 'splash'])->name('splash');
 
 /*
 |--------------------------------------------------------------------------
-| Solo admin
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+| Solo superadministrador
+ |--------------------------------------------------------------------------
++| Administración de cuentas, roles, contraseñas y bitácora del sistema.
++|
++| Antes este grupo usaba `role:admin`, lo que permitía a cualquier
++| administrador cambiar roles y planes de todas las cuentas. Ahora exige
++| `super_admin`; los nombres de las rutas se conservan para no romper los
++| enlaces existentes.
+ */
+Route::middleware(['auth', 'verified', 'super_admin'])->group(function () {
     Route::get('/admin/usuarios', [AdminUserController::class, 'index'])
         ->name('admin.usuarios.index');
+    Route::post('/admin/usuarios', [AdminUserController::class, 'store'])
+        ->name('admin.usuarios.store');
     Route::put('/admin/usuarios/{user}', [AdminUserController::class, 'update'])
         ->name('admin.usuarios.update');
+    Route::patch('/admin/usuarios/{user}/estado', [AdminUserController::class, 'cambiarEstado'])
+        ->name('admin.usuarios.estado');
+    Route::patch('/admin/usuarios/{user}/password', [AdminUserController::class, 'restablecerPassword'])
+        ->name('admin.usuarios.password');
+    Route::delete('/admin/usuarios/{user}', [AdminUserController::class, 'destroy'])
+        ->name('admin.usuarios.destroy');
+
+    // Bitácora: solo lectura. No existe ruta para editarla ni borrarla.
+    Route::get('/admin/auditoria', [AdminUserController::class, 'auditoria'])
+        ->name('admin.auditoria.index');
+
+    // Permisos: qué módulos toca cada puesto y las excepciones por persona.
+    Route::get('/admin/permisos', [AdminPermisoController::class, 'index'])
+        ->name('admin.permisos.index');
+    Route::put('/admin/permisos/puesto/{puesto}', [AdminPermisoController::class, 'actualizarPuesto'])
+        ->name('admin.permisos.puesto');
+    Route::put('/admin/permisos/persona/{user}', [AdminPermisoController::class, 'actualizarPersona'])
+        ->name('admin.permisos.persona');
 });
 
 /*
@@ -363,6 +397,91 @@ Route::middleware(['auth', 'verified'])->prefix('reportes')->name('reportes.')->
     Route::get('/exportar/xml', [ReportesController::class, 'exportarXml'])->name('xml');
     Route::get('/ficha/pdf', [ReportesController::class, 'exportarFichaPdf'])->name('ficha.pdf');
 });
+
+    /*|----------------------------------------------------------------------
+    | Costos
+    |----------------------------------------------------------------------
+    */
+    Route::resource('costos', CostoController::class)->except(['create', 'edit', 'show']);
+    Route::get('/costos/exportar/csv', [CostoController::class, 'exportarCsv'])->name('costos.exportar.csv');
+    Route::get('/costos/exportar/pdf', [CostoController::class, 'exportarPdf'])->name('costos.exportar.pdf');
+    Route::get('/api/costos/resumen', [CostoController::class, 'resumen'])->name('costos.resumen');
+
+ /*
+    |----------------------------------------------------------------------
+    | Calendario sanitario y reportes ovinos
+    |----------------------------------------------------------------------
+    */
+    Route::get('/calendario-sanitario', [CalendarioSanitarioController::class, 'index'])
+        ->name('calendario.index');
+    Route::get('/reportes-ovinos', [ReporteOvinoController::class, 'index'])
+        ->name('reportes.ovinos');
+
+    /*
+    |----------------------------------------------------------------------
+    | Documentos y evidencias
+    |----------------------------------------------------------------------
+    */
+    Route::post('/documentos', [DocumentoController::class, 'store'])->name('documentos.store');
+    Route::get('/documentos/{documento}/descargar', [DocumentoController::class, 'download'])->name('documentos.download');
+    Route::delete('/documentos/{documento}', [DocumentoController::class, 'destroy'])->name('documentos.destroy');
+    
+/*
+    |----------------------------------------------------------------------
+    | Trabajadores y mano de obra
+    |----------------------------------------------------------------------
+    | El acceso a cada acción lo resuelve TrabajadorPolicy: consultar y
+    | registrar actividades es de operación; alta, edición, cambio de estado
+    | y datos salariales exigen rol de administrador.
+    */
+    Route::get('/trabajadores', [TrabajadorController::class, 'index'])
+        ->name('trabajadores.index');
+    Route::post('/trabajadores', [TrabajadorController::class, 'store'])
+        ->name('trabajadores.store');
+    Route::get('/trabajadores/{trabajador}', [TrabajadorController::class, 'show'])
+        ->name('trabajadores.show');
+    Route::put('/trabajadores/{trabajador}', [TrabajadorController::class, 'update'])
+        ->name('trabajadores.update');
+    Route::patch('/trabajadores/{trabajador}/estado', [TrabajadorController::class, 'cambiarEstado'])
+        ->name('trabajadores.estado');
+    Route::delete('/trabajadores/{trabajador}', [TrabajadorController::class, 'destroy'])
+        ->name('trabajadores.destroy');
+
+    Route::get('/actividades-trabajador', [ActividadTrabajadorController::class, 'index'])
+        ->name('actividades-trabajador.index');
+    Route::post('/actividades-trabajador', [ActividadTrabajadorController::class, 'store'])
+        ->name('actividades-trabajador.store');
+    Route::put('/actividades-trabajador/{actividad}', [ActividadTrabajadorController::class, 'update'])
+        ->name('actividades-trabajador.update');
+    Route::delete('/actividades-trabajador/{actividad}', [ActividadTrabajadorController::class, 'destroy'])
+        ->name('actividades-trabajador.destroy');
+    // Vista previa del importe; no persiste nada.
+    Route::post('/actividades-trabajador/calcular', [ActividadTrabajadorController::class, 'calcular'])
+        ->name('actividades-trabajador.calcular');
+
+    /*
+    |----------------------------------------------------------------------
+    | Valuación y cotización
+    |----------------------------------------------------------------------
+    */
+    Route::get('/valuaciones/{animal}', [AnimalValuationController::class, 'show'])
+        ->name('valuaciones.show');
+    Route::post('/valuaciones/{animal}/recalcular', [AnimalValuationController::class, 'recalcular'])
+        ->name('valuaciones.recalcular');
+    Route::post('/valuaciones/{animal}/simular', [AnimalValuationController::class, 'simular'])
+        ->name('valuaciones.simular');
+    Route::post('/valuaciones/{animal}/guardar', [AnimalValuationController::class, 'guardar'])
+        ->name('valuaciones.guardar');
+    Route::post('/valuaciones/{animal}/confirmar-venta', [AnimalValuationController::class, 'confirmarPrecioVenta'])
+        ->name('valuaciones.confirmar-venta');
+    Route::get('/valuaciones/{animal}/pdf', [AnimalValuationController::class, 'exportarPdf'])
+        ->name('valuaciones.pdf');
+    // Los valores del plus reproductivo entran en la fórmula del precio de
+    // toda la explotación. Estaba abierta a cualquier usuario autenticado;
+    // ahora es una modificación crítica y exige superadministrador.
+    Route::put('/valuaciones-configuracion', [AnimalValuationController::class, 'actualizarConfiguracion'])
+        ->middleware('super_admin')
+        ->name('valuaciones.configuracion');
 
 /*
 |--------------------------------------------------------------------------

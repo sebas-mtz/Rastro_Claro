@@ -87,10 +87,7 @@ class AnimalController extends Controller
         ]);
     }
 
-   public function store(
-    StoreAnimalRequest $request,
-    HistorialNacimientoService $historialNacimientoService
-){
+   public function store(StoreAnimalRequest $request,HistorialNacimientoService $historialNacimientoService){
      $validated = $request->validated();
     if (
         !empty($validated['padre_id']) &&
@@ -121,17 +118,18 @@ class AnimalController extends Controller
             $fechaServicioEstimada
         );
     }
-
+unset($validated['motivo_movimiento_lote']);
     DB::transaction(function () use ($validated, $historialNacimientoService, $request) {
+    
     $animal = Animal::create($validated);
 
     if (!empty($validated['madre_id'])) {
         $historialNacimientoService->crear($animal, $validated, $request->user()->id);
     }
 });
-
     return back()->with('success', 'Animal agregado exitosamente.');
 }
+
     public function show(Animal $animal, EstadoActualAnimalService $estadoActualService)
     {
         $animal->load([
@@ -152,6 +150,7 @@ class AnimalController extends Controller
 
         return Inertia::render('Animals/ShowAnimal', [
             'animal'             => $animal,
+            'movimientosLote' => $animal->movimientosLote()->with(['loteAnterior:id,nombre', 'loteNuevo:id,nombre', 'responsable:id,name'])->get(),
             'lotes'              => Lote::all(),
             'especies'           => $this->especiesDisponibles(),
             'razasPorEspecie'    => $this->razasPorEspecie,
@@ -290,7 +289,11 @@ class AnimalController extends Controller
             'peso' => 'Cuando ya existe historial, el peso sólo puede cambiarse desde el módulo de Pesajes.',
         ])->withInput();
     }
-    $animal->update($validated);
+    $animal->motivoMovimientoLote = $validated['motivo_movimiento_lote'] ?? null;
+      unset($validated['motivo_movimiento_lote']);
+
+        $animal->update($validated);
+
     return back()->with('success', 'Animal actualizado.');
 }
 

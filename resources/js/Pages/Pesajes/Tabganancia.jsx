@@ -13,31 +13,24 @@ const CHART_COLORS = [
 
 // ─── Helpers puros ────────────────────────────────────────────────────────────
 
-function calcularGananciaEnRango(animal, fechaInicio, fechaFin) {
-    const sorted = [...(animal.pesajes || [])].sort((a, b) => a.fecha.localeCompare(b.fecha));
-    const antesFin = sorted.filter((p) => p.fecha <= fechaFin);
-    if (!antesFin.length) return null;
-    
-const ultimoPesaje = antesFin[antesFin.length - 1];
+function calcularGananciaEnRango(pesajes, fechaInicio, fechaFin) {
+    const sorted = [...(pesajes || [])].sort((a, b) => a.fecha.localeCompare(b.fecha));
+    const antesInicio = sorted.filter((p) => p.fecha <= fechaInicio);
+    const antesFin    = sorted.filter((p) => p.fecha <= fechaFin);
+    if (!antesInicio.length || !antesFin.length) return null;
 
-const antesInicio = sorted.filter((p) => p.fecha < fechaInicio);
-const pesajeInicio = antesInicio[antesInicio.length - 1];
+    const primerPesaje = antesInicio[antesInicio.length - 1];
+    const ultimoPesaje = antesFin[antesFin.length - 1];
+    const pesoInicio   = parseFloat(primerPesaje.peso);
+    const pesoFin      = parseFloat(ultimoPesaje.peso);
+    const ganancia     = Math.round((pesoFin - pesoInicio) * 100) / 100;
+    const dias         = Math.round(
+        (new Date(ultimoPesaje.fecha) - new Date(primerPesaje.fecha)) / 86400000
+    );
+    const gdp = dias > 0 ? Math.round((ganancia / dias) * 1000) / 1000 : null;
+    return { pesoInicio, pesoFin, ganancia, gdp, dias };
+}
 
-const primerPesaje = sorted[0];
-const pesoInicio = pesajeInicio? parseFloat(pesajeInicio.peso): primerPesaje   ? parseFloat(primerPesaje.peso): null;
-if (pesoInicio == null || !ultimoPesaje) return null;
-
-const fechaBase = pesajeInicio?.fecha || primerPesaje?.fecha;
-
-const pesoFin = parseFloat(ultimoPesaje.peso);
-
-const ganancia = Math.round((pesoFin - pesoInicio) * 100) / 100;
-
-const dias = fechaBase? Math.max( 0, Math.round( (new Date(ultimoPesaje.fecha) - new Date(fechaBase)) / 86400000    ) ) : 0;
-
-const gdp = dias > 0? Math.round((ganancia / dias) * 1000) / 1000: 0;
-
-return { pesoInicio,pesoFin, ganancia,gdp,dias};
 function buildChartData(animals, fechaInicio, fechaFin) {
     const fechas = [...new Set(
         animals.flatMap((a) =>
@@ -56,7 +49,7 @@ function buildChartData(animals, fechaInicio, fechaFin) {
         return point;
     });
 }
-}
+
 // ─── Tooltip y leyenda personalizados (más legibles con varias líneas) ───────
 
 function ChartTooltip({ active, payload, label, formatWeight, ocultas }) {
@@ -97,8 +90,8 @@ function ChartLegend({ animales, colores, ocultas, hover, onToggle, onHover }) {
     return (
         <div className="mt-3 flex flex-wrap gap-2">
             {animales.map((a, i) => {
-                const oculto  = ocultas.has(a.arete);
-                const activo  = hover === a.arete;
+                const oculto = ocultas.has(a.arete);
+                const activo = hover === a.arete;
                 return (
                     <button
                         key={a.id}
@@ -180,14 +173,14 @@ function TabGanancia({ animales = [] }) {
 
     const ganancias = useMemo(() =>
         animalesFiltradosGanancia
-            .map((a) => ({ animal: a, ...calcularGananciaEnRango(a, gFechaInicio, gFechaFin) }))
-            .filter((r) => r.ganancia != null)
+            .map((a) => ({ animal: a, ...calcularGananciaEnRango(a.pesajes, gFechaInicio, gFechaFin) }))
+            .filter((r) => r.ganancia !== undefined)
             .sort((a, b) => (b.ganancia ?? -Infinity) - (a.ganancia ?? -Infinity)),
     [animalesFiltradosGanancia, gFechaInicio, gFechaFin]);
 
     const sinDatos = useMemo(
         () => animalesFiltradosGanancia.filter(
-            (a) => !calcularGananciaEnRango(a, gFechaInicio, gFechaFin)
+            (a) => !calcularGananciaEnRango(a.pesajes, gFechaInicio, gFechaFin)
         ),
         [animalesFiltradosGanancia, gFechaInicio, gFechaFin]
     );
@@ -471,9 +464,9 @@ function TabGanancia({ animales = [] }) {
                                 }
                             />
                             {animalesParaChart.map((a, i) => {
-                                const color     = CHART_COLORS[i % CHART_COLORS.length];
-                                const oculta    = seriesOcultas.has(a.arete);
-                                const atenuada  = seriesHover && seriesHover !== a.arete;
+                                const color    = CHART_COLORS[i % CHART_COLORS.length];
+                                const oculta   = seriesOcultas.has(a.arete);
+                                const atenuada = seriesHover && seriesHover !== a.arete;
                                 return (
                                     <Line
                                         key={a.id}
@@ -573,7 +566,7 @@ function TabGanancia({ animales = [] }) {
                 <div className="rounded-2xl border border-gray-100 bg-white p-10 text-center shadow">
                     <Scale size={32} className="mx-auto mb-3 text-gray-300" />
                     <p className="text-sm font-medium text-gray-500">
-                        No hay animales con pesajes en este período.
+                        No hay ejemplares con pesajes en este período.
                     </p>
                     <p className="mt-1 text-xs text-gray-400">
                         Ajusta las fechas o registra pesajes en la pestaña Animales.

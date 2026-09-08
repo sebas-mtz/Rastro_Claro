@@ -45,7 +45,7 @@ export default function BajasIndex({
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">Salidas del rebaño</h1>
                         <p className="text-gray-600">
-                            Ventas, fallecimientos, descartes y traslados. El historial de cada ejemplar se conserva.
+                            Fallecimientos, descartes reproductivos, robos, extravíos, donaciones y traslados. El historial de cada ejemplar se conserva.
                         </p>
                     </div>
                     <button
