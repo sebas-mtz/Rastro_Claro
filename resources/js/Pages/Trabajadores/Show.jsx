@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowLeft, PlusCircle, Lock, Trash2, Clock, Coins, Users, Boxes, History,
 } from 'lucide-react';
 import ActividadModal from './ActividadModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function fmtFecha(f) {
     return f ? new Date(f).toLocaleDateString('es-MX') : '—';
@@ -33,6 +33,8 @@ export default function TrabajadorShow({
     lotes = [],
     permisos = {},
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [showActividad, setShowActividad] = useState(false);
 
     const filas = actividades?.data || [];
@@ -119,9 +121,9 @@ export default function TrabajadorShow({
                                 <Dato etiqueta="RFC" valor={trabajador.rfc} />
                                 <Dato etiqueta="Nacimiento" valor={fmtFecha(trabajador.fecha_nacimiento)} />
                                 <Dato etiqueta="Dirección" valor={trabajador.direccion} />
-                                <Dato etiqueta="Sueldo" valor={trabajador.sueldo != null ? formatMXN(trabajador.sueldo) : null} />
-                                <Dato etiqueta="Costo por jornada" valor={trabajador.costo_jornada != null ? formatMXN(trabajador.costo_jornada) : null} />
-                                <Dato etiqueta="Costo por hora" valor={trabajador.costo_hora != null ? formatMXN(trabajador.costo_hora) : null} />
+                                <Dato etiqueta="Sueldo" valor={trabajador.sueldo != null ? formatCurrency(trabajador.sueldo, currency) : null} />
+                                <Dato etiqueta="Costo por jornada" valor={trabajador.costo_jornada != null ? formatCurrency(trabajador.costo_jornada, currency) : null} />
+                                <Dato etiqueta="Costo por hora" valor={trabajador.costo_hora != null ? formatCurrency(trabajador.costo_hora, currency) : null} />
                                 <Dato
                                     etiqueta="Emergencia"
                                     valor={trabajador.contacto_emergencia
@@ -182,11 +184,11 @@ export default function TrabajadorShow({
                         {permisos.verCostos ? (
                             <>
                                 <p className="mt-2 text-2xl font-semibold text-emerald-700 tabular-nums">
-                                    {formatMXN(resumen.costo_total)}
+                                    {formatCurrency(resumen.costo_total, currency)}
                                 </p>
                                 <p className="text-xs text-slate-400 mt-0.5">
                                     {resumen.costo_promedio != null
-                                        ? `${formatMXN(resumen.costo_promedio)} por actividad`
+                                        ? `${formatCurrency(resumen.costo_promedio, currency)} por actividad`
                                         : 'Sin actividades todavía'}
                                 </p>
                             </>
@@ -264,7 +266,7 @@ export default function TrabajadorShow({
                                             </td>
                                             {permisos.verCostos && (
                                                 <td className="px-5 py-3 whitespace-nowrap text-sm text-right font-medium text-slate-800 tabular-nums">
-                                                    {formatMXN(a.costo_total)}
+                                                    {formatCurrency(a.costo_total, currency)}
                                                 </td>
                                             )}
                                             <td className="px-5 py-3 whitespace-nowrap text-right">
@@ -338,7 +340,7 @@ export default function TrabajadorShow({
                                                 {c.animal?.arete || c.lote?.nombre || 'General'}
                                             </td>
                                             <td className="px-5 py-3 whitespace-nowrap text-sm text-right font-medium text-slate-800 tabular-nums">
-                                                {formatMXN(c.monto)}
+                                                {formatCurrency(c.monto, currency)}
                                             </td>
                                         </tr>
                                     ))}

@@ -8,7 +8,7 @@ use App\Models\Destete;
 use App\Models\DonadorExterno;
 use App\Models\EventoReproductivo;
 use App\Models\Lote;
-use App\Models\Muerte;
+use App\Models\Baja;
 use App\Models\Parto;
 use App\Models\User;
 use Database\Seeders\ControlPartosSeeder;
@@ -52,11 +52,25 @@ class ReproduccionDesteteTest extends TestCase
         ]);
 
         $valorAnterior = getenv('CONTROL_PARTOS_SEED_EMAIL');
+        $envAnterior = $_ENV['CONTROL_PARTOS_SEED_EMAIL'] ?? null;
+        $serverAnterior = $_SERVER['CONTROL_PARTOS_SEED_EMAIL'] ?? null;
+        $_ENV['CONTROL_PARTOS_SEED_EMAIL'] = $user->email;
+        $_SERVER['CONTROL_PARTOS_SEED_EMAIL'] = $user->email;
         putenv("CONTROL_PARTOS_SEED_EMAIL={$user->email}");
 
         try {
             $this->seed(ControlPartosSeeder::class);
         } finally {
+            if ($envAnterior === null) {
+                unset($_ENV['CONTROL_PARTOS_SEED_EMAIL']);
+            } else {
+                $_ENV['CONTROL_PARTOS_SEED_EMAIL'] = $envAnterior;
+            }
+            if ($serverAnterior === null) {
+                unset($_SERVER['CONTROL_PARTOS_SEED_EMAIL']);
+            } else {
+                $_SERVER['CONTROL_PARTOS_SEED_EMAIL'] = $serverAnterior;
+            }
             $valorAnterior === false
                 ? putenv('CONTROL_PARTOS_SEED_EMAIL')
                 : putenv("CONTROL_PARTOS_SEED_EMAIL={$valorAnterior}");
@@ -79,8 +93,8 @@ class ReproduccionDesteteTest extends TestCase
         $loteDestete = $this->createLote('Lote de destete', $user);
 
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-001',
             'alias' => 'Luna',
             'sexo' => 'H',
@@ -89,14 +103,14 @@ class ReproduccionDesteteTest extends TestCase
         ]);
 
         $criaAnimal = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'CRIA-001',
             'alias' => 'Lucero',
             'sexo' => 'M',
             'fecha_nac' => today()->subYears(2)->toDateString(),
             'peso' => 34,
-            'estado_productivo' => 'reemplazo',
+            'estado_productivo' => 'Cordero',
             'lote_id' => $loteNacimiento->id,
             'madre_id' => $madre->id,
         ]);
@@ -132,13 +146,13 @@ class ReproduccionDesteteTest extends TestCase
             'parto_id' => $parto->id,
             'fecha' => today()->toDateString(),
             'estado_madre' => 'bueno',
-            'estado_productivo_madre' => 'mantenimiento',
+            'estado_productivo_madre' => 'Vientre',
             'observaciones' => 'Destete registrado aunque el parto ocurrió hace dos años.',
             'crias' => [
                 [
                     'cria_id' => $cria->id,
                     'peso_destete' => 185.5,
-                    'estado_destino' => 'En crecimiento',
+                    'estado_destino' => 'Cordero',
                     'lote_id' => $loteDestete->id,
                 ],
             ],
@@ -164,7 +178,7 @@ class ReproduccionDesteteTest extends TestCase
             'owner_id' => $user->id,
             'parto_id' => $parto->id,
             'estado_madre' => 'bueno',
-            'estado_productivo_madre' => 'mantenimiento',
+            'estado_productivo_madre' => 'Vientre',
             'tipo_nacimiento' => 'simple',
         ]);
         $this->assertDatabaseHas('destete_crias', [
@@ -172,7 +186,7 @@ class ReproduccionDesteteTest extends TestCase
             'destete_id' => $destete->id,
             'cria_id' => $cria->id,
             'peso_destete' => 185.5,
-            'estado_destino' => 'En crecimiento',
+            'estado_destino' => 'Cordero',
         ]);
         $this->assertDatabaseHas('pesajes', [
             'owner_id' => $user->id,
@@ -187,13 +201,13 @@ class ReproduccionDesteteTest extends TestCase
         $this->assertDatabaseHas('animals', [
             'id' => $criaAnimal->id,
             'owner_id' => $user->id,
-            'estado_productivo' => 'En crecimiento',
+            'estado_productivo' => 'Cordero',
             'lote_id' => $loteDestete->id,
             'peso' => 185.5,
         ]);
         $this->assertDatabaseHas('animals', [
             'id' => $madre->id,
-            'estado_productivo' => 'mantenimiento',
+            'estado_productivo' => 'Vientre',
         ]);
 
         $this->get(route('reproduccion.index'))
@@ -253,8 +267,8 @@ class ReproduccionDesteteTest extends TestCase
         $loteDestete = $this->createLote('Destete activos', $user);
 
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-GEM-01',
             'alias' => 'Canela',
             'sexo' => 'H',
@@ -263,21 +277,21 @@ class ReproduccionDesteteTest extends TestCase
         ]);
 
         $animalActivo = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'GEM-ACTIVO',
             'alias' => 'Sol',
             'sexo' => 'M',
             'fecha_nac' => today()->subDays(180)->toDateString(),
             'peso' => 32,
-            'estado_productivo' => 'reemplazo',
+            'estado_productivo' => 'Cordero',
             'lote_id' => $loteNacimiento->id,
             'madre_id' => $madre->id,
         ]);
 
         $animalMuerto = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'GEM-MUERTO',
             'alias' => 'Nube',
             'sexo' => 'H',
@@ -288,7 +302,8 @@ class ReproduccionDesteteTest extends TestCase
             'madre_id' => $madre->id,
         ]);
 
-        Muerte::create([
+        Baja::create([
+            'tipo_salida' => Baja::FALLECIMIENTO,
             'animal_id' => $animalMuerto->id,
             'fecha' => today()->subDays(20)->toDateString(),
             'causa' => 'Neumonia',
@@ -332,13 +347,13 @@ class ReproduccionDesteteTest extends TestCase
             'parto_id' => $parto->id,
             'fecha' => today()->toDateString(),
             'estado_madre' => 'regular',
-            'estado_productivo_madre' => 'mantenimiento',
+            'estado_productivo_madre' => 'Vientre',
             'observaciones' => 'Solo se desteta la cria que continua activa.',
             'crias' => [
                 [
                     'cria_id' => $criaActiva->id,
                     'peso_destete' => 172.4,
-                    'estado_destino' => 'En crecimiento',
+                    'estado_destino' => 'Cordero',
                     'lote_id' => $loteDestete->id,
                 ],
             ],
@@ -352,14 +367,14 @@ class ReproduccionDesteteTest extends TestCase
         $this->assertDatabaseHas('destetes', [
             'id' => $destete->id,
             'parto_id' => $parto->id,
-            'estado_productivo_madre' => 'mantenimiento',
+            'estado_productivo_madre' => 'Vientre',
             'tipo_nacimiento' => 'simple',
         ]);
         $this->assertDatabaseHas('destete_crias', [
             'destete_id' => $destete->id,
             'cria_id' => $criaActiva->id,
             'peso_destete' => 172.4,
-            'estado_destino' => 'En crecimiento',
+            'estado_destino' => 'Cordero',
         ]);
         $this->assertDatabaseMissing('destete_crias', [
             'destete_id' => $destete->id,
@@ -367,7 +382,7 @@ class ReproduccionDesteteTest extends TestCase
         ]);
         $this->assertDatabaseHas('animals', [
             'id' => $animalActivo->id,
-            'estado_productivo' => 'En crecimiento',
+            'estado_productivo' => 'Cordero',
             'lote_id' => $loteDestete->id,
             'peso' => 172.4,
         ]);
@@ -413,16 +428,16 @@ class ReproduccionDesteteTest extends TestCase
 
         $lote = $this->createLote('Maternidad sin crias disponibles', $user);
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-SIN-DESTETE',
             'sexo' => 'H',
             'estado_productivo' => 'lactancia',
             'lote_id' => $lote->id,
         ]);
         $animalVendido = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'CRIA-VENDIDA',
             'sexo' => 'M',
             'estado_productivo' => 'vendido',
@@ -463,17 +478,17 @@ class ReproduccionDesteteTest extends TestCase
                 'parto_id' => $parto->id,
                 'fecha' => today()->toDateString(),
                 'estado_madre' => 'regular',
-                'estado_productivo_madre' => 'mantenimiento',
+                'estado_productivo_madre' => 'Vientre',
                 'crias' => [
                     [
                         'cria_id' => $nacidaMuerta->id,
                         'peso_destete' => 28,
-                        'estado_destino' => 'En crecimiento',
+                        'estado_destino' => 'Cordero',
                     ],
                     [
                         'cria_id' => $vendida->id,
                         'peso_destete' => 120,
-                        'estado_destino' => 'En crecimiento',
+                        'estado_destino' => 'Cordero',
                     ],
                 ],
             ])
@@ -514,8 +529,8 @@ class ReproduccionDesteteTest extends TestCase
 
         $lote = $this->createLote('Notas de bajas', $user);
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-NOTA-BAJA',
             'sexo' => 'H',
             'estado_productivo' => 'lactancia',
@@ -574,20 +589,20 @@ class ReproduccionDesteteTest extends TestCase
 
         $lote = $this->createLote('Destete sin bajas', $user);
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-SIN-BAJAS',
             'sexo' => 'H',
             'estado_productivo' => 'lactancia',
             'lote_id' => $lote->id,
         ]);
         $animalCria = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'CRIA-SIN-BAJAS',
             'sexo' => 'M',
             'peso' => 95,
-            'estado_productivo' => 'reemplazo',
+            'estado_productivo' => 'Cordero',
             'lote_id' => $lote->id,
             'madre_id' => $madre->id,
         ]);
@@ -618,7 +633,7 @@ class ReproduccionDesteteTest extends TestCase
                     'parto_id' => $parto->id,
                     'fecha' => today()->toDateString(),
                     'estado_madre' => 'bueno',
-                    'estado_productivo_madre' => 'mantenimiento',
+                    'estado_productivo_madre' => 'Vientre',
                     'crias' => [[
                         'cria_id' => $cria->id,
                         'peso_destete' => 100,
@@ -630,7 +645,7 @@ class ReproduccionDesteteTest extends TestCase
         }
 
         $this->assertDatabaseMissing('destetes', ['parto_id' => $parto->id]);
-        $this->assertDatabaseCount('muertes', 0);
+        $this->assertDatabaseCount('bajas', 0);
         $this->assertDatabaseCount('ventas', 0);
     }
 
@@ -642,8 +657,8 @@ class ReproduccionDesteteTest extends TestCase
         $lote = $this->createLote('Genealogia', $user);
 
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-ETIQUETA',
             'alias' => 'Estrella',
             'sexo' => 'H',
@@ -652,8 +667,8 @@ class ReproduccionDesteteTest extends TestCase
         ]);
 
         $padreInterno = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'PADRE-INTERNO',
             'alias' => 'Trueno',
             'sexo' => 'M',
@@ -664,27 +679,27 @@ class ReproduccionDesteteTest extends TestCase
         $padreExterno = DonadorExterno::create([
             'codigo' => 'EXT-GEN-001',
             'nombre' => 'Titan Genomico',
-            'raza' => 'Angus',
+            'raza' => 'Dorper',
         ]);
 
         $animalPadreInterno = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'CRIA-PADRE-INT',
             'alias' => 'Rayo',
             'sexo' => 'M',
-            'estado_productivo' => 'reemplazo',
+            'estado_productivo' => 'Cordero',
             'madre_id' => $madre->id,
             'padre_id' => $padreInterno->id,
         ]);
 
         $animalPadreExterno = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'CRIA-PADRE-EXT',
             'alias' => 'Aurora',
             'sexo' => 'H',
-            'estado_productivo' => 'reemplazo',
+            'estado_productivo' => 'Cordero',
             'madre_id' => $madre->id,
             'padre_externo_id' => $padreExterno->id,
         ]);

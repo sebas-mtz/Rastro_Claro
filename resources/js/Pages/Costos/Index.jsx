@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     DollarSign, PlusCircle, Search, Edit, Trash2, Download, FileText,
     TrendingUp, TrendingDown, Filter,
 } from 'lucide-react';
 import CostoModal from './CostoModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const CATEGORIA_LABEL = {
     alimentacion: 'Alimentación',
@@ -26,6 +26,8 @@ const CATEGORIA_LABEL = {
 };
 
 export default function CostosIndex({ auth, costos, totales, comparacion, filtros, categorias, animales, lotes, faenas, sacrificios }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [showModal, setShowModal] = useState(false);
     const [costoEditando, setCostoEditando] = useState(null);
     const [concepto, setConcepto] = useState(filtros?.concepto || '');
@@ -113,23 +115,23 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">Total de costos</p>
-                        <p className="text-2xl font-bold text-gray-800">{formatMXN(totales?.total_general)}</p>
+                        <p className="text-2xl font-bold text-gray-800">{formatCurrency(totales?.total_general, currency)}</p>
                         <p className="text-xs text-gray-500">{totales?.cantidad_registros ?? 0} registros</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">Ingresos por ventas</p>
-                        <p className="text-2xl font-bold text-green-700">{formatMXN(comparacion?.ingresos)}</p>
+                        <p className="text-2xl font-bold text-green-700">{formatCurrency(comparacion?.ingresos, currency)}</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">{comparacion?.estado === 'utilidad' ? 'Utilidad' : 'Pérdida'}</p>
                         <p className={`text-2xl font-bold flex items-center gap-1 ${comparacion?.estado === 'utilidad' ? 'text-green-700' : 'text-red-700'}`}>
                             {comparacion?.estado === 'utilidad' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-                            {formatMXN(comparacion?.utilidad)}
+                            {formatCurrency(comparacion?.utilidad, currency)}
                         </p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">Costo promedio por animal</p>
-                        <p className="text-2xl font-bold text-gray-800">{formatMXN(totales?.costo_promedio_por_animal)}</p>
+                        <p className="text-2xl font-bold text-gray-800">{formatCurrency(totales?.costo_promedio_por_animal, currency)}</p>
                     </div>
                 </div>
 
@@ -142,7 +144,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                         <div className="flex flex-wrap gap-2">
                             {Object.entries(totalPorCategoria).map(([cat, monto]) => (
                                 <span key={cat} className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full">
-                                    {CATEGORIA_LABEL[cat] || cat}: {formatMXN(monto)}
+                                    {CATEGORIA_LABEL[cat] || cat}: {formatCurrency(monto, currency)}
                                 </span>
                             ))}
                         </div>
@@ -276,7 +278,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                                                 {costo.animal?.alias || costo.animal?.arete || costo.lote?.nombre || '—'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                                {formatMXN(costo.monto)}
+                                                {formatCurrency(costo.monto, currency)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {costo.usuario?.name || '—'}

@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\Produccion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Produccion>
- */
+/** @extends Factory<Produccion> */
 class ProduccionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Produccion::class;
+
     public function definition(): array
     {
         return [
-            //
+            'animal_id' => AnimalFactory::new(),
+            'fecha' => today()->toDateString(),
+            'tipo' => 'lana',
+            'valor' => 2,
+            'unidad' => 'kg',
         ];
     }
 }

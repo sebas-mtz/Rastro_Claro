@@ -6,7 +6,7 @@ use App\Models\Animal;
 use App\Models\Destete;
 use App\Models\EventoReproductivo;
 use App\Models\EventoSalud;
-use App\Models\Muerte;
+use App\Models\Baja;
 use App\Models\Parto;
 use App\Models\Tratamiento;
 use App\Models\User;
@@ -43,7 +43,8 @@ class AnimalEstadoContextualTest extends TestCase
             estado: 'muerto',
         );
 
-        Muerte::create([
+        Baja::create([
+            'tipo_salida' => Baja::FALLECIMIENTO,
             'animal_id' => $animal->id,
             'fecha' => today()->subDay()->toDateString(),
             'causa' => 'Enfermedad',

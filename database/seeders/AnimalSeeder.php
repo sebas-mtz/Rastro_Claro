@@ -234,13 +234,6 @@ class AnimalSeeder extends Seeder
         ?int    $padreId = null,
         ?int    $madreId = null
     ): int {
-        // El peso principal representa el peso actual del animal. Para la línea
-        // base de crecimiento usamos el peso natal conocido o una estimación
-        // ovina que PesajeSeeder afinará con el registro de la cría, si existe.
-        $pesoInicial = $peso <= 10
-            ? $peso
-            : ($sexo === 'M' ? 4.3 : 3.8);
-
         return DB::table('animals')->insertGetId([
             'especie'           => $especie,
             'raza'              => $raza,
@@ -249,8 +242,6 @@ class AnimalSeeder extends Seeder
             'sexo'              => $sexo,
             'fecha_nac'         => $fechaNac,
             'peso'              => $peso,
-            'peso_inicial'      => $pesoInicial,
-            'fecha_peso_inicial' => $fechaNac,
             'BCS'               => $bcs,
             'estado_productivo' => $estado,
             'lote_id'           => $loteId,

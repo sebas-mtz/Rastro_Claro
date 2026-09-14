@@ -23,7 +23,7 @@ protected $fillable = [
     'numero_registro',
     'grado_pureza',
     'lectura_microchip',
-    'color', 'tipo_origen', 'fecha_adquisicion', 'proovedor_origen'
+    'color', 'estado_reproductivo', 'tipo_origen', 'fecha_adquisicion', 'proveedor_origen'
     ];
 
 protected $casts = [
@@ -469,5 +469,13 @@ public function valuacionActiva(): HasOne
     return $this->hasOne(AnimalValuation::class)
                 ->where('estado', AnimalValuation::ESTADO_ACTIVA)
                 ->latestOfMany();
+}
+// Animal.php
+public function scopeActivo($query)
+{
+    return $query->where(function ($q) {
+        $q->whereNull('estado_productivo')
+            ->orWhereNotIn('estado_productivo', EstadoProductivoService::estadosSistema());
+    });
 }
 }

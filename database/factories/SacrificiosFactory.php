@@ -2,22 +2,7 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Sacrificios>
- */
-class SacrificiosFactory extends Factory
+/** @deprecated Usar SacrificioFactory. Conserva compatibilidad con fixtures anteriores. */
+class SacrificiosFactory extends SacrificioFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
 }

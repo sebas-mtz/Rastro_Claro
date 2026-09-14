@@ -2,22 +2,7 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ventas>
- */
-class VentasFactory extends Factory
+/** @deprecated Usar VentaFactory. Conserva compatibilidad con fixtures anteriores. */
+class VentasFactory extends VentaFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
 }

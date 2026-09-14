@@ -381,8 +381,6 @@ if ($pajillaId) {
                         'padre_externo_id' => $padreExternoId,
                         'fecha_nac' => $partoFecha->toDateString(),
                         'peso' => $cria['peso'],
-                        'peso_inicial' => $cria['peso'],
-                        'fecha_peso_inicial' => $partoFecha->toDateString(),
                         'updated_at' => now(),
                     ]);
             }

@@ -2,22 +2,7 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Reproduccion>
- */
-class ReproduccionFactory extends Factory
+/** @deprecated Usar EventoReproductivoFactory. Conserva compatibilidad con fixtures anteriores. */
+class ReproduccionFactory extends EventoReproductivoFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
 }

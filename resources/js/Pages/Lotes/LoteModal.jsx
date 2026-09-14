@@ -27,6 +27,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
       sexo: "",
       fecha_nac: "",
       peso: "",
+      tipo: "",
       estado_productivo: "",
     }
   });
@@ -49,6 +50,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
             sexo: "",
             fecha_nac: "",
             peso: "",
+            tipo: lote.tipo || "",
             estado_productivo: "",
           }
         });
@@ -67,6 +69,7 @@ export default function LoteModal({ show, onClose, lote = {}, usuarios = [], esp
             sexo: "",
             fecha_nac: "",
             peso: "",
+            tipo: "",
             estado_productivo: "",
           }
         });

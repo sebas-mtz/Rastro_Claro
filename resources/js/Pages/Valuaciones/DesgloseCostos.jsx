@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight, Info } from 'lucide-react';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const BUCKETS = [
     { key: 'costo_gestacion', categoria: 'gestacion', label: 'Costo de gestación asignado' },
@@ -19,6 +20,8 @@ function fmtFecha(fecha) {
 }
 
 export default function DesgloseCostos({ calculo }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [abierto, setAbierto] = useState({});
     const buckets = calculo?.buckets || {};
     const detalles = calculo?.detalles || [];
@@ -66,7 +69,7 @@ export default function DesgloseCostos({ calculo }) {
                                     )}
                                 </span>
                                 <span className="text-sm font-semibold text-slate-900 tabular-nums">
-                                    {formatMXN(monto)}
+                                    {formatCurrency(monto, currency)}
                                 </span>
                             </button>
 
@@ -99,10 +102,10 @@ export default function DesgloseCostos({ calculo }) {
                                                             : '—'}
                                                     </td>
                                                     <td className="py-2 pr-4 text-right tabular-nums">
-                                                        {linea.costo_unitario != null ? formatMXN(linea.costo_unitario) : '—'}
+                                                        {linea.costo_unitario != null ? formatCurrency(linea.costo_unitario, currency) : '—'}
                                                     </td>
                                                     <td className="py-2 pr-4 text-right tabular-nums font-semibold">
-                                                        {formatMXN(linea.costo_total)}
+                                                        {formatCurrency(linea.costo_total, currency)}
                                                     </td>
                                                     <td className="py-2 text-slate-500">
                                                         {linea.metodo_distribucion || linea.observaciones || '—'}
@@ -122,7 +125,7 @@ export default function DesgloseCostos({ calculo }) {
             <div className="border-t-2 border-slate-200 px-5 py-3 flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-900">Costo total de producción</span>
                 <span className="text-sm font-bold text-slate-900 tabular-nums">
-                    {formatMXN(calculo?.costo_total_produccion)}
+                    {formatCurrency(calculo?.costo_total_produccion, currency)}
                 </span>
             </div>
 
@@ -135,7 +138,7 @@ export default function DesgloseCostos({ calculo }) {
                         </span>
                     </span>
                     <span className="text-sm font-semibold text-slate-900 tabular-nums">
-                        {formatMXN(calculo?.valor_margen_genetico)}
+                        {formatCurrency(calculo?.valor_margen_genetico, currency)}
                     </span>
                 </div>
                 <div className="px-5 py-3 flex items-center justify-between">
@@ -148,13 +151,13 @@ export default function DesgloseCostos({ calculo }) {
                         )}
                     </span>
                     <span className="text-sm font-semibold text-slate-900 tabular-nums">
-                        {formatMXN(calculo?.plus_reproductivo)}
+                        {formatCurrency(calculo?.plus_reproductivo, currency)}
                     </span>
                 </div>
                 <div className="px-5 py-3 flex items-center justify-between">
                     <span className="text-sm text-slate-700">Ajuste manual</span>
                     <span className="text-sm font-semibold text-slate-900 tabular-nums">
-                        {formatMXN(calculo?.ajuste_manual)}
+                        {formatCurrency(calculo?.ajuste_manual, currency)}
                     </span>
                 </div>
             </div>
@@ -169,7 +172,7 @@ export default function DesgloseCostos({ calculo }) {
             <div className="border-t-2 border-emerald-200 bg-emerald-50 px-5 py-4 flex items-center justify-between">
                 <span className="text-sm font-bold text-emerald-900">Precio final estimado</span>
                 <span className="text-xl font-bold text-emerald-700 tabular-nums">
-                    {formatMXN(calculo?.precio_estimado)}
+                        {formatCurrency(calculo?.precio_estimado, currency)}
                 </span>
             </div>
         </div>

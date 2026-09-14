@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, BadgeCheck } from 'lucide-react';
-import { useForm } from '@inertiajs/react';
-import { formatMXN } from '@/utils/currency';
+import { useForm, usePage } from '@inertiajs/react';
+import { formatCurrency } from '@/utils/currency';
 
 export default function ConfirmarVentaModal({ show, onClose, animal, valuacion }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const { data, setData, post, processing, errors, reset } = useForm({
         precio_real_venta: '',
         fecha_venta: new Date().toISOString().split('T')[0],
@@ -66,12 +68,12 @@ export default function ConfirmarVentaModal({ show, onClose, animal, valuacion }
                         <div className="flex justify-between">
                             <span className="text-slate-600">Precio estimado</span>
                             <span className="font-semibold tabular-nums">
-                                {formatMXN(valuacion?.precio_estimado)}
+                                {formatCurrency(valuacion?.precio_estimado, currency)}
                             </span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-slate-600">Costo de producción</span>
-                            <span className="font-semibold tabular-nums">{formatMXN(costoProduccion)}</span>
+                            <span className="font-semibold tabular-nums">{formatCurrency(costoProduccion, currency)}</span>
                         </div>
                     </div>
 
@@ -130,7 +132,7 @@ export default function ConfirmarVentaModal({ show, onClose, animal, valuacion }
                                     {utilidad >= 0 ? 'Utilidad' : 'Pérdida'}
                                 </span>
                                 <span className={`font-bold tabular-nums ${utilidad >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
-                                    {formatMXN(utilidad)}
+                                    {formatCurrency(utilidad, currency)}
                                     {porcentaje != null && ` (${porcentaje.toFixed(2)} %)`}
                                 </span>
                             </div>

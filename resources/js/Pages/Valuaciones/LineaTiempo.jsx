@@ -1,5 +1,6 @@
 import React from 'react';
-import { formatMXN } from '@/utils/currency';
+import { usePage } from '@inertiajs/react';
+import { formatCurrency } from '@/utils/currency';
 
 const ETIQUETA_CATEGORIA = {
     gestacion: 'Gestación',
@@ -31,6 +32,8 @@ function fmtFecha(fecha) {
 }
 
 export default function LineaTiempo({ hitos = [], precioEstimado }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     return (
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-200">
@@ -70,7 +73,7 @@ export default function LineaTiempo({ hitos = [], precioEstimado }) {
                                 </div>
                                 {hito.costo != null && (
                                     <span className="text-sm font-medium text-slate-700 tabular-nums shrink-0">
-                                        {formatMXN(hito.costo)}
+                                        {formatCurrency(hito.costo, currency)}
                                     </span>
                                 )}
                             </div>
@@ -86,7 +89,7 @@ export default function LineaTiempo({ hitos = [], precioEstimado }) {
                                 <p className="text-sm font-semibold text-emerald-800">Cotización actual</p>
                             </div>
                             <span className="text-sm font-bold text-emerald-700 tabular-nums">
-                                {formatMXN(precioEstimado)}
+                                {formatCurrency(precioEstimado, currency)}
                             </span>
                         </div>
                     </li>

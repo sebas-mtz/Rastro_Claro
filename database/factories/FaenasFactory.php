@@ -2,22 +2,7 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Faenas>
- */
-class FaenasFactory extends Factory
+/** @deprecated Usar FaenaFactory. Conserva compatibilidad con fixtures anteriores. */
+class FaenasFactory extends FaenaFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
 }

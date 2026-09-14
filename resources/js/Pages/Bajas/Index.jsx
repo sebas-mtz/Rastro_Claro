@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { LogOut, PlusCircle, Undo2, FileText, Users, HeartCrack } from 'lucide-react';
 import BajaModal from './BajaModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function fmtFecha(f) {
     return f ? new Date(f).toLocaleDateString('es-MX') : '—';
@@ -12,6 +12,8 @@ function fmtFecha(f) {
 export default function BajasIndex({
     auth, bajas, indicadores, tipos = {}, tiposConPrecio = [], filtros = {}, animalesActivos = [],
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [showModal, setShowModal] = useState(false);
     const [locales, setLocales] = useState({
         tipo_salida: filtros.tipo_salida || '',
@@ -84,7 +86,7 @@ export default function BajasIndex({
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500">Ingresos por salidas</p>
                         <p className="mt-2 text-2xl font-semibold text-emerald-700">
-                            {formatMXN(indicadores?.ingresos_por_salidas)}
+                            {formatCurrency(indicadores?.ingresos_por_salidas, currency)}
                         </p>
                     </div>
                 </div>
@@ -176,7 +178,7 @@ export default function BajasIndex({
                                                 )}
                                             </td>
                                             <td className="px-5 py-3 whitespace-nowrap text-sm text-right font-medium text-slate-800 tabular-nums">
-                                                {baja.precio_salida != null ? formatMXN(baja.precio_salida) : '—'}
+                                                {baja.precio_salida != null ? formatCurrency(baja.precio_salida, currency) : '—'}
                                             </td>
                                             <td className="px-5 py-3 whitespace-nowrap text-sm">
                                                 {baja.documento ? (

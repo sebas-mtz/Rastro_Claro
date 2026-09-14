@@ -46,12 +46,9 @@ class PesajeGananciaTest extends TestCase
         $this->assertDatabaseHas('animals', [
             'id' => $animal->id,
             'peso' => 11,
-            'peso_inicial' => 10,
         ]);
-        $this->assertSame(
-            '2026-01-01',
-            $animal->fresh()->fecha_peso_inicial->toDateString(),
-        );
+        $this->assertTrue(Pesaje::where('animal_id', $animal->id)
+            ->whereDate('fecha', '2026-01-01')->where('peso', 10)->exists());
     }
 
     public function test_second_weighing_keeps_the_registered_initial_weight_as_total_baseline(): void
@@ -69,15 +66,16 @@ class PesajeGananciaTest extends TestCase
             expectedDays: 4,
         );
 
-        $this->assertSame(10.0, $animal->fresh()->peso_inicial);
+        $this->assertTrue(Pesaje::where('animal_id', $animal->id)
+            ->whereDate('fecha', '2026-01-01')->where('peso', 10)->exists());
     }
 
-    public function test_deleting_the_only_weighing_restores_the_initial_weight(): void
+    public function test_deleting_the_latest_weighing_restores_the_first_recorded_weight(): void
     {
         [$user, $animal] = $this->createUserAndAnimal('PESO-003');
 
         $this->createPesajeThroughEndpoint($user, $animal, '2026-01-02', 12);
-        $pesaje = Pesaje::where('animal_id', $animal->id)->firstOrFail();
+        $pesaje = Pesaje::where('animal_id', $animal->id)->latest('fecha')->firstOrFail();
 
         $this->actingAs($user)
             ->delete(route('pesajes.destroy', $pesaje))
@@ -88,7 +86,6 @@ class PesajeGananciaTest extends TestCase
         $this->assertDatabaseHas('animals', [
             'id' => $animal->id,
             'peso' => 10,
-            'peso_inicial' => 10,
         ]);
     }
 
@@ -98,12 +95,11 @@ class PesajeGananciaTest extends TestCase
         $this->actingAs($user);
 
         $madre = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => 'MADRE-PESO-NATAL',
             'sexo' => 'H',
             'peso' => 480,
-            'fecha_peso_inicial' => '2024-01-01',
             'estado_productivo' => 'gestante',
         ]);
 
@@ -118,6 +114,7 @@ class PesajeGananciaTest extends TestCase
                 'sexo' => 'hembra',
                 'peso_nacimiento' => 32.5,
                 'condicion' => 'vivo',
+                'vigor' => 'B',
                 'arete' => 'CRIA-PESO-NATAL',
             ]],
         ])
@@ -127,11 +124,9 @@ class PesajeGananciaTest extends TestCase
         $cria = Cria::with('animal')->firstOrFail();
 
         $this->assertSame(32.5, $cria->animal->peso);
-        $this->assertSame(32.5, $cria->animal->peso_inicial);
-        $this->assertSame(
-            '2026-01-01',
-            $cria->animal->fecha_peso_inicial->toDateString(),
-        );
+        $this->assertEquals(32.5, $cria->peso_nacimiento);
+        $this->assertTrue(Pesaje::where('animal_id', $cria->animal_id)
+            ->whereDate('fecha', '2026-01-01')->where('peso', 32.5)->exists());
     }
 
     /**
@@ -143,14 +138,18 @@ class PesajeGananciaTest extends TestCase
         $this->actingAs($user);
 
         $animal = Animal::create([
-            'especie' => 'Bovino',
-            'raza' => 'Angus',
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
             'arete' => $arete,
             'sexo' => 'M',
             'peso' => 10,
-            'peso_inicial' => 10,
-            'fecha_peso_inicial' => '2026-01-01',
-            'estado_productivo' => 'En crecimiento',
+            'estado_productivo' => 'Cordero',
+        ]);
+
+        Pesaje::create([
+            'animal_id' => $animal->id,
+            'fecha' => '2026-01-01',
+            'peso' => 10,
         ]);
 
         return [$user, $animal];

@@ -1,0 +1,452 @@
+"filename", "language", "PHP", "JavaScript", "JavaScript JSX", "PostCSS", "JSON", "Markdown", "XML", "Shell Script", "JSON with Comments", "Docker", "comment", "blank", "total"
+"c:\Proyectos\Rastro_Claro_custom\Dockerfile", "Docker", 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 15, 14, 60
+"c:\Proyectos\Rastro_Claro_custom\README.md", "Markdown", 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 3, 24
+"c:\Proyectos\Rastro_Claro_custom\_ide_helper.php", "PHP", 8349, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18053, 2063, 28465
+"c:\Proyectos\Rastro_Claro_custom\app\Console\Commands\ClaimLegacyTenantData.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 50
+"c:\Proyectos\Rastro_Claro_custom\app\Console\Commands\EnviarRecordatoriosTareas.php", "PHP", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 40
+"c:\Proyectos\Rastro_Claro_custom\app\Console\Commands\GenerarAlimentacionesProgramadas.php", "PHP", 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 29, 158
+"c:\Proyectos\Rastro_Claro_custom\app\Console\Commands\MakeSuperAdmin.php", "PHP", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 19, 85
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ActividadTrabajadorController.php", "PHP", 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 28, 167
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Admin\PermisoController.php", "PHP", 132, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 25, 182
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Admin\UserController.php", "PHP", 410, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99, 81, 590
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\AlertaController.php", "PHP", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\AlimentacionController.php", "PHP", 262, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 52, 343
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\AnimalController.php", "PHP", 283, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 52, 373
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\AnimalValuationController.php", "PHP", 287, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 64, 394
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\AuthenticatedSessionController.php", "PHP", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 12, 57
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\ConfirmablePasswordController.php", "PHP", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 42
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\EmailVerificationNotificationController.php", "PHP", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 25
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\EmailVerificationPromptController.php", "PHP", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 23
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\NewPasswordController.php", "PHP", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 9, 70
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\PasswordController.php", "PHP", 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 30
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\PasswordResetLinkController.php", "PHP", 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 8, 52
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\RegisteredUserController.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 52
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Auth\VerifyEmailController.php", "PHP", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 28
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\BajaController.php", "PHP", 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 14, 96
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\CalendarioSanitarioController.php", "PHP", 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 12, 74
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\CompradorController.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 9, 65
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\Controller.php", "PHP", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 9
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ConversionAlimenticiaController.php", "PHP", 152, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 32, 201
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\CostoController.php", "PHP", 142, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 170
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\CriaController.php", "PHP", 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 19, 87
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\CustomController.php", "PHP", 174, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 35, 220
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\DesteteController.php", "PHP", 178, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 31, 210
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\DiagnosticoGestacionController.php", "PHP", 143, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 20, 184
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\DocumentoController.php", "PHP", 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 17, 109
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\DonadorExternoController.php", "PHP", 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 61
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\EstadisticasSaludController.php", "PHP", 92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12, 111
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\EventoReproductivoController.php", "PHP", 350, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 28, 393
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\EventoSaludController.php", "PHP", 338, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 59, 418
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\FaenaController.php", "PHP", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 24, 140
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\GenealogiasController.php", "PHP", 161, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 31, 224
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\InventarioInsumoController.php", "PHP", 214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 54, 292
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\LoteController.php", "PHP", 140, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 31, 207
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\PajillaController.php", "PHP", 236, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 52, 301
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\PartoController.php", "PHP", 211, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 34, 277
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\PaymentController.php", "PHP", 54, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12, 68
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\PesajeController.php", "PHP", 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 37, 175
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\PrediccionController.php", "PHP", 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 137
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ProduccionController.php", "PHP", 142, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 27, 174
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ProfileController.php", "PHP", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 14, 64
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ProgramacionAlimentacionController.php", "PHP", 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19, 138
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\RacionController.php", "PHP", 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 36, 227
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ReporteOvinoController.php", "PHP", 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 6, 47
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ReportesController.php", "PHP", 545, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 79, 685
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\SacrificioController.php", "PHP", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 24, 140
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\ServicioReproductivoController.php", "PHP", 147, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 28, 186
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\SettingsController.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 42
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\SocialAuthController.php", "PHP", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 59
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\TareaController.php", "PHP", 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 31, 181
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\TermoController.php", "PHP", 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 30, 200
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\TrabajadorController.php", "PHP", 219, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 47, 303
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\TratamientoController.php", "PHP", 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 38, 224
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\VacunaController.php", "PHP", 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 16, 92
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Controllers\VentaController.php", "PHP", 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 36, 248
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\CheckPlan.php", "PHP", 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 35
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\CheckRole.php", "PHP", 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 19
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\CheckSuperAdmin.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 8, 42
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\HandleInertiaRequests.php", "PHP", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 5, 55
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\RoleMiddleware.php", "PHP", 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 24
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Middleware\VerificarPermisoModulo.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 14, 69
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\Auth\LoginRequest.php", "PHP", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 14, 86
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\ProfileUpdateRequest.php", "PHP", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 4, 31
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreActividadTrabajadorRequest.php", "PHP", 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 20, 114
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreAlertaRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreAlimentacionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreAnimalRequest.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 15, 62
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreEventoSaludRequest.php", "PHP", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 55
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreInventarioInsumoRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreLoteRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreProduccionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreRacionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreReproduccionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreTrabajadorRequest.php", "PHP", 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 14, 84
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreTratamientoRequest.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 32
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreUserRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\StoreVacunaRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateAlertaRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateAlimentacionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateAnimalRequest.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14, 59
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateEventoSaludRequest.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 58
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateInventarioInsumoRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateLoteRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateProduccionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateRacionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateReproduccionRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateTrabajadorRequest.php", "PHP", 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 79
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateUserRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Http\Requests\UpdateVacunaRequest.php", "PHP", 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 5, 29
+"c:\Proyectos\Rastro_Claro_custom\app\Jobs\EjecutarProgramacionesAlimentacion.php", "PHP", 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 18, 124
+"c:\Proyectos\Rastro_Claro_custom\app\Models\ActividadTrabajador.php", "PHP", 117, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 25, 154
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Alerta.php", "PHP", 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 19
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Alimentacion.php", "PHP", 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 17, 98
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Animal.php", "PHP", 353, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 73, 481
+"c:\Proyectos\Rastro_Claro_custom\app\Models\AnimalValuation.php", "PHP", 117, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 21, 151
+"c:\Proyectos\Rastro_Claro_custom\app\Models\AnimalValuationDetalle.php", "PHP", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 11, 70
+"c:\Proyectos\Rastro_Claro_custom\app\Models\AnimalValuationHistorial.php", "PHP", 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 75
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Auditoria.php", "PHP", 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 17, 103
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Baja.php", "PHP", 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 13, 80
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Comprador.php", "PHP", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 44
+"c:\Proyectos\Rastro_Claro_custom\app\Models\ConfiguracionValuacion.php", "PHP", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 13, 62
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Costo.php", "PHP", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 20, 130
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Cria.php", "PHP", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 64
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Destete.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 34
+"c:\Proyectos\Rastro_Claro_custom\app\Models\DesteteCria.php", "PHP", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 33
+"c:\Proyectos\Rastro_Claro_custom\app\Models\DiagnosticoGestacion.php", "PHP", 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 13, 65
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Documento.php", "PHP", 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 16, 89
+"c:\Proyectos\Rastro_Claro_custom\app\Models\DonadorExterno.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 34
+"c:\Proyectos\Rastro_Claro_custom\app\Models\EventoReproductivo.php", "PHP", 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19, 84
+"c:\Proyectos\Rastro_Claro_custom\app\Models\EventoSalud.php", "PHP", 144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 27, 218
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Faena.php", "PHP", 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 16, 118
+"c:\Proyectos\Rastro_Claro_custom\app\Models\InventarioInsumo.php", "PHP", 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 11, 78
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Lote.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8, 53
+"c:\Proyectos\Rastro_Claro_custom\app\Models\MovimientoLote.php", "PHP", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 58
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Pajilla.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 54
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Parto.php", "PHP", 86, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 16, 107
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Pesaje.php", "PHP", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8, 33
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Produccion.php", "PHP", 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 24
+"c:\Proyectos\Rastro_Claro_custom\app\Models\ProgramacionAlimentacion.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 53
+"c:\Proyectos\Rastro_Claro_custom\app\Models\PuestoTrabajador.php", "PHP", 176, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 34, 257
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Racion.php", "PHP", 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 11, 87
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Reporte.php", "PHP", 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 12, 94
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Sacrificio.php", "PHP", 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 90
+"c:\Proyectos\Rastro_Claro_custom\app\Models\ServicioReproductivo.php", "PHP", 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 79
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Tarea.php", "PHP", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 51
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Termo.php", "PHP", 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 66
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Trabajador.php", "PHP", 151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 31, 206
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Tratamiento.php", "PHP", 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 23, 128
+"c:\Proyectos\Rastro_Claro_custom\app\Models\User.php", "PHP", 245, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 64, 409
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Vacuna.php", "PHP", 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 7, 38
+"c:\Proyectos\Rastro_Claro_custom\app\Models\Venta.php", "PHP", 77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 11, 110
+"c:\Proyectos\Rastro_Claro_custom\app\Notifications\RecordatorioTareaNotification.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 34
+"c:\Proyectos\Rastro_Claro_custom\app\Observers\MovimientoLoteObserver.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 42
+"c:\Proyectos\Rastro_Claro_custom\app\Observers\ValuacionRecalculoObserver.php", "PHP", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 21, 136
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\AlertaPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\AlimentacionPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\AnimalPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\InventarioInsumoPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\LotePolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\ProduccionPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\RacionPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\ReproduccionPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\SaludPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\TrabajadorPolicy.php", "PHP", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 12, 103
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\UserPolicy.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 11, 91
+"c:\Proyectos\Rastro_Claro_custom\app\Policies\VacunaPolicy.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 10, 67
+"c:\Proyectos\Rastro_Claro_custom\app\Providers\AppServiceProvider.php", "PHP", 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 19, 133
+"c:\Proyectos\Rastro_Claro_custom\app\Providers\RouteServiceProvider.php", "PHP", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 10
+"c:\Proyectos\Rastro_Claro_custom\app\Services\AlertaOperativaService.php", "PHP", 202, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 36, 257
+"c:\Proyectos\Rastro_Claro_custom\app\Services\AnimalValuationService.php", "PHP", 545, 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 112, 773
+"c:\Proyectos\Rastro_Claro_custom\app\Services\AuditoriaService.php", "PHP", 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 9, 85
+"c:\Proyectos\Rastro_Claro_custom\app\Services\BajaService.php", "PHP", 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 12, 100
+"c:\Proyectos\Rastro_Claro_custom\app\Services\CostoService.php", "PHP", 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 17, 112
+"c:\Proyectos\Rastro_Claro_custom\app\Services\CriaDisponibilidadService.php", "PHP", 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 14, 118
+"c:\Proyectos\Rastro_Claro_custom\app\Services\EstadoActualAnimalService.php", "PHP", 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 145
+"c:\Proyectos\Rastro_Claro_custom\app\Services\EstadoProductivoService.php", "PHP", 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 15, 127
+"c:\Proyectos\Rastro_Claro_custom\app\Services\HaciendaService.php", "PHP", 493, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 80, 646
+"c:\Proyectos\Rastro_Claro_custom\app\Services\HistorialNacimientoService.php", "PHP", 208, 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 33, 298
+"c:\Proyectos\Rastro_Claro_custom\app\Services\IndicadoresOvinosService.php", "PHP", 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 36, 264
+"c:\Proyectos\Rastro_Claro_custom\app\Services\ManoObraService.php", "PHP", 289, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86, 59, 434
+"c:\Proyectos\Rastro_Claro_custom\app\Services\PaternidadProbableService.php", "PHP", 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 19, 155
+"c:\Proyectos\Rastro_Claro_custom\app\Support\ModuloSistema.php", "PHP", 142, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 18, 210
+"c:\Proyectos\Rastro_Claro_custom\app\Validation\TenantPresenceVerifier.php", "PHP", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 12, 66
+"c:\Proyectos\Rastro_Claro_custom\bootstrap\app.php", "PHP", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 7, 67
+"c:\Proyectos\Rastro_Claro_custom\bootstrap\providers.php", "PHP", 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 6
+"c:\Proyectos\Rastro_Claro_custom\composer.json", "JSON", 0, 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 1, 84
+"c:\Proyectos\Rastro_Claro_custom\composer.lock", "JSON", 0, 0, 0, 0, 10051, 0, 0, 0, 0, 0, 0, 1, 10052
+"c:\Proyectos\Rastro_Claro_custom\config\app.php", "PHP", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 23, 127
+"c:\Proyectos\Rastro_Claro_custom\config\auth.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 14, 116
+"c:\Proyectos\Rastro_Claro_custom\config\cache.php", "PHP", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 18, 109
+"c:\Proyectos\Rastro_Claro_custom\config\database.php", "PHP", 118, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 23, 184
+"c:\Proyectos\Rastro_Claro_custom\config\filesystems.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 13, 81
+"c:\Proyectos\Rastro_Claro_custom\config\logging.php", "PHP", 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 21, 133
+"c:\Proyectos\Rastro_Claro_custom\config\mail.php", "PHP", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 19, 119
+"c:\Proyectos\Rastro_Claro_custom\config\queue.php", "PHP", 52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 17, 113
+"c:\Proyectos\Rastro_Claro_custom\config\sanctum.php", "PHP", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 54, 14, 85
+"c:\Proyectos\Rastro_Claro_custom\config\services.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 7, 45
+"c:\Proyectos\Rastro_Claro_custom\config\session.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 160, 35, 218
+"c:\Proyectos\Rastro_Claro_custom\config\tenancy.php", "PHP", 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 126
+"c:\Proyectos\Rastro_Claro_custom\database\factories\AlertaFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\AlimentacionFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\AnimalFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\CompradoresFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 23
+"c:\Proyectos\Rastro_Claro_custom\database\factories\FaenasFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 23
+"c:\Proyectos\Rastro_Claro_custom\database\factories\InventarioInsumoFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\LoteFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\ProduccionFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\RacionFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\ReproduccionFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\SacrificiosFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 23
+"c:\Proyectos\Rastro_Claro_custom\database\factories\SaludFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\UserFactory.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 8, 66
+"c:\Proyectos\Rastro_Claro_custom\database\factories\VacunaFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\database\factories\VentasFactory.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 23
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\0001_01_01_000000_create_users_table.php", "PHP", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 61
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\0001_01_01_000001_create_cache_table.php", "PHP", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 36
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\0001_01_01_000002_create_jobs_table.php", "PHP", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 58
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181910_create_lotes_table.php", "PHP", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 32
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181911_create_animals_table.php", "PHP", 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 36
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181911_create_vacunas_table.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 40
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181912_create_racions_table.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 39
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181913_create_eventos_salud_table.php", "PHP", 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 50
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181913_create_programacion_alimentacions.php", "PHP", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 50
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181914_create_alimentacions_table.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 12, 63
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181914_create_produccions_table.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 33
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181915_create_alertas_table.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 34
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_09_24_181916_create_inventario_insumos_table.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 46
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_10_26_165151_add_estado_y_fecha_aplicacion_to_saluds_table.php", "PHP", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 24
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_19_022146_create_tratamientos_table.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 39
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_22_224937_add_description_to_lotes_table.php", "PHP", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 3, 28
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_23_003355_create_faenas_table.php", "PHP", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 5, 46
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_23_003809_create_sacrificios_table.php", "PHP", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 43
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_23_003900_create_compradores_table.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 31
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2025_11_23_003931_create_ventas_table.php", "PHP", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 11, 57
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_22_043032_create_termos_table.php", "PHP", 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 43
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_22_043033_create_pajillas_table.php", "PHP", 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 9, 53
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_23_024920_create_evento_reproductivos_table.php", "PHP", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 12, 60
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_23_024921_create_servicio_reproductivos_table.php", "PHP", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 11, 59
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_23_024922_create_diagnostico_gestacions_table.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 11, 63
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_23_024923_create_partos_table.php", "PHP", 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 8, 52
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_03_23_024924_create_crias_table.php", "PHP", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 33
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_04_07_082704_create_racion_insumo_table.php", "PHP", 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10, 37
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_04_17_072856_create_pesajes_table.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 26
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_05_23_235949_create_reportes_table.php", "PHP", 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 11, 49
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_06_10_060310_create_donadores_externos_table.php", "PHP", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 8, 39
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_06_10_060405_add_donador_externo_id_to_pajillas_table.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 33
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_06_27_082234_create_tareas_table.php", "PHP", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12, 53
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_06_27_083030_create_notifications_table.php", "PHP", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 32
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_06_28_091117_add_padre_externo_id_to_animals_table.php", "PHP", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 27
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_19_000000_add_owner_id_to_tenant_tables.php", "PHP", 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 58
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_19_000001_scope_business_unique_indexes_by_owner.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 41
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_24_000001_add_leche_to_partos_table.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 43
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_24_000003_create_destetes_tables.php", "PHP", 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 43
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_24_000005_add_mother_productive_state_to_destetes_table.php", "PHP", 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_24_000006_add_settings_to_users_table.php", "PHP", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 23
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_07_24_030733_create_personal_access_tokens_table.php", "PHP", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 4, 34
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_010400_create_configuracion_valuaciones_table.php", "PHP", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 7, 34
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_010500_create_animal_valuations_table.php", "PHP", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 14, 66
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_010600_create_animal_valuation_detalles_table.php", "PHP", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12, 56
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_010700_create_animal_valuation_historial_table.php", "PHP", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12, 54
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_072252_update_tipo_servicio_enum_in_servicios_table.php", "PHP", 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 37
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_01_074822_add_fields_to_animals_table.php", "PHP", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 60
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_02_000000_add_vigor_to_crias_table.php", "PHP", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 23
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_02_020000_create_bajas.php", "PHP", 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 34
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_02_020200_create_movimientos_lote_table.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 8, 46
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_03_010000_create_documentos_table.php", "PHP", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 49
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_04_010000_create_puestos_trabajador_table.php", "PHP", 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 46
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_04_010100_create_trabajadores_table.php", "PHP", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 16, 82
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_04_010200_create_actividades_trabajador_table.php", "PHP", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 17, 80
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_05_010100_create_auditorias_table.php", "PHP", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 12, 63
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_06_010000_create_costos_table.php", "PHP", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 49
+"c:\Proyectos\Rastro_Claro_custom\database\migrations\2026_08_23_005133_add_puesto_y_permisos_to_users_and_puestos_trabajador_tables.php", "PHP", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 40
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\AlertaSeeder.php", "PHP", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 18
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\AlimentacionSeeder.php", "PHP", 379, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 45, 451
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\AnimalSeeder.php", "PHP", 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 78, 48, 264
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\ControlPartosSeeder.php", "PHP", 452, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 67, 528
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\DatabaseSeeder.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 37
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\DonadoresExternosSeeder.php", "PHP", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 22
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\EventoSaludSeeder.php", "PHP", 280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 26, 341
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\FaenaSeeder.php", "PHP", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 124, 3, 140
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\LoteSeeder.php", "PHP", 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 52
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\PajillaSeeder.php", "PHP", 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 9, 134
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\PesajeSeeder.php", "PHP", 136, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 43, 224
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\ProduccionSeeder.php", "PHP", 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 30, 186
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\ReproduccionSeeder.php", "PHP", 291, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 74, 404
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\SacrificioSeeder.php", "PHP", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 118, 3, 134
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\SaludSeeder.php", "PHP", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 18
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\TermoSeeder.php", "PHP", 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 43
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\TratamientoSeeder.php", "PHP", 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 14, 175
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\UserSeeder.php", "PHP", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 38
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\VacunaSeeder.php", "PHP", 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 4, 86
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\ValuacionEjemploSeeder.php", "PHP", 278, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 45, 366
+"c:\Proyectos\Rastro_Claro_custom\database\seeders\VentaSeeder.php", "PHP", 186, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 27, 240
+"c:\Proyectos\Rastro_Claro_custom\entrypoint.sh", "Shell Script", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 2, 7
+"c:\Proyectos\Rastro_Claro_custom\jsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 1, 11
+"c:\Proyectos\Rastro_Claro_custom\package-lock.json", "JSON", 0, 0, 0, 0, 5370, 0, 0, 0, 0, 0, 0, 1, 5371
+"c:\Proyectos\Rastro_Claro_custom\package.json", "JSON", 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 1, 33
+"c:\Proyectos\Rastro_Claro_custom\phpunit.xml", "XML", 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 1, 35
+"c:\Proyectos\Rastro_Claro_custom\postcss.config.js", "JavaScript", 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"c:\Proyectos\Rastro_Claro_custom\public\index.php", "PHP", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 7, 21
+"c:\Proyectos\Rastro_Claro_custom\resources\css\app.css", "PostCSS", 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 6, 4, 13
+"c:\Proyectos\Rastro_Claro_custom\resources\css\custom.css", "PostCSS", 0, 0, 0, 910, 0, 0, 0, 0, 0, 0, 50, 114, 1074
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\ApplicationLogo.jsx", "JavaScript JSX", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\Checkbox.jsx", "JavaScript JSX", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\DangerButton.jsx", "JavaScript JSX", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 1, 21
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\Dropdown.jsx", "JavaScript JSX", 0, 0, 91, 0, 0, 0, 0, 0, 0, 0, 0, 17, 108
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\InputError.jsx", "JavaScript JSX", 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 1, 11
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\InputLabel.jsx", "JavaScript JSX", 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 1, 19
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\Modal.jsx", "JavaScript JSX", 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 5, 66
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\NavLink.jsx", "JavaScript JSX", 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 2, 24
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\PrimaryButton.jsx", "JavaScript JSX", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 1, 21
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\ResponsiveNavLink.jsx", "JavaScript JSX", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\SecondaryButton.jsx", "JavaScript JSX", 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 1, 23
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\SettingsModal.jsx", "JavaScript JSX", 0, 0, 348, 0, 0, 0, 0, 0, 0, 0, 0, 28, 376
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\Sidebar.jsx", "JavaScript JSX", 0, 0, 170, 0, 0, 0, 0, 0, 0, 0, 4, 15, 189
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\Statistics.jsx", "JavaScript JSX", 0, 0, 287, 0, 0, 0, 0, 0, 0, 0, 14, 23, 324
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Components\TextInput.jsx", "JavaScript JSX", 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 5, 31
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Contexts\PreferencesContext.jsx", "JavaScript JSX", 0, 0, 135, 0, 0, 0, 0, 0, 0, 0, 0, 32, 167
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Layouts\AppLayout.jsx", "JavaScript JSX", 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 4, 30
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Layouts\AuthenticatedLayout.jsx", "JavaScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 4, 7, 34
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Layouts\GuestLayout.jsx", "JavaScript JSX", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Permisos\Index.jsx", "JavaScript JSX", 0, 0, 210, 0, 0, 0, 0, 0, 0, 0, 3, 18, 231
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Permisos\MatrizPermisos.jsx", "JavaScript JSX", 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 8, 16, 122
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Permisos\PermisosPersonaModal.jsx", "JavaScript JSX", 0, 0, 147, 0, 0, 0, 0, 0, 0, 0, 8, 13, 168
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Permisos\PermisosPuestoModal.jsx", "JavaScript JSX", 0, 0, 85, 0, 0, 0, 0, 0, 0, 0, 0, 11, 96
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Users\Auditoria.jsx", "JavaScript JSX", 0, 0, 192, 0, 0, 0, 0, 0, 0, 0, 3, 16, 211
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Users\Index.jsx", "JavaScript JSX", 0, 0, 354, 0, 0, 0, 0, 0, 0, 0, 5, 29, 388
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Users\PasswordModal.jsx", "JavaScript JSX", 0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 7, 12, 107
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Admin\Users\UserModal.jsx", "JavaScript JSX", 0, 0, 267, 0, 0, 0, 0, 0, 0, 0, 11, 25, 303
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\Alimentacion.jsx", "JavaScript JSX", 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 5, 11, 100
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\tabs\AlimentaciónModal.jsx", "JavaScript JSX", 0, 0, 423, 0, 0, 0, 0, 0, 0, 0, 0, 42, 465
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\tabs\ConversionAlimenticia.jsx", "JavaScript JSX", 0, 0, 310, 0, 0, 0, 0, 0, 0, 0, 16, 23, 349
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\tabs\Inventario.jsx", "JavaScript JSX", 0, 0, 485, 0, 0, 0, 0, 0, 0, 0, 28, 61, 574
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\tabs\Raciones.jsx", "JavaScript JSX", 0, 0, 505, 0, 0, 0, 0, 0, 0, 0, 31, 44, 580
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Alimentacion\tabs\Sugerencias.jsx", "JavaScript JSX", 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 5, 45
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\AnimalModal.jsx", "JavaScript JSX", 0, 0, 297, 0, 0, 0, 0, 0, 0, 0, 10, 25, 332
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\CicloVidaPanel.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\DocumentosPanel.jsx", "JavaScript JSX", 0, 0, 165, 0, 0, 0, 0, 0, 0, 0, 6, 16, 187
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\Edit.jsx", "JavaScript JSX", 0, 0, 231, 0, 0, 0, 0, 0, 0, 0, 2, 27, 260
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\Index.jsx", "JavaScript JSX", 0, 0, 379, 0, 0, 0, 0, 0, 0, 0, 13, 44, 436
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\Show.jsx", "JavaScript JSX", 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 5, 8, 93
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Animals\ShowAnimal.jsx", "JavaScript JSX", 0, 0, 510, 0, 0, 0, 0, 0, 0, 0, 15, 42, 567
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\ConfirmPassword.jsx", "JavaScript JSX", 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 10, 56
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\ForgotPassword.jsx", "JavaScript JSX", 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 7, 42
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\Login.jsx", "JavaScript JSX", 0, 0, 267, 0, 0, 0, 0, 0, 0, 0, 7, 23, 297
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\Register.jsx", "JavaScript JSX", 0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 19, 121
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\ResetPassword.jsx", "JavaScript JSX", 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 15, 95
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Auth\VerifyEmail.jsx", "JavaScript JSX", 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 9, 51
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Bajas\BajaModal.jsx", "JavaScript JSX", 0, 0, 167, 0, 0, 0, 0, 0, 0, 0, 0, 14, 181
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Bajas\Index.jsx", "JavaScript JSX", 0, 0, 226, 0, 0, 0, 0, 0, 0, 0, 3, 13, 242
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Costos\CostoModal.jsx", "JavaScript JSX", 0, 0, 322, 0, 0, 0, 0, 0, 0, 0, 1, 30, 353
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Costos\Index.jsx", "JavaScript JSX", 0, 0, 314, 0, 0, 0, 0, 0, 0, 0, 4, 24, 342
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Custom\Home.jsx", "JavaScript JSX", 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 1, 3, 33
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Custom\Login.jsx", "JavaScript JSX", 0, 0, 190, 0, 0, 0, 0, 0, 0, 0, 17, 24, 231
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Custom\Splash.jsx", "JavaScript JSX", 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 8, 2, 25
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Dashboard.jsx", "JavaScript JSX", 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 2, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Error.jsx", "JavaScript JSX", 0, 0, 69, 0, 0, 0, 0, 0, 0, 0, 9, 9, 87
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Faenas\FaenaModal.jsx", "JavaScript JSX", 0, 0, 378, 0, 0, 0, 0, 0, 0, 0, 11, 21, 410
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Faenas\Index.jsx", "JavaScript JSX", 0, 0, 325, 0, 0, 0, 0, 0, 0, 0, 11, 19, 355
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genealogias\Show.jsx", "JavaScript JSX", 0, 0, 346, 0, 0, 0, 0, 0, 0, 0, 39, 51, 436
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\Index.jsx", "JavaScript JSX", 0, 0, 194, 0, 0, 0, 0, 0, 0, 0, 8, 20, 222
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\ModalDonadorExterno.jsx", "JavaScript JSX", 0, 0, 279, 0, 0, 0, 0, 0, 0, 0, 11, 41, 331
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\Modalpajilla.jsx", "JavaScript JSX", 0, 0, 466, 0, 0, 0, 0, 0, 0, 0, 3, 55, 524
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\Modaltermo.jsx", "JavaScript JSX", 0, 0, 195, 0, 0, 0, 0, 0, 0, 0, 3, 21, 219
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\Tabpajillas.jsx", "JavaScript JSX", 0, 0, 360, 0, 0, 0, 0, 0, 0, 0, 8, 35, 403
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Genetica\Tabtermos.jsx", "JavaScript JSX", 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 2, 28, 330
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Lotes\Index.jsx", "JavaScript JSX", 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 13, 12, 152
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Lotes\LoteModal.jsx", "JavaScript JSX", 0, 0, 347, 0, 0, 0, 0, 0, 0, 0, 19, 33, 399
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Lotes\ShowLoteModal.jsx", "JavaScript JSX", 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 4, 7, 121
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Pesajes\HistorialPesajesModal.jsx", "JavaScript JSX", 0, 0, 123, 0, 0, 0, 0, 0, 0, 0, 2, 12, 137
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Pesajes\Pesajes.jsx", "JavaScript JSX", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 4, 8, 78
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Pesajes\Tabganancia.jsx", "JavaScript JSX", 0, 0, 540, 0, 0, 0, 0, 0, 0, 0, 11, 49, 600
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Pesajes\Tabpesajes.jsx", "JavaScript JSX", 0, 0, 469, 0, 0, 0, 0, 0, 0, 0, 13, 58, 540
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Planes\Index.jsx", "JavaScript JSX", 0, 0, 44, 0, 0, 0, 0, 0, 0, 0, 1, 6, 51
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Predicciones\Index.jsx", "JavaScript JSX", 0, 0, 121, 0, 0, 0, 0, 0, 0, 0, 3, 17, 141
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\Comparativo.jsx", "JavaScript JSX", 0, 0, 124, 0, 0, 0, 0, 0, 0, 0, 3, 11, 138
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\Index.jsx", "JavaScript JSX", 0, 0, 173, 0, 0, 0, 0, 0, 0, 0, 8, 27, 208
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\ProduccionEditModal.jsx", "JavaScript JSX", 0, 0, 141, 0, 0, 0, 0, 0, 0, 0, 8, 14, 163
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\ProduccionModal.jsx", "JavaScript JSX", 0, 0, 118, 0, 0, 0, 0, 0, 0, 0, 0, 12, 130
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\Reportes.jsx", "JavaScript JSX", 0, 0, 79, 0, 0, 0, 0, 0, 0, 0, 5, 13, 97
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\ShowProduccionModal.jsx", "JavaScript JSX", 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 8, 68
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Producciones\Tendencias.jsx", "JavaScript JSX", 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 3, 12, 119
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Profile\Edit.jsx", "JavaScript JSX", 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 5, 40
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Profile\Partials\DeleteUserForm.jsx", "JavaScript JSX", 0, 0, 103, 0, 0, 0, 0, 0, 0, 0, 0, 18, 121
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Profile\Partials\UpdatePasswordForm.jsx", "JavaScript JSX", 0, 0, 124, 0, 0, 0, 0, 0, 0, 0, 0, 19, 143
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Profile\Partials\UpdateProfileInformationForm.jsx", "JavaScript JSX", 0, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 17, 114
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reportes\FichaAnimal.jsx", "JavaScript JSX", 0, 0, 447, 0, 0, 0, 0, 0, 0, 0, 26, 25, 498
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reportes\FiltrosPanel.jsx", "JavaScript JSX", 0, 0, 286, 0, 0, 0, 0, 0, 0, 0, 18, 19, 323
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reportes\Ovinos.jsx", "JavaScript JSX", 0, 0, 253, 0, 0, 0, 0, 0, 0, 0, 2, 22, 277
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reportes\Reportes.jsx", "JavaScript JSX", 0, 0, 287, 0, 0, 0, 0, 0, 0, 0, 14, 34, 335
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reportes\Tablas.jsx", "JavaScript JSX", 0, 0, 502, 0, 0, 0, 0, 0, 0, 0, 40, 33, 575
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\CalendarioReproductivo.jsx", "JavaScript JSX", 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 4, 16, 97
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\ControlPartos.jsx", "JavaScript JSX", 0, 0, 306, 0, 0, 0, 0, 0, 0, 0, 0, 29, 335
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Destetes.jsx", "JavaScript JSX", 0, 0, 611, 0, 0, 0, 0, 0, 0, 0, 0, 64, 675
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\DiagnosticoModal.jsx", "JavaScript JSX", 0, 0, 170, 0, 0, 0, 0, 0, 0, 0, 10, 24, 204
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Estadisticas.jsx", "JavaScript JSX", 0, 0, 498, 0, 0, 0, 0, 0, 0, 0, 19, 44, 561
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Eventos.jsx", "JavaScript JSX", 0, 0, 134, 0, 0, 0, 0, 0, 0, 0, 5, 17, 156
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Gestaciones.jsx", "JavaScript JSX", 0, 0, 122, 0, 0, 0, 0, 0, 0, 0, 2, 12, 136
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Index.jsx", "JavaScript JSX", 0, 0, 230, 0, 0, 0, 0, 0, 0, 0, 21, 29, 280
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\PartoModal.jsx", "JavaScript JSX", 0, 0, 491, 0, 0, 0, 0, 0, 0, 0, 16, 59, 566
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Partos.jsx", "JavaScript JSX", 0, 0, 164, 0, 0, 0, 0, 0, 0, 0, 5, 11, 180
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\ServicioModal.jsx", "JavaScript JSX", 0, 0, 594, 0, 0, 0, 0, 0, 0, 0, 40, 93, 727
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Reproduccion\Topsementales.jsx", "JavaScript JSX", 0, 0, 123, 0, 0, 0, 0, 0, 0, 0, 17, 18, 158
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Sacrificios\Index.jsx", "JavaScript JSX", 0, 0, 326, 0, 0, 0, 0, 0, 0, 0, 11, 21, 358
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Sacrificios\SacrificioModal.jsx", "JavaScript JSX", 0, 0, 339, 0, 0, 0, 0, 0, 0, 0, 12, 22, 373
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\Calendario.jsx", "JavaScript JSX", 0, 0, 163, 0, 0, 0, 0, 0, 0, 0, 1, 13, 177
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\Index.jsx", "JavaScript JSX", 0, 0, 344, 0, 0, 0, 0, 0, 0, 0, 6, 46, 396
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\ModalAnimalSelect.jsx", "JavaScript JSX", 0, 0, 273, 0, 0, 0, 0, 0, 0, 0, 1, 22, 296
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\ModalLoteSelect.jsx", "JavaScript JSX", 0, 0, 193, 0, 0, 0, 0, 0, 0, 0, 0, 23, 216
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\ModalNuevaCita.jsx", "JavaScript JSX", 0, 0, 459, 0, 0, 0, 0, 0, 0, 0, 28, 46, 533
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\ModalNuevaVacuna.jsx", "JavaScript JSX", 0, 0, 177, 0, 0, 0, 0, 0, 0, 0, 14, 22, 213
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\ModalNuevoTratamiento.jsx", "JavaScript JSX", 0, 0, 257, 0, 0, 0, 0, 0, 0, 0, 23, 30, 310
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\TabEstadisticas.jsx", "JavaScript JSX", 0, 0, 405, 0, 0, 0, 0, 0, 0, 0, 14, 32, 451
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\TabEventos.jsx", "JavaScript JSX", 0, 0, 209, 0, 0, 0, 0, 0, 0, 0, 12, 21, 242
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\TabRecomendaciones.jsx", "JavaScript JSX", 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 1, 0, 33
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\TabTratamientos.jsx", "JavaScript JSX", 0, 0, 79, 0, 0, 0, 0, 0, 0, 0, 0, 9, 88
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Salud\TabVacunaciones.jsx", "JavaScript JSX", 0, 0, 152, 0, 0, 0, 0, 0, 0, 0, 3, 15, 170
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Tareas\Index.jsx", "JavaScript JSX", 0, 0, 562, 0, 0, 0, 0, 0, 0, 0, 0, 109, 671
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Tareas\ModalTarea.jsx", "JavaScript JSX", 0, 0, 362, 0, 0, 0, 0, 0, 0, 0, 0, 54, 416
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Trabajadores\ActividadModal.jsx", "JavaScript JSX", 0, 0, 354, 0, 0, 0, 0, 0, 0, 0, 6, 30, 390
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Trabajadores\Actividades.jsx", "JavaScript JSX", 0, 0, 283, 0, 0, 0, 0, 0, 0, 0, 8, 20, 311
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Trabajadores\Index.jsx", "JavaScript JSX", 0, 0, 293, 0, 0, 0, 0, 0, 0, 0, 5, 28, 326
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Trabajadores\Show.jsx", "JavaScript JSX", 0, 0, 358, 0, 0, 0, 0, 0, 0, 0, 6, 25, 389
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Trabajadores\TrabajadorModal.jsx", "JavaScript JSX", 0, 0, 253, 0, 0, 0, 0, 0, 0, 0, 10, 28, 291
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\ConfirmarVentaModal.jsx", "JavaScript JSX", 0, 0, 154, 0, 0, 0, 0, 0, 0, 0, 1, 18, 173
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\DesgloseCostos.jsx", "JavaScript JSX", 0, 0, 166, 0, 0, 0, 0, 0, 0, 0, 1, 14, 181
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\HistorialPrecio.jsx", "JavaScript JSX", 0, 0, 133, 0, 0, 0, 0, 0, 0, 0, 0, 11, 144
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\LineaTiempo.jsx", "JavaScript JSX", 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 2, 9, 101
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\Show.jsx", "JavaScript JSX", 0, 0, 237, 0, 0, 0, 0, 0, 0, 0, 8, 21, 266
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Valuaciones\SimuladorModal.jsx", "JavaScript JSX", 0, 0, 283, 0, 0, 0, 0, 0, 0, 0, 1, 26, 310
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Ventas\Index.jsx", "JavaScript JSX", 0, 0, 360, 0, 0, 0, 0, 0, 0, 0, 12, 26, 398
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Ventas\VentasModal.jsx", "JavaScript JSX", 0, 0, 609, 0, 0, 0, 0, 0, 0, 0, 23, 62, 694
+"c:\Proyectos\Rastro_Claro_custom\resources\js\Pages\Welcome.jsx", "JavaScript JSX", 0, 0, 77, 0, 0, 0, 0, 0, 0, 0, 3, 13, 93
+"c:\Proyectos\Rastro_Claro_custom\resources\js\app.jsx", "JavaScript JSX", 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 3, 21
+"c:\Proyectos\Rastro_Claro_custom\resources\js\bootstrap.js", "JavaScript", 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5
+"c:\Proyectos\Rastro_Claro_custom\resources\js\utils\currency.js", "JavaScript", 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 25
+"c:\Proyectos\Rastro_Claro_custom\resources\views\app.blade.php", "PHP", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 30
+"c:\Proyectos\Rastro_Claro_custom\resources\views\costos\pdf.blade.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Proyectos\Rastro_Claro_custom\resources\views\reportes\ficha_animal.blade.php", "PHP", 511, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 34, 556
+"c:\Proyectos\Rastro_Claro_custom\resources\views\reportes\pdf.blade.php", "PHP", 812, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 35, 860
+"c:\Proyectos\Rastro_Claro_custom\resources\views\valuaciones\pfd.blade.php", "PHP", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Proyectos\Rastro_Claro_custom\routes\api.php", "PHP", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 1, 94
+"c:\Proyectos\Rastro_Claro_custom\routes\auth.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 60
+"c:\Proyectos\Rastro_Claro_custom\routes\console.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"c:\Proyectos\Rastro_Claro_custom\routes\web.php", "PHP", 301, 0, 0, 0, 0, 0, 0, 0, 0, 0, 154, 46, 501
+"c:\Proyectos\Rastro_Claro_custom\tailwind.config.js", "JavaScript", 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 24
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\AnimalEstadoContextualTest.php", "PHP", 205, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 26, 234
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\AuthenticationTest.php", "PHP", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15, 56
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\EmailVerificationTest.php", "PHP", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 59
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\PasswordConfirmationTest.php", "PHP", 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 45
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\PasswordResetTest.php", "PHP", 52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 74
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\PasswordUpdateTest.php", "PHP", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 52
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\Auth\RegistrationTest.php", "PHP", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 32
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\ExampleTest.php", "PHP", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 20
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\PesajeGananciaTest.php", "PHP", 178, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 29, 210
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\ProfileTest.php", "PHP", 76, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 100
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\ReproduccionDesteteTest.php", "PHP", 681, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 755
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\SettingsTest.php", "PHP", 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 87
+"c:\Proyectos\Rastro_Claro_custom\tests\Feature\TenantIsolationTest.php", "PHP", 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 131
+"c:\Proyectos\Rastro_Claro_custom\tests\TestCase.php", "PHP", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 11
+"c:\Proyectos\Rastro_Claro_custom\tests\Unit\ExampleTest.php", "PHP", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 17
+"c:\Proyectos\Rastro_Claro_custom\vite.config.js", "JavaScript", 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 25
+"Total", "-", 32475, 71, 27453, 913, 15536, 21, 34, 2, 10, 31, 23487, 9840, 109873

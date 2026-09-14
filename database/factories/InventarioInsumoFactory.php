@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\InventarioInsumo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\InventarioInsumo>
- */
+/** @extends Factory<InventarioInsumo> */
 class InventarioInsumoFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = InventarioInsumo::class;
+
     public function definition(): array
     {
         return [
-            //
+            'nombre' => fake()->unique()->bothify('Insumo ######'),
+            'tipo' => 'Forraje',
+            'existencias' => 100,
+            'unidad' => 'kg',
+            'costo_promedio' => 5,
         ];
     }
 }

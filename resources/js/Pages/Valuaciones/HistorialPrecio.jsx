@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { History, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const ETIQUETA_TIPO = {
     creacion: 'Creación',
@@ -22,6 +22,8 @@ function fmtFechaHora(valor) {
 }
 
 export default function HistorialPrecio({ animal, historial = [], tiposMovimiento = [], filtros = {} }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [locales, setLocales] = useState({
         desde: filtros.desde || '',
         hasta: filtros.hasta || '',
@@ -119,15 +121,15 @@ export default function HistorialPrecio({ animal, historial = [], tiposMovimient
 
                                     <div className="text-right shrink-0">
                                         <p className="text-xs text-slate-400">
-                                            {mov.precio_anterior != null ? formatMXN(mov.precio_anterior) : '—'}
+                                            {mov.precio_anterior != null ? formatCurrency(mov.precio_anterior, currency) : '—'}
                                             {' → '}
                                         </p>
                                         <p className="text-sm font-semibold text-slate-900 tabular-nums">
-                                            {formatMXN(mov.precio_nuevo)}
+                                            {formatCurrency(mov.precio_nuevo, currency)}
                                         </p>
                                         <p className={`text-xs font-medium flex items-center justify-end gap-1 ${color}`}>
                                             <Icono className="w-3 h-3" />
-                                            {diferencia >= 0 ? '+' : ''}{formatMXN(diferencia)}
+                                            {diferencia >= 0 ? '+' : ''}{formatCurrency(diferencia, currency)}
                                         </p>
                                     </div>
                                 </div>

@@ -38,8 +38,6 @@ class AlertaOperativaService
             $this->diagnosticosPendientes(),
             $this->criasSinIdentificar(),
             $this->destetesProximos(),
-            $this->ejemplaresSinIdentificador(),
-            $this->identificadoresDuplicados(),
             $this->vendidosAunActivos(),
             $this->ejemplaresSinGenealogia(),
             $this->ejemplaresSinPesajeReciente(),
@@ -112,26 +110,25 @@ class AlertaOperativaService
     }
 
     private function destetesProximos(): ?array
-    {
-        // Crías vivas de entre 60 y 90 días sin fecha de destete registrada.
-        $proximos = Cria::where('condicion', 'vivo')
-            ->whereNull('fecha_destete')
-            ->whereHas('parto.evento', function ($q) {
-                $q->whereBetween('fecha', [
-                    now()->subDays(90)->toDateString(),
-                    now()->subDays(60)->toDateString(),
-                ]);
-            })
-            ->count();
+{
+    $proximos = Cria::where('condicion', 'vivo')
+        ->whereDoesntHave('parto.destete')
+        ->whereHas('parto.evento', function ($q) {
+            $q->whereBetween('fecha', [
+                now()->subDays(90)->toDateString(),
+                now()->subDays(60)->toDateString(),
+            ]);
+        })
+        ->count();
 
-        return $this->alerta(
-            self::ATENCION,
-            'Destetes próximos',
-            'Crías de entre 60 y 90 días de edad que aún no tienen destete registrado.',
-            $proximos,
-            '/reproduccion'
-        );
-    }
+    return $this->alerta(
+        self::ATENCION,
+        'Destetes próximos',
+        'Crías de entre 60 y 90 días de edad que aún no tienen destete registrado.',
+        $proximos,
+        '/reproduccion'
+    );
+}
 
     private function criasSinIdentificar(): ?array
     {
@@ -204,53 +201,6 @@ class AlertaOperativaService
         );
     }
 
-    // ─── Identificación y datos ───────────────────────────────────────────
-
-    private function ejemplaresSinIdentificador(): ?array
-    {
-        $sinId = Animal::activo()
-            ->whereNull('microchip_codigo')
-            ->where(fn ($q) => $q->whereNull('arete')->orWhere('arete', ''))
-            ->count();
-
-        return $this->alerta(
-            self::ATENCION,
-            'Ejemplares sin identificación',
-            'No tienen arete ni microchip registrados.',
-            $sinId,
-            '/animales'
-        );
-    }
-
-    /**
-     * Aretes o microchips repetidos dentro de la misma cuenta.
-     */
-    private function identificadoresDuplicados(): ?array
-    {
-        $aretes = Animal::activo()
-            ->whereNotNull('arete')->where('arete', '!=', '')
-            ->select('arete')
-            ->groupBy('arete')
-            ->havingRaw('COUNT(*) > 1')
-            ->get()
-            ->count();
-
-        $microchips = Animal::activo()
-            ->whereNotNull('microchip_codigo')
-            ->select('microchip_codigo')
-            ->groupBy('microchip_codigo')
-            ->havingRaw('COUNT(*) > 1')
-            ->get()
-            ->count();
-
-        return $this->alerta(
-            self::CRITICA,
-            'Identificadores duplicados',
-            'Hay aretes o microchips repetidos entre ejemplares activos. Revisa la captura.',
-            $aretes + $microchips,
-            '/animales'
-        );
-    }
 
     private function vendidosAunActivos(): ?array
     {

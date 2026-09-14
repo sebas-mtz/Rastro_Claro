@@ -34,7 +34,6 @@ use App\Models\ActividadTrabajador;
 use App\Models\AnimalValuation;
 use App\Models\AnimalValuationDetalle;
 use App\Models\AnimalValuationHistorial;
-use App\Models\Auditoria;
 use App\Models\ConfiguracionValuacion;
 use App\Models\Costo;
 use App\Models\Documento;
@@ -82,7 +81,6 @@ return [
         AnimalValuation::class,
         AnimalValuationDetalle::class,
         AnimalValuationHistorial::class,
-        Auditoria::class,
         ConfiguracionValuacion::class,
         Costo::class,
         Documento::class,

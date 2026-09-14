@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         $cuentaDestino = env('CONTROL_PARTOS_SEED_EMAIL');
 
-        if ($cuentaDestino) {
+        if ($cuentaDestino && User::exists()) {
             if (!User::where('email', $cuentaDestino)->exists()) {
                 throw new \RuntimeException(
                     "No existe la cuenta {$cuentaDestino}. Se canceló el sembrado."
@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         }
 
         User::firstOrCreate(
-            ['email' => 'demo@rastroclaro.test'],
+            ['email' => $cuentaDestino ?: 'demo@rastroclaro.test'],
             [
                 'name' => 'Usuario Demo',
                 'email_verified_at' => now(),

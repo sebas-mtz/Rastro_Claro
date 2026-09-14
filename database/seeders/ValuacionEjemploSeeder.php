@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Animal;
-use App\Models\AnimalGenetica;
 use App\Models\AnimalValuationHistorial;
 use App\Models\Costo;
 use App\Models\Cria;
@@ -50,16 +49,18 @@ class ValuacionEjemploSeeder extends Seeder
 
         // El seeder corre desde consola, sin sesión: se autentica para que el
         // scope de tenencia y la asignación automática de owner_id funcionen.
+        $usuarioAnterior = Auth::user();
         Auth::login($usuario);
 
-        $this->limpiarEjemplosPrevios();
-
-        DB::transaction(function () use ($usuario) {
-            $this->crearDorperDeRegistro($usuario);
-            $this->crearCriaDeParahGemelar($usuario);
-        });
-
-        Auth::logout();
+        try {
+            DB::transaction(function () use ($usuario) {
+                $this->limpiarEjemplosPrevios();
+                $this->crearDorperDeRegistro($usuario);
+                $this->crearCriaDeParahGemelar($usuario);
+            });
+        } finally {
+            $usuarioAnterior ? Auth::login($usuarioAnterior) : Auth::logout();
+        }
 
         $this->command?->info('Ejemplos creados para la cuenta ' . $usuario->email . ':');
         $this->command?->line('  DEMO-001  Dorper de registro cargada  →  $17,000.00 MXN');
@@ -81,19 +82,19 @@ class ValuacionEjemploSeeder extends Seeder
 
     private function limpiarEjemplosPrevios(): void
     {
-        $animales = Animal::withoutGlobalScope('owner')
+        $animales = Animal::query()
             ->whereIn('arete', self::ARETES_DEMO)
             ->get();
 
         foreach ($animales as $animal) {
             // Las tablas hijas usan cascadeOnDelete o nullOnDelete; los costos
             // se borran de forma explícita porque apuntan con nullOnDelete.
-            Costo::withoutGlobalScope('owner')->where('animal_id', $animal->id)->delete();
+            Costo::query()->where('animal_id', $animal->id)->delete();
             EventoSalud::where('animal_id', $animal->id)->delete();
             Tratamiento::where('animal_id', $animal->id)->delete();
-            AnimalValuationHistorial::withoutGlobalScope('owner')->where('animal_id', $animal->id)->delete();
+            AnimalValuationHistorial::query()->where('animal_id', $animal->id)->delete();
 
-            EventoReproductivo::withoutGlobalScope('owner')->where('hembra_id', $animal->id)->delete();
+            EventoReproductivo::query()->where('hembra_id', $animal->id)->delete();
 
             $animal->delete();
         }
@@ -109,7 +110,9 @@ class ValuacionEjemploSeeder extends Seeder
             'raza' => 'Dorper',
             'arete' => 'DEMO-001',
             'alias' => 'Ejemplo — Dorper de registro',
-            'sexo' => 'F',
+            'numero_registro' => 'DEMO-REG-001',
+            'grado_pureza' => 'Puro',
+            'sexo' => 'H',
             'fecha_nac' => now()->subMonths(14)->toDateString(),
             'peso' => 58.5,
             'estado_productivo' => 'Reproductora',
@@ -196,6 +199,7 @@ class ValuacionEjemploSeeder extends Seeder
             'raza' => 'Dorper',
             'arete' => 'DEMO-MADRE',   // se reutiliza el prefijo DEMO para poder limpiarlo
             'alias' => 'Ejemplo — Semental de registro',
+            'numero_registro' => 'DEMO-REG-SEMENTAL',
             'sexo' => 'M',
             'fecha_nac' => now()->subYears(3)->toDateString(),
             'tipo_origen' => Animal::ORIGEN_COMPRADO,
@@ -219,7 +223,7 @@ class ValuacionEjemploSeeder extends Seeder
         ]);
 
         // ── Cotización guardada ──────────────────────────────────────────
-        // Margen 50 % (viene de la ficha genética) y plus de $5,000, que es el
+        // Margen 50 % (guardado en la cotización) y plus de $5,000, que es el
         // valor del ejemplo documentado. En el simulador puedes ver qué pasa
         // con el plus configurado para "cargada por semental de registro".
         app(AnimalValuationService::class)->guardar(
@@ -250,7 +254,7 @@ class ValuacionEjemploSeeder extends Seeder
             'raza' => 'Dorper',
             'arete' => 'DEMO-002',
             'alias' => 'Ejemplo — Cría de parto gemelar',
-            'sexo' => 'F',
+            'sexo' => 'H',
             'fecha_nac' => now()->subMonths(2)->toDateString(),
             'peso' => 18.2,
             'madre_id' => $madre->id,

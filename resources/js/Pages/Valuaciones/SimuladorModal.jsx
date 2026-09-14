@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { X, Sliders, RotateCcw, Save, AlertTriangle } from 'lucide-react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const ETIQUETA_ESTADO = {
     joven_sin_edad_reproductiva: 'Borrega joven, sin edad reproductiva',
@@ -19,6 +19,8 @@ const ETIQUETA_ESTADO = {
 export default function SimuladorModal({
     show, onClose, animal, calculo, estadosReproductivos = [], puedeMargenExtendido = false,
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const valoresBase = {
         porcentaje_margen_genetico: Number(calculo?.porcentaje_margen_genetico ?? 0),
         estado_reproductivo_valuacion: calculo?.estado_reproductivo_valuacion || 'abierta',
@@ -237,39 +239,39 @@ export default function SimuladorModal({
                         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 space-y-2">
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-600">Costo de producción</span>
-                                <span className="font-semibold tabular-nums">{formatMXN(simulado.costo_total_produccion)}</span>
+                                <span className="font-semibold tabular-nums">{formatCurrency(simulado.costo_total_produccion, currency)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-600">Valor del margen</span>
-                                <span className="font-semibold tabular-nums">{formatMXN(simulado.valor_margen_genetico)}</span>
+                                <span className="font-semibold tabular-nums">{formatCurrency(simulado.valor_margen_genetico, currency)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-600">Plus reproductivo</span>
-                                <span className="font-semibold tabular-nums">{formatMXN(simulado.plus_reproductivo)}</span>
+                                <span className="font-semibold tabular-nums">{formatCurrency(simulado.plus_reproductivo, currency)}</span>
                             </div>
                             <div className="flex justify-between items-baseline border-t border-emerald-200 pt-2">
                                 <span className="text-sm font-bold text-emerald-900">Precio simulado</span>
                                 <span className="text-lg font-bold text-emerald-700 tabular-nums">
-                                    {formatMXN(simulado.precio_estimado)}
+                                    {formatCurrency(simulado.precio_estimado, currency)}
                                 </span>
                             </div>
 
                             <p className="text-xs text-slate-500">
-                                Cotización actual: {formatMXN(precioActual)}
+                                Cotización actual: {formatCurrency(precioActual, currency)}
                                 {diferencia != null && (
                                     <span className={diferencia >= 0 ? ' text-emerald-700' : ' text-red-600'}>
-                                        {' '}({diferencia >= 0 ? '+' : ''}{formatMXN(diferencia)})
+                                        {' '}({diferencia >= 0 ? '+' : ''}{formatCurrency(diferencia, currency)})
                                     </span>
                                 )}
                             </p>
 
                             {!isNaN(objetivo) && precioObjetivo !== '' && (
                                 <p className="text-xs text-slate-600">
-                                    Frente a tu precio objetivo de {formatMXN(objetivo)}:{' '}
+                                    Frente a tu precio objetivo de {formatCurrency(objetivo, currency)}:{' '}
                                     <span className={precioSimulado >= objetivo ? 'text-emerald-700 font-medium' : 'text-amber-700 font-medium'}>
                                         {precioSimulado >= objetivo
-                                            ? `lo alcanzas con ${formatMXN(precioSimulado - objetivo)} de margen`
-                                            : `te faltan ${formatMXN(objetivo - precioSimulado)}`}
+                                            ? `lo alcanzas con ${formatCurrency(precioSimulado - objetivo, currency)} de margen`
+                                            : `te faltan ${formatCurrency(objetivo - precioSimulado, currency)}`}
                                     </span>
                                 </p>
                             )}

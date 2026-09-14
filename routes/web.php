@@ -144,8 +144,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('eventos-salud.completar');
     Route::post('eventos-salud/{eventoSalud}/completar', [EventoSaludController::class, 'completar'])
         ->name('eventos-salud.completar.post');
-    Route::resource('eventos-salud', EventoSaludController::class)->except(['index']);
-
+    Route::resource('eventos-salud', EventoSaludController::class)
+    ->except(['index'])
+    ->parameters(['eventos-salud' => 'eventoSalud']);
     Route::post('tratamientos/marcar-vencidos', [TratamientoController::class, 'marcarVencidos'])
         ->name('tratamientos.marcar-vencidos');
     Route::patch('tratamientos/{tratamiento}/completar', [TratamientoController::class, 'completar'])
@@ -263,9 +264,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::resource('faenas', FaenaController::class);
-    Route::resource('ventas', VentaController::class);
+Route::resource('ventas', VentaController::class)->only(['index', 'store']);
     Route::resource('sacrificios', SacrificioController::class);
-Route::resource('ventas', VentaController::class);
 Route::put('/ventas/{venta}/estados', [VentaController::class, 'updateEstado'])
     ->name('ventas.update-estados');
     Route::get('/api/faenas/estadisticas', [FaenaController::class, 'estadisticas']);

@@ -158,7 +158,7 @@ class AnimalValuationService
                 $atributos['precio_publicado'] = $overrides['precio_publicado'];
             }
 
-            if (array_key_exists('estado', $overrides)) {
+            if (isset($overrides['estado'])) {
                 $atributos['estado'] = $overrides['estado'];
             }
 
@@ -634,8 +634,8 @@ class AnimalValuationService
     // ─── Apoyos ───────────────────────────────────────────────────────────
 
     /**
-     * Margen a aplicar: el override explícito, si no el guardado en la ficha
-     * genética del animal, si no cero.
+     * Margen a aplicar: el override explícito, la cotización activa o cero.
+     * El porcentaje pertenece a animal_valuations; no a una ficha genética.
      */
     private function resolverMargen(Animal $animal, array $overrides): float
     {
@@ -643,9 +643,10 @@ class AnimalValuationService
             return round((float) $overrides['porcentaje_margen_genetico'], 2);
         }
 
-        $genetica = $animal->genetica;
-
-        return $genetica ? round((float) $genetica->porcentaje_margen_genetico, 2) : 0.0;
+        return round((float) ($animal->valuaciones()
+            ->where('estado', AnimalValuation::ESTADO_ACTIVA)
+            ->latest()
+            ->value('porcentaje_margen_genetico') ?? 0), 2);
     }
 
     /**
@@ -655,7 +656,7 @@ class AnimalValuationService
      */
     public function sugerirEstadoReproductivo(Animal $animal): string
     {
-        if ($animal->sexo !== 'F') {
+        if (! $animal->esHembra()) {
             return 'otro';
         }
 
@@ -702,9 +703,7 @@ class AnimalValuationService
     }
 
     /**
-     * `animals.fecha_nac` no está casteado a fecha en el modelo, así que llega
-     * como string. Se normaliza aquí en lugar de cambiar el cast, para no
-     * alterar cómo el resto de los módulos ya serializan ese campo.
+     * Normaliza animals.fecha_nac para los consumidores de la valuación.
      */
     public static function fechaNacimiento(Animal $animal): ?\Carbon\Carbon
     {
@@ -725,22 +724,22 @@ class AnimalValuationService
 
     /**
      * ¿El servicio que la dejó cargada usó un semental de registro?
-     * Se considera de registro cuando el macho tiene ficha genética con número
-     * de registro, o cuando se usó pajilla de un donador con registro genealógico.
+     * Se considera de registro cuando el macho tiene numero_registro, o cuando
+     * se usó pajilla de un donador con registro genealógico.
      */
     private function cargadaPorSementalDeRegistro(Animal $animal): bool
     {
         $servicio = EventoReproductivo::where('hembra_id', $animal->id)
             ->where('tipo_evento', 'servicio')
             ->latest('fecha')
-            ->with(['servicio.macho.genetica', 'servicio.pajilla.donadorExterno'])
+            ->with(['servicio.macho', 'servicio.pajilla.donadorExterno'])
             ->first()?->servicio;
 
         if (! $servicio) {
             return false;
         }
 
-        if ($servicio->macho?->genetica?->numero_registro) {
+        if ($servicio->macho?->numero_registro) {
             return true;
         }
 
@@ -763,8 +762,8 @@ class AnimalValuationService
             $avisos[] = "{$alimentacion['sin_costo']} consumo(s) de alimento no tienen precio conocido y quedaron fuera del total.";
         }
 
-        if (! $animal->genetica) {
-            $avisos[] = 'Este animal no tiene ficha genética; el margen genético se aplica en 0 % hasta que la registres.';
+        if (blank($animal->numero_registro)) {
+            $avisos[] = 'Este animal no tiene número de registro genético. Puedes definir el margen en el simulador.';
         }
 
         return $avisos;

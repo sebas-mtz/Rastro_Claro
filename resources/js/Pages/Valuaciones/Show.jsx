@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import {
     ArrowLeft, RefreshCw, Sliders, FileText, BadgeCheck,
     Info, AlertTriangle, PawPrint,
@@ -10,7 +10,7 @@ import HistorialPrecio from './HistorialPrecio';
 import LineaTiempo from './LineaTiempo';
 import SimuladorModal from './SimuladorModal';
 import ConfirmarVentaModal from './ConfirmarVentaModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function calcularEdad(fechaNac) {
     if (!fechaNac) return 'N/D';
@@ -35,6 +35,8 @@ export default function ValuacionShow({
     estadosReproductivos, tiposMovimiento, filtrosHistorial,
     puedeMargenExtendido, esVendido,
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [showSimulador, setShowSimulador] = useState(false);
     const [showConfirmar, setShowConfirmar] = useState(false);
     const [recalculando, setRecalculando] = useState(false);
@@ -119,19 +121,19 @@ export default function ValuacionShow({
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500">Costo total de producción</p>
                         <p className="mt-2 text-xl font-semibold text-slate-900 tabular-nums">
-                            {formatMXN(calculo?.costo_total_produccion)}
+                            {formatCurrency(calculo?.costo_total_produccion, currency)}
                         </p>
                     </div>
                     <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                         <p className="text-xs font-medium text-emerald-700">Precio estimado</p>
                         <p className="mt-2 text-xl font-bold text-emerald-700 tabular-nums">
-                            {formatMXN(calculo?.precio_estimado)}
+                            {formatCurrency(calculo?.precio_estimado, currency)}
                         </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500">Precio publicado</p>
                         <p className="mt-2 text-xl font-semibold text-slate-900 tabular-nums">
-                            {valuacion?.precio_publicado != null ? formatMXN(valuacion.precio_publicado) : '—'}
+                            {valuacion?.precio_publicado != null ? formatCurrency(valuacion.precio_publicado, currency) : '—'}
                         </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -142,7 +144,7 @@ export default function ValuacionShow({
                             utilidad == null ? 'text-slate-400'
                                 : utilidad >= 0 ? 'text-emerald-700' : 'text-red-600'
                         }`}>
-                            {utilidad != null ? formatMXN(utilidad) : 'Sin vender'}
+                            {utilidad != null ? formatCurrency(utilidad, currency) : 'Sin vender'}
                         </p>
                         {porcentajeUtilidad != null && (
                             <p className="text-xs text-slate-500 mt-0.5">
@@ -212,17 +214,15 @@ export default function ValuacionShow({
                                 label="Padre"
                                 value={animal.padre?.arete || animal.padre_externo?.nombre}
                             />
-                            <Dato label="Microchip / QR" value={animal.microchip_codigo} />
+                            <Dato label="Microchip" value={animal.lectura_microchip} />
                             <Dato
                                 label="Estado reproductivo"
                                 value={calculo?.estado_reproductivo_valuacion?.replaceAll('_', ' ')}
                             />
-                            <Dato label="N° de registro" value={animal.genetica?.numero_registro} />
+                            <Dato label="N° de registro" value={animal.numero_registro} />
                             <Dato
                                 label="Pureza"
-                                value={animal.genetica?.porcentaje_pureza != null
-                                    ? `${Number(animal.genetica.porcentaje_pureza).toFixed(2)} %`
-                                    : null}
+                                value={animal.grado_pureza}
                             />
                         </dl>
                     </div>

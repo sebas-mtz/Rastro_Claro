@@ -2,22 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\Vacuna;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Vacuna>
- */
+/** @extends Factory<Vacuna> */
 class VacunaFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Vacuna::class;
+
     public function definition(): array
     {
         return [
-            //
+            'nombre' => fake()->unique()->bothify('Vacuna ######'),
+            'especie_objetivo' => 'Ovino',
         ];
     }
 }

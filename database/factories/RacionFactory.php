@@ -2,22 +2,20 @@
 
 namespace Database\Factories;
 
+use App\Models\Racion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Racion>
- */
+/** @extends Factory<Racion> */
 class RacionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Racion::class;
+
     public function definition(): array
     {
         return [
-            //
+            'nombre' => fake()->unique()->bothify('Ración ######'),
+            'precio_kg' => 5,
+            'activo' => true,
         ];
     }
 }

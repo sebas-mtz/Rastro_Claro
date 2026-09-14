@@ -21,18 +21,6 @@ const LABELS_TIPO_PARTO = {
   distocico: "Distócico",
   cesarea: "Cesárea",
 };
-// Si esta prop no llega, es un error de configuración del controller
-// (AnimalController::index() dejó de pasar 'estadosSistema'), no un
-// caso normal que debamos tolerar silenciosamente con una lista
-// hardcodeada que puede desincronizarse de EstadoProductivoService.
-const estadosSistema = props.estadosSistema ?? [];
-
-if (import.meta.env.DEV && estadosSistema.length === 0) {
-  console.warn(
-    "AnimalController::index() no envió 'estadosSistema' — " +
-    "la sección de historial no va a detectar animales dados de baja."
-  );
-}
 // ── Color de viñeta ──────────────────────────────────────────────────────
 function colorViñeta(animal) {
   return "bg-gray-100 text-gray-700";

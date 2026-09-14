@@ -2,22 +2,18 @@
 
 namespace Database\Factories;
 
+use App\Models\Lote;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lote>
- */
+/** @extends Factory<Lote> */
 class LoteFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Lote::class;
+
     public function definition(): array
     {
         return [
-            //
+            'nombre' => fake()->unique()->bothify('Lote ######'),
         ];
     }
 }

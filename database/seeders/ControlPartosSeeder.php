@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Animal;
+use App\Models\Baja;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -12,14 +13,7 @@ class ControlPartosSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('CONTROL_PARTOS_SEED_EMAIL');
-
-        if (!$email) {
-            $this->command->error(
-                'Define CONTROL_PARTOS_SEED_EMAIL con el correo de la cuenta que recibirá los datos.'
-            );
-            return;
-        }
+        $email = env('CONTROL_PARTOS_SEED_EMAIL') ?: 'demo@rastroclaro.test';
 
         $ownerId = DB::table('users')->where('email', $email)->value('id');
 
@@ -130,11 +124,16 @@ class ControlPartosSeeder extends Seeder
             }
 
             if (!is_null($cria->peso_nacimiento)) {
-                DB::table('animals')->where('id', $animal->id)->update([
-                    'peso_inicial' => $cria->peso_nacimiento,
-                    'fecha_peso_inicial' => $parto->fecha,
-                    'updated_at' => now(),
-                ]);
+                DB::table('pesajes')->updateOrInsert(
+                    ['animal_id' => $animal->id, 'fecha' => $parto->fecha],
+                    [
+                        'owner_id' => $ownerId,
+                        'peso' => $cria->peso_nacimiento,
+                        'notas' => 'Peso de nacimiento',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                );
             }
 
             DB::table('partos')->where('id', $parto->id)->update([
@@ -301,7 +300,7 @@ class ControlPartosSeeder extends Seeder
                 return false;
             }
 
-            $murioAntesDelDestete = DB::table('muertes')
+            $murioAntesDelDestete = DB::table('bajas')
                 ->where('animal_id', $cria['animal_id'])
                 ->whereDate('fecha', '<=', $fechaDestete)
                 ->exists();
@@ -393,13 +392,14 @@ class ControlPartosSeeder extends Seeder
             ->where('partos.id', $cria->parto_id)
             ->value('evento_reproductivos.fecha');
 
-        DB::table('muertes')->updateOrInsert(
+        DB::table('bajas')->updateOrInsert(
             [
                 'owner_id' => $ownerId,
                 'animal_id' => $animal->id,
             ],
             [
                 'fecha' => Carbon::parse($fechaParto)->addDays(45)->toDateString(),
+                'tipo_salida' => Baja::FALLECIMIENTO,
                 'causa' => 'Neumonía',
                 'observaciones' => 'Presentó dificultad respiratoria; se aplicó tratamiento, pero no respondió favorablemente.',
                 'created_at' => now(),

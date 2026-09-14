@@ -29,7 +29,7 @@ class AnimalValuationController extends Controller
      */
     public function show(Request $request, Animal $animal)
     {
-        $animal->load(['lote', 'madre', 'padre', 'padreExterno', 'genetica']);
+        $animal->load(['lote', 'madre', 'padre', 'padreExterno']);
 
         $valuacion = $animal->valuaciones()
             ->where('estado', AnimalValuation::ESTADO_ACTIVA)
@@ -37,7 +37,7 @@ class AnimalValuationController extends Controller
             ->latest()
             ->first();
 
-        $calculo = $this->valuationService->calcular($animal);
+        $calculo = $this->calcularCotizacion($animal, $valuacion);
 
         return Inertia::render('Valuaciones/Show', [
             'animal' => $animal,
@@ -188,6 +188,7 @@ class AnimalValuationController extends Controller
                 datosAnteriores: ['precio_estimado' => $precioAnterior],
                 datosNuevos: [
                     'precio_real_venta' => $validated['precio_real_venta'],
+                    'fecha_venta' => $validated['fecha_venta'],
                     'utilidad' => round((float) $validated['precio_real_venta'] - (float) $valuacion->costo_total_produccion, 2),
                 ],
             );
@@ -239,7 +240,7 @@ class AnimalValuationController extends Controller
 
     public function exportarPdf(Animal $animal)
     {
-        $animal->load(['lote', 'madre', 'padre', 'genetica']);
+        $animal->load(['lote', 'madre', 'padre', 'padreExterno']);
 
         $valuacion = $animal->valuaciones()
             ->where('estado', AnimalValuation::ESTADO_ACTIVA)
@@ -247,7 +248,7 @@ class AnimalValuationController extends Controller
             ->latest()
             ->first();
 
-        $calculo = $this->valuationService->calcular($animal);
+        $calculo = $this->calcularCotizacion($animal, $valuacion);
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('valuaciones.pdf', [
             'animal' => $animal,
@@ -260,6 +261,14 @@ class AnimalValuationController extends Controller
 
     // ─── Apoyos ───────────────────────────────────────────────────────────
 
+    private function calcularCotizacion(Animal $animal, ?AnimalValuation $valuacion): array
+    {
+        return $this->valuationService->calcular($animal, $valuacion?->only([
+            'porcentaje_margen_genetico', 'estado_reproductivo_valuacion',
+            'plus_reproductivo', 'ajuste_manual', 'motivo_ajuste',
+        ]) ?? []);
+    }
+
     private function reglasCotizacion(): array
     {
         return [
@@ -268,7 +277,10 @@ class AnimalValuationController extends Controller
             'plus_reproductivo' => 'nullable|numeric|min:0',
             'ajuste_manual' => 'nullable|numeric',
             // El ajuste manual solo se acepta acompañado de una justificación.
-            'motivo_ajuste' => 'nullable|string|max:2000|required_with:ajuste_manual',
+            'motivo_ajuste' => [
+                'nullable', 'string', 'max:2000',
+                Rule::requiredIf(fn () => (float) request('ajuste_manual', 0) !== 0.0),
+            ],
         ];
     }
 

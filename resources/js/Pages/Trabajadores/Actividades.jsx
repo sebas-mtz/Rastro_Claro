@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ClipboardList, PlusCircle, ArrowLeft, Trash2, Users } from 'lucide-react';
 import ActividadModal from './ActividadModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function fmtFecha(f) {
     return f ? new Date(f).toLocaleDateString('es-MX') : '—';
@@ -26,6 +26,8 @@ export default function ActividadesTrabajador({
     permisos = {},
     totales,
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [showModal, setShowModal] = useState(false);
     const [locales, setLocales] = useState({
         trabajador_id: filtros.trabajador_id || '',
@@ -106,7 +108,7 @@ export default function ActividadesTrabajador({
                         <div className="rounded-2xl border border-slate-200 bg-white p-4">
                             <p className="text-xs font-medium text-slate-500">Costo de mano de obra</p>
                             <p className="mt-2 text-2xl font-semibold text-emerald-700 tabular-nums">
-                                {formatMXN(totales.costo)}
+                                {formatCurrency(totales.costo, currency)}
                             </p>
                         </div>
                     </div>
@@ -253,7 +255,7 @@ export default function ActividadesTrabajador({
                                             </td>
                                             {permisos.verCostos && (
                                                 <td className="px-5 py-3 whitespace-nowrap text-sm text-right font-medium text-slate-800 tabular-nums">
-                                                    {formatMXN(a.costo_total)}
+                                                    {formatCurrency(a.costo_total, currency)}
                                                 </td>
                                             )}
                                             <td className="px-5 py-3 whitespace-nowrap text-right">

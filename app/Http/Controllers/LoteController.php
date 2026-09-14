@@ -70,7 +70,7 @@ class LoteController extends Controller
     public function index()
     {
         $lotes = Lote::with(['responsable', 'animales'])->get();
-+        $usuarios = $this->responsablesDisponibles();
+        $usuarios = $this->responsablesDisponibles();
         $tiposLote = \App\Models\Lote::TIPOS;
 
         return Inertia::render('Lotes/Index', [

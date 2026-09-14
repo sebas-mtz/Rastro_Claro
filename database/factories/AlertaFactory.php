@@ -2,22 +2,21 @@
 
 namespace Database\Factories;
 
+use App\Models\Alerta;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Alerta>
- */
+/** @extends Factory<Alerta> */
 class AlertaFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Alerta::class;
+
     public function definition(): array
     {
         return [
-            //
+            'tipo' => 'revision',
+            'fecha_objetivo' => today()->toDateString(),
+            'severidad' => 'media',
+            'estado' => 'pendiente',
         ];
     }
 }

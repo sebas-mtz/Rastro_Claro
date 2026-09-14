@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     HardHat, PlusCircle, Search, Eye, Pencil, UserCheck, UserX, ClipboardList,
 } from 'lucide-react';
 import TrabajadorModal from './TrabajadorModal';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function fmtFecha(f) {
     return f ? new Date(f).toLocaleDateString('es-MX') : '—';
@@ -22,6 +22,8 @@ export default function TrabajadoresIndex({
     usuariosDisponibles = [],
     resumen = {},
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [modal, setModal] = useState({ show: false, trabajador: null });
     const [locales, setLocales] = useState({
         buscar: filtros.buscar || '',
@@ -231,9 +233,9 @@ export default function TrabajadoresIndex({
                                             {permisos.verSensibles && (
                                                 <td className="px-5 py-3 whitespace-nowrap text-sm text-right tabular-nums text-slate-800">
                                                     {t.costo_hora != null ? (
-                                                        <span>{formatMXN(t.costo_hora)}<span className="text-xs text-slate-400"> /h</span></span>
+                                                        <span>{formatCurrency(t.costo_hora, currency)}<span className="text-xs text-slate-400"> /h</span></span>
                                                     ) : t.costo_jornada != null ? (
-                                                        <span>{formatMXN(t.costo_jornada)}<span className="text-xs text-slate-400"> /jornada</span></span>
+                                                        <span>{formatCurrency(t.costo_jornada, currency)}<span className="text-xs text-slate-400"> /jornada</span></span>
                                                     ) : (
                                                         <span className="text-slate-400">—</span>
                                                     )}

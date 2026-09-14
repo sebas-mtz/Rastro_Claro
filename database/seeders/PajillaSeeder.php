@@ -33,7 +33,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-001',
                 'lote'               => 'LOTE-A',
                 'fecha_ingreso'      => '2024-01-15',
-                'fecha_vencimiento'  => '2026-01-15',
                 'fecha_utilizacion'  => '2024-06-15',
                 'estado'             => 'utilizada',
                 'observaciones'      => 'IATF sobre Dulce (B22-001). Donador: Pegaso (DON-001). Resultado: parto simple el 2024-11-09.',
@@ -45,7 +44,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-002',
                 'lote'               => 'LOTE-A',
                 'fecha_ingreso'      => '2024-01-15',
-                'fecha_vencimiento'  => '2026-01-15',
                 'fecha_utilizacion'  => '2024-06-15',
                 'estado'             => 'utilizada',
                 'observaciones'      => 'IATF sobre Valeria (B22-002). Donador: Pegaso (DON-001). Resultado: parto gemelar el 2024-11-09.',
@@ -57,7 +55,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-003',
                 'lote'               => 'LOTE-A',
                 'fecha_ingreso'      => '2024-01-15',
-                'fecha_vencimiento'  => '2026-01-15',
                 'fecha_utilizacion'  => null,
                 'estado'             => 'disponible',
                 'observaciones'      => 'Pajilla de Pegaso (DON-001). Reserva para próximo ciclo IATF.',
@@ -74,7 +71,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-004',
                 'lote'               => 'LOTE-B',
                 'fecha_ingreso'      => '2024-03-10',
-                'fecha_vencimiento'  => '2025-03-10',
                 'fecha_utilizacion'  => null,
                 'estado'             => 'vencida',
                 'observaciones'      => 'Pajilla vencida, pendiente de baja.',
@@ -92,7 +88,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-005',
                 'lote'               => 'LOTE-C',
                 'fecha_ingreso'      => '2024-06-01',
-                'fecha_vencimiento'  => '2026-06-01',
                 'fecha_utilizacion'  => '2024-09-15',
                 'estado'             => 'utilizada',
                 'observaciones'      => 'IATF sobre Palma (B22-003). Donador: Pegaso (DON-001). Resultado: parto simple el 2025-02-09.',
@@ -104,7 +99,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2024-006',
                 'lote'               => 'LOTE-C',
                 'fecha_ingreso'      => '2024-06-01',
-                'fecha_vencimiento'  => '2026-06-01',
                 'fecha_utilizacion'  => null,
                 'estado'             => 'disponible',
                 'observaciones'      => null,
@@ -120,7 +114,6 @@ class PajillaSeeder extends Seeder
                 'codigo'             => 'PAJ-2025-001',
                 'lote'               => 'LOTE-D',
                 'fecha_ingreso'      => '2025-02-20',
-                'fecha_vencimiento'  => '2027-02-20',
                 'fecha_utilizacion'  => null,
                 'estado'             => 'disponible',
                 'observaciones'      => 'Lote nuevo ingresado en febrero 2025.',
@@ -128,7 +121,7 @@ class PajillaSeeder extends Seeder
         ];
 
         foreach ($pajillas as $pajilla) {
-            Pajilla::create($pajilla);
+            Pajilla::create(array_merge(['capacidad_pajilla' => 0.25], $pajilla));
         }
     }
 }

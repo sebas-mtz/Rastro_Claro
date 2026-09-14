@@ -12,7 +12,6 @@ import EditModal from "./Edit";
 import ProduccionModal from "../Producciones/ProduccionModal";
 import ShowProduccionModal from "../Producciones/ShowProduccionModal";
 import ProduccionEditModal from "../Producciones/ProduccionEditModal";
-import MuerteModal from "@/Components/MuerteModal";
 import { usePreferences } from "@/Contexts/PreferencesContext";
 
 export default function ShowAnimal({

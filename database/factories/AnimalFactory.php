@@ -2,22 +2,24 @@
 
 namespace Database\Factories;
 
+use App\Models\Animal;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Animal>
- */
+/** @extends Factory<Animal> */
 class AnimalFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Animal::class;
+
     public function definition(): array
     {
         return [
-            //
+            'especie' => 'Ovino',
+            'raza' => 'Dorper',
+            'arete' => fake()->unique()->bothify('OV-########'),
+            'sexo' => fake()->randomElement(['M', 'H']),
+            'fecha_nac' => now()->subYear()->toDateString(),
+            'peso' => 40,
+            'estado_productivo' => 'Cordero',
         ];
     }
 }

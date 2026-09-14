@@ -7,11 +7,21 @@ use App\Models\Animal;
 use App\Models\Produccion;
 use App\Models\InventarioInsumo;
 use App\Models\EventoSalud;
+use App\Services\AlertaOperativaService;
+use App\Services\CostoService;
+use App\Services\IndicadoresOvinosService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
+
 class CustomController extends Controller
 {
+     public function __construct(
+        protected CostoService $costoService,
+        protected IndicadoresOvinosService $indicadores,
+        protected AlertaOperativaService $alertas,
+    ) {
+    }
     public function home(Request $request)
     {
         $hoy = Carbon::today();
@@ -19,6 +29,16 @@ class CustomController extends Controller
 
         // 🐄 1) RESUMEN SUPERIOR (summary)
         $animalsActive = Animal::count();
+        $totalAlimento = InventarioInsumo::sum('existencias');
+        $capacidadMax = (float) data_get($settings, 'inventory_capacity_kg', 3000);
+        $foodInventoryPercent = $capacidadMax > 0
+            ? round(($totalAlimento / $capacidadMax) * 100)
+            : 0;
+
+        $consumoDiario = (float) data_get($settings, 'daily_feed_kg', 200);
+        $foodDaysAvailable = $consumoDiario > 0
+            ? floor($totalAlimento / $consumoDiario)
+            : 0;
 
         // diferencia vs mes pasado (aprox)
         $inicioMesActual = now()->copy()->startOfMonth();
@@ -58,6 +78,7 @@ class CustomController extends Controller
             'vaccinationAlerts'    => $vaccinationAlerts,
             'foodInventoryPercent' => $foodInventoryPercent,
             'foodDaysAvailable'    => $foodDaysAvailable,
+            
         ];
 
         // 🐐 2) DISTRIBUCIÓN POR ESPECIE
@@ -142,11 +163,42 @@ class CustomController extends Controller
             ];
         }
 
+         // 💵 5) COSTOS Y UTILIDAD DEL MES
+        $comparacionMes = $this->costoService->compararIngresosCostos(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+
+
+// 🐑 6) INDICADORES OVINOS DEL REBAÑO
+        $inventario = $this->indicadores->inventario();
+        $reproduccion = $this->indicadores->reproduccion(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+        $economico = $this->indicadores->economico(
+            $inicioMesActual->toDateString(),
+            $finMesActual->toDateString()
+        );
+       
         return Inertia::render('Custom/Home', [
-            'summary'            => $summary,
-            'speciesDistribution'=> $speciesDistribution,
-            'productionByMonth'  => $productionByMonth,
-            'alerts'             => $alerts,
+            'summary' => $summary,
+            'speciesDistribution' => $speciesDistribution,
+            'productionByMonth' => $productionByMonth,
+            'alerts' => $alerts,
+            'alertasOperativas' => $this->alertas->todas(),
+            'costos' => $comparacionMes,
+            'rebano' => [
+                'activos' => $inventario['total_activos'],
+                'hembras_reproductoras' => $inventario['hembras_reproductoras'],
+                'sementales' => $inventario['sementales'],
+                'sin_identificador' => $inventario['sin_identificador'],
+                'gestantes' => $reproduccion['gestantes'],
+                'partos_proximos' => $reproduccion['partos_proximos'],
+                'crias_periodo' => $reproduccion['crias_nacidas'],
+                'prolificidad' => $reproduccion['prolificidad'],
+                'precio_estimado' => $economico['precio_estimado_rebano'],
+            ],
         ]);
     }
 

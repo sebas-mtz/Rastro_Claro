@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import { X, Calculator } from 'lucide-react';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const VACIO = {
     trabajador_id: '',
@@ -32,6 +32,8 @@ export default function ActividadModal({
     lotes = [],
     puedeVerCostos = false,
 }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         ...VACIO,
         trabajador_id: trabajadorFijo?.id || '',
@@ -339,16 +341,16 @@ export default function ActividadModal({
                                     <p className="flex justify-between">
                                         <span>
                                             {previa.modalidad_pago === 'jornada'
-                                                ? `${previa.jornadas ?? 0} jornada(s) × ${formatMXN(previa.costo_jornada)}`
-                                                : `${previa.horas_trabajadas ?? 0} hora(s) × ${formatMXN(previa.costo_hora)}`}
+                                                ? `${previa.jornadas ?? 0} jornada(s) × ${formatCurrency(previa.costo_jornada, currency)}`
+                                                : `${previa.horas_trabajadas ?? 0} hora(s) × ${formatCurrency(previa.costo_hora, currency)}`}
                                         </span>
-                                        <span className="font-semibold tabular-nums">{formatMXN(previa.costo_total)}</span>
+                                        <span className="font-semibold tabular-nums">{formatCurrency(previa.costo_total, currency)}</span>
                                     </p>
 
                                     {previa.animales_atendidos > 1 && (
                                         <p className="flex justify-between text-xs text-slate-500">
                                             <span>Entre {previa.animales_atendidos} ejemplares</span>
-                                            <span className="tabular-nums">{formatMXN(previa.costo_por_animal)} c/u</span>
+                                            <span className="tabular-nums">{formatCurrency(previa.costo_por_animal, currency)} c/u</span>
                                         </p>
                                     )}
 

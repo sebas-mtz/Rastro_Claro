@@ -11,8 +11,7 @@ import {
     ResponsiveContainer,
     Legend,
 } from 'recharts';
-import { formatMXN } from '@/utils/currency';
-
+import { formatCurrency } from '@/utils/currency';
 export default function Statistics() {
     // 👇 PON ESTOS VALORES POR DEFECTO
     const {
@@ -29,9 +28,11 @@ export default function Statistics() {
         alerts = [],
         costos = { ingresos: 0, costos: 0, utilidad: 0, estado: 'utilidad' },
         rebano = {},
+        settings = { currency: 'MXN' },
         alertasOperativas = [],
     } = usePage().props;
 
+const currency = settings.currency;
     const colorNivel = {
         critica: 'bg-red-50 border-red-100 text-red-800',
         atencion: 'bg-amber-50 border-amber-100 text-amber-800',
@@ -110,7 +111,7 @@ export default function Statistics() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-4">
                     <p className="text-xs font-medium text-slate-500">Borregas reproductoras</p>
                     <div className="mt-2 text-2xl font-semibold text-slate-900">
-                        {rebano.borregas_reproductoras ?? 0}
+                        {rebano.hembras_reproductoras ?? 0}
                     </div>
                     <p className="mt-1 text-xs text-slate-500">{rebano.sementales ?? 0} semental(es)</p>
                 </div>
@@ -138,7 +139,7 @@ export default function Statistics() {
                 <div className="rounded-2xl border border-slate-200 bg-white p-4">
                     <p className="text-xs font-medium text-slate-500">Precio estimado del rebaño</p>
                     <div className="mt-2 text-2xl font-semibold text-emerald-700">
-                        {formatMXN(rebano.precio_estimado)}
+                        {formatCurrency(rebano.precio_estimado, currency)}
                     </div>
                     <p className="mt-1 text-xs text-slate-500">
                         {rebano.sin_identificador ?? 0} sin identificar
@@ -190,13 +191,13 @@ export default function Statistics() {
                     <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
                         <p className="text-xs font-medium text-slate-500">Ingresos por ventas</p>
                         <div className="mt-2 text-xl font-semibold text-emerald-700">
-                            {formatMXN(costos.ingresos)}
+                            {formatCurrency(costos.ingresos, currency)}
                         </div>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
                         <p className="text-xs font-medium text-slate-500">Costos totales</p>
                         <div className="mt-2 text-xl font-semibold text-red-600">
-                            {formatMXN(costos.costos)}
+                            {formatCurrency(costos.costos, currency)}
                         </div>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
@@ -204,7 +205,7 @@ export default function Statistics() {
                             {costos.estado === 'utilidad' ? 'Utilidad' : 'Pérdida'}
                         </p>
                         <div className={`mt-2 text-xl font-semibold ${costos.estado === 'utilidad' ? 'text-emerald-700' : 'text-red-600'}`}>
-                            {formatMXN(costos.utilidad)}
+                            {formatCurrency(costos.utilidad, currency)}
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { BarChart3, Info, AlertTriangle, Bell } from 'lucide-react';
-import { formatMXN } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 /** Indicador con su fórmula visible, para que el número sea auditable. */
 function Indicador({ etiqueta, valor, sufijo = '', formula, ausente = 'Sin datos' }) {
@@ -51,6 +51,8 @@ const COLOR_NIVEL = {
 };
 
 export default function ReportesOvinos({ auth, resumen, costosPorLote = [], alertas = [], etapas = {}, filtros = {}, formulas = {} }) {
+    const { settings = { currency: 'MXN' } } = usePage().props;
+    const currency = settings.currency;
     const [locales, setLocales] = useState({ desde: filtros.desde || '', hasta: filtros.hasta || '' });
 
     const aplicar = (cambios) => {
@@ -133,7 +135,7 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
 
                 <Seccion titulo="Inventario del rebaño">
                     <Indicador etiqueta="Ovinos activos" valor={inv.total_activos} />
-                    <Indicador etiqueta="Borregas reproductoras" valor={inv.borregas_reproductoras} />
+                    <Indicador etiqueta="Borregas reproductoras" valor={inv.hembras_reproductoras} />
                     <Indicador etiqueta="Sementales" valor={inv.sementales} />
                     <Indicador etiqueta="Sin identificación" valor={inv.sin_identificador} />
                 </Seccion>
@@ -219,23 +221,23 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
                         sufijo=" %"
                         formula={formulas.porcentaje_mortalidad}
                     />
-                    <Indicador etiqueta="Ingresos por salidas" valor={sal.ingresos_por_salidas != null ? formatMXN(sal.ingresos_por_salidas) : null} />
+                    <Indicador etiqueta="Ingresos por salidas" valor={sal.ingresos_por_salidas != null ? formatCurrency(sal.ingresos_por_salidas, currency) : null} />
                 </Seccion>
 
                 <Seccion titulo="Económico">
-                    <Indicador etiqueta="Costos totales" valor={eco.costos_totales != null ? formatMXN(eco.costos_totales) : null} />
+                    <Indicador etiqueta="Costos totales" valor={eco.costos_totales != null ? formatCurrency(eco.costos_totales, currency) : null} />
                     <Indicador
                         etiqueta="Costo por ejemplar"
-                        valor={eco.costo_promedio_por_ejemplar != null ? formatMXN(eco.costo_promedio_por_ejemplar) : null}
+                        valor={eco.costo_promedio_por_ejemplar != null ? formatCurrency(eco.costo_promedio_por_ejemplar, currency) : null}
                         formula={formulas.costo_promedio_por_ejemplar}
                     />
-                    <Indicador etiqueta="Ingresos por ventas" valor={eco.ingresos != null ? formatMXN(eco.ingresos) : null} />
+                    <Indicador etiqueta="Ingresos por ventas" valor={eco.ingresos != null ? formatCurrency(eco.ingresos, currency) : null} />
                     <Indicador
                         etiqueta="Utilidad"
-                        valor={eco.utilidad != null ? formatMXN(eco.utilidad) : null}
+                        valor={eco.utilidad != null ? formatCurrency(eco.utilidad, currency) : null}
                         formula={formulas.porcentaje_utilidad}
                     />
-                    <Indicador etiqueta="Precio estimado del rebaño" valor={eco.precio_estimado_rebano != null ? formatMXN(eco.precio_estimado_rebano) : null} />
+                    <Indicador etiqueta="Precio estimado del rebaño" valor={eco.precio_estimado_rebano != null ? formatCurrency(eco.precio_estimado_rebano, currency) : null} />
                 </Seccion>
 
                 {costosPorLote.length > 0 && (
@@ -255,7 +257,7 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
                                         <tr key={i} className="border-t border-slate-100">
                                             <td className="py-2">{fila.lote || 'Sin lote'}</td>
                                             <td className="py-2 text-right tabular-nums">{fila.movimientos}</td>
-                                            <td className="py-2 text-right tabular-nums font-medium">{formatMXN(fila.total)}</td>
+                                            <td className="py-2 text-right tabular-nums font-medium">{formatCurrency(fila.total, currency)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
