@@ -114,8 +114,8 @@ function ReproduccionIndex({
         {/* HEADER */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold">Reproducción</h1>
-            <p className="text-gray-500 text-sm">Gestión del ciclo reproductivo ovino</p>
+            <h1 className="text-2xl font-bold text-gray-800">Reproducción</h1>
+            <p className="text-gray-600">Gestión del ciclo reproductivo ovino</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -274,7 +274,12 @@ function ReproduccionIndex({
 }
 
 ReproduccionIndex.layout = (page) => (
-  <AppLayout user={page.props.auth.user}>{page}</AppLayout>
+  <AppLayout
+    user={page.props.auth.user}
+    header={<h2 className="font-semibold text-xl text-gray-800">Módulo de Reproducción</h2>}
+  >
+    {page}
+  </AppLayout>
 );
 
 export default ReproduccionIndex;

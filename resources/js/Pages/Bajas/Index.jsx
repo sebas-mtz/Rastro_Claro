@@ -42,7 +42,7 @@ export default function BajasIndex({
         >
             <Head title="Bajas del rebaño" />
 
-            <div className="py-8 px-4 sm:px-6 max-w-6xl mx-auto space-y-6">
+            <div className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">Salidas del rebaño</h1>
@@ -52,7 +52,7 @@ export default function BajasIndex({
                     </div>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm hover:shadow-blue-200"
                     >
                         <PlusCircle className="w-5 h-5" /> Registrar salida
                     </button>
@@ -62,7 +62,7 @@ export default function BajasIndex({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500 flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5" /> Ejemplares activos
+                            <Users className="w-3.5 h-3.5 text-blue-600" /> Ejemplares activos
                         </p>
                         <p className="mt-2 text-2xl font-semibold text-slate-900">{indicadores?.activos ?? 0}</p>
                     </div>
@@ -72,7 +72,7 @@ export default function BajasIndex({
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500 flex items-center gap-1">
-                            <HeartCrack className="w-3.5 h-3.5" /> Mortalidad
+                            <HeartCrack className="w-3.5 h-3.5 text-blue-600" /> Mortalidad
                         </p>
                         <p className="mt-2 text-2xl font-semibold text-red-600">
                             {indicadores?.porcentaje_mortalidad != null
@@ -85,7 +85,7 @@ export default function BajasIndex({
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
                         <p className="text-xs font-medium text-slate-500">Ingresos por salidas</p>
-                        <p className="mt-2 text-2xl font-semibold text-emerald-700">
+                        <p className="mt-2 text-2xl font-semibold text-blue-700">
                             {formatCurrency(indicadores?.ingresos_por_salidas, currency)}
                         </p>
                     </div>
@@ -120,7 +120,7 @@ export default function BajasIndex({
                     />
                     <button
                         onClick={() => { setLocales({ tipo_salida: '', desde: '', hasta: '' }); router.get(route('bajas.index'), {}, { preserveState: true, replace: true }); }}
-                        className="text-sm text-slate-500 hover:text-slate-800 underline"
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
                     >
                         Limpiar filtros
                     </button>
@@ -149,7 +149,7 @@ export default function BajasIndex({
                                 </thead>
                                 <tbody className="bg-white divide-y divide-slate-100">
                                     {filas.map((baja) => (
-                                        <tr key={baja.id} className="hover:bg-slate-50">
+                                        <tr key={baja.id} className="hover:bg-blue-50 transition-colors">
                                             <td className="px-5 py-3 whitespace-nowrap text-sm text-slate-700">
                                                 {fmtFecha(baja.fecha)}
                                             </td>
@@ -157,7 +157,7 @@ export default function BajasIndex({
                                                 {baja.animal ? (
                                                     <Link
                                                         href={`/animales/${baja.animal.id}`}
-                                                        className="text-emerald-700 hover:underline font-medium"
+                                                        className="text-blue-700 hover:underline font-medium"
                                                     >
                                                         {baja.animal.arete}
                                                     </Link>
@@ -196,7 +196,7 @@ export default function BajasIndex({
                                                 <button
                                                     onClick={() => revertir(baja.id)}
                                                     title="Revertir baja"
-                                                    className="text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                                                    className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 px-1 rounded flex items-center gap-1 transition"
                                                 >
                                                     <Undo2 className="w-4 h-4" /> Revertir
                                                 </button>
@@ -218,8 +218,8 @@ export default function BajasIndex({
                                     href={link.url || '#'}
                                     className={`px-3 py-1 rounded-lg text-sm font-medium ${
                                         link.active
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-white text-slate-700 border border-slate-300 hover:bg-blue-50 hover:border-blue-200'
                                     } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

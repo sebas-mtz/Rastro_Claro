@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Animal;
 use App\Models\Baja;
 use App\Services\AnimalValuationService;
+use App\Services\EstadoProductivoService;
 use App\Services\BajaService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,7 +23,7 @@ class BajaController extends Controller
             ->when($request->tipo_salida, fn ($q) => $q->where('tipo_salida', $request->tipo_salida))
             ->when($request->desde, fn ($q) => $q->whereDate('fecha', '>=', $request->desde))
             ->when($request->hasta, fn ($q) => $q->whereDate('fecha', '<=', $request->hasta))
-            ->with(['animal:id,arete,alias,raza_original', 'responsable:id,name'])
+            ->with(['animal:id,arete,alias,raza', 'responsable:id,name'])
             ->orderByDesc('fecha')
             ->paginate(20)
             ->withQueryString();
@@ -59,11 +60,11 @@ class BajaController extends Controller
 
         $animal = Animal::findOrFail($validated['animal_id']);
 
-        if (! $animal->activo) {
-            return back()->withErrors([
-                'animal_id' => 'Este ejemplar ya fue dado de baja del rebaño.',
-            ])->withInput();
-        }
+        if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {
+    return back()->withErrors([
+        'animal_id' => 'Este ejemplar ya fue dado de baja del rebaño.',
+    ])->withInput();
+}
 
         // La salida no puede ser anterior al nacimiento del ejemplar.
         $nacimiento = AnimalValuationService::fechaNacimiento($animal);

@@ -22,9 +22,9 @@ function Seccion({ titulo, descripcion, icono: Icono, color, eventos = [], vacio
             {eventos.length === 0 ? (
                 <p className="px-5 py-6 text-sm text-slate-400 text-center">{vacio}</p>
             ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-slate-100">
                     {eventos.map((ev) => (
-                        <li key={ev.id} className="px-5 py-3 flex flex-wrap items-start justify-between gap-2">
+                        <li key={ev.id} className="bg-white px-5 py-3 flex flex-wrap items-start justify-between gap-2 transition-colors hover:bg-blue-50">
                             <div className="min-w-0">
                                 <p className="text-sm font-medium text-slate-800">
                                     {ev.vacuna?.nombre || ev.diagnostico || ev.tipo}
@@ -73,10 +73,10 @@ export default function Calendario({
         >
             <Head title="Calendario sanitario" />
 
-            <div className="py-8 px-4 sm:px-6 max-w-5xl mx-auto space-y-6">
+            <div className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <CalendarDays className="w-7 h-7 text-emerald-600" />
+                        <CalendarDays className="w-7 h-7 text-blue-600" />
                         <div>
                             <h1 className="text-2xl font-bold text-slate-900">Calendario sanitario</h1>
                             <p className="text-sm text-slate-600">
@@ -113,14 +113,14 @@ export default function Calendario({
 
                 {/* Partos próximos: hito reproductivo que ocupa al equipo */}
                 {partosProximos.length > 0 && (
-                    <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4">
-                        <p className="text-sm font-semibold text-purple-900 flex items-center gap-2">
-                            <Baby className="w-4 h-4" />
+                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+                        <p className="text-sm font-semibold text-blue-900 flex items-center gap-2">
+                            <Baby className="w-4 h-4 text-blue-600" />
                             {partosProximos.length} borrega(s) con parto probable en los próximos 21 días
                         </p>
                         <ul className="mt-2 space-y-1">
                             {partosProximos.map((dx) => (
-                                <li key={dx.id} className="text-xs text-purple-800 flex justify-between">
+                                <li key={dx.id} className="text-xs text-blue-800 flex justify-between">
                                     <span>
                                         {dx.evento?.hembra?.arete || 'Sin arete'}
                                         {dx.evento?.hembra?.alias ? ` — ${dx.evento.hembra.alias}` : ''}
@@ -129,7 +129,7 @@ export default function Calendario({
                                 </li>
                             ))}
                         </ul>
-                        <Link href="/reproduccion" className="mt-2 inline-block text-xs text-purple-900 underline">
+                        <Link href="/reproduccion" className="mt-2 inline-block text-xs text-blue-700 hover:text-blue-900 underline">
                             Ir a Reproducción →
                         </Link>
                     </div>

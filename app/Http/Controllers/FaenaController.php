@@ -68,12 +68,8 @@ class FaenaController extends Controller
         // FaenaController::store()
         Faena::create($validated);
 
-        $animal = Animal::find($validated['animal_id']);
-        $animal->update([
-                    'estado_productivo' => 'faeneado',
-                    'activo' => false,
-                    'fecha_baja' => $validated['fecha'],
-                ]);
+       $animal = Animal::find($validated['animal_id']);
+$animal->update(['estado_productivo' => 'faeneado']);
         $animal->save();
 
         return redirect()->route('faenas.index')->with([

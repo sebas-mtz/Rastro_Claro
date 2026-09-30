@@ -55,8 +55,8 @@ export default function Index({
             iconColor: 'text-emerald-600',
         },
         {
-            title: 'Pajillas vencidas',
-            value: stats.pajillas_vencidas ?? 0,
+            title: 'Pajillas dañadas',
+            value: stats.pajillas_dañadas ?? 0,
             subtitle: 'Requieren revisión',
             icon: PackageX,
             border: 'border-red-500',
@@ -117,9 +117,9 @@ export default function Index({
                 </div>
 
                 {/* ALERTAS */}
-                {stats.pajillas_vencidas > 0 && (
+                {stats.pajillas_dañadas > 0 && (
                     <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
-                        ⚠ Tienes {stats.pajillas_vencidas} pajilla(s) vencida(s) que requieren atención.
+                        ⚠ Tienes {stats.pajillas_dañadas} pajilla(s) dañada(s) que requieren atención.
                     </div>
                 )}
 
@@ -219,4 +219,8 @@ export default function Index({
     );
 }
 
-Index.layout = (page) => <AppLayout>{page}</AppLayout>;
+Index.layout = (page) => (
+    <AppLayout header={<h2 className="font-semibold text-xl text-gray-800">Material Genético</h2>}>
+        {page}
+    </AppLayout>
+);

@@ -84,17 +84,17 @@ export default function TrabajadoresIndex({
                     <div className="flex flex-wrap gap-2">
                         <Link
                             href={route('actividades-trabajador.index')}
-                            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                            className="bg-white border border-slate-300 hover:bg-blue-50 hover:border-blue-200 text-slate-700 font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
                         >
-                            <ClipboardList className="w-5 h-5" /> Actividades
+                            <ClipboardList className="w-5 h-5 text-blue-600" /> Actividades
                         </Link>
 
                         {permisos.crear && (
                             <button
                                 onClick={() => setModal({ show: true, trabajador: null })}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm hover:shadow-blue-200"
                             >
-                                <PlusCircle className="w-5 h-5" /> Nuevo trabajador
+                            <PlusCircle className="w-5 h-5" /> Nuevo trabajador
                             </button>
                         )}
                     </div>
@@ -169,7 +169,7 @@ export default function TrabajadoresIndex({
 
                     <button
                         onClick={limpiar}
-                        className="text-sm text-slate-500 hover:text-slate-800 underline justify-self-start"
+                        className="text-sm text-blue-600 hover:text-blue-800 underline justify-self-start"
                     >
                         Limpiar filtros
                     </button>
@@ -179,7 +179,7 @@ export default function TrabajadoresIndex({
                 <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
                     {filas.length === 0 ? (
                         <div className="text-center py-12">
-                            <HardHat className="w-14 h-14 text-slate-200 mx-auto mb-3" />
+                            <HardHat className="w-14 h-14 text-blue-200 mx-auto mb-3" />
                             <p className="text-slate-500">No hay trabajadores con estos filtros.</p>
                         </div>
                     ) : (
@@ -201,11 +201,11 @@ export default function TrabajadoresIndex({
                                 </thead>
                                 <tbody className="bg-white divide-y divide-slate-100">
                                     {filas.map((t) => (
-                                        <tr key={t.id} className={'hover:bg-slate-50 ' + (t.activo ? '' : 'opacity-60')}>
+                                        <tr key={t.id} className={'hover:bg-blue-50 transition-colors ' + (t.activo ? '' : 'opacity-60')}>
                                             <td className="px-5 py-3 text-sm">
                                                 <Link
                                                     href={route('trabajadores.show', t.id)}
-                                                    className="text-emerald-700 hover:underline font-medium"
+                                                    className="text-blue-700 hover:underline font-medium"
                                                 >
                                                     {t.nombre_completo}
                                                 </Link>
@@ -256,7 +256,7 @@ export default function TrabajadoresIndex({
                                                     <Link
                                                         href={route('trabajadores.show', t.id)}
                                                         title="Ver ficha"
-                                                        className="text-slate-500 hover:text-slate-800"
+                                                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-1 rounded"
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </Link>
@@ -265,7 +265,7 @@ export default function TrabajadoresIndex({
                                                         <button
                                                             onClick={() => setModal({ show: true, trabajador: t })}
                                                             title="Editar"
-                                                            className="text-blue-600 hover:text-blue-800"
+                                                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-1 rounded"
                                                         >
                                                             <Pencil className="w-4 h-4" />
                                                         </button>
@@ -299,8 +299,8 @@ export default function TrabajadoresIndex({
                                     href={link.url || '#'}
                                     className={`px-3 py-1 rounded-lg text-sm font-medium ${
                                         link.active
-                                            ? 'bg-emerald-600 text-white'
-                                            : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white text-slate-700 border border-slate-300 hover:bg-blue-50 hover:border-blue-200'
                                     } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

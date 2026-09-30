@@ -363,7 +363,7 @@ export default function Index({
     }, [filtros.buscar, filtros.estado]);
 
     return (
-        <AppLayout>
+        <AppLayout header={<h2 className="font-semibold text-xl text-gray-800">Tareas y recordatorios</h2>}>
             <Head title="Tareas y recordatorios" />
 
             <div className="bg-gray-50/50">

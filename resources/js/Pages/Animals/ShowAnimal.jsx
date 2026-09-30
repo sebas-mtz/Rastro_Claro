@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import EditModal from "./Edit";
 import ProduccionModal from "../Producciones/ProduccionModal";
+import BajaModal from "../Bajas/BajaModal";
 import ShowProduccionModal from "../Producciones/ShowProduccionModal";
 import ProduccionEditModal from "../Producciones/ProduccionEditModal";
 import { usePreferences } from "@/Contexts/PreferencesContext";
@@ -52,7 +53,7 @@ export default function ShowAnimal({
     const [showAddProduccion, setShowAddProduccion] = useState(false);
     const [showProduccionList, setShowProduccionList] = useState(false);
     const [editProduccion, setEditProduccion] = useState(null);
-    const [showMuerte, setShowMuerte] = useState(false);
+    const [showBaja, setShowBaja] = useState(false);
 const bloqueado = animal.es_terminal;
 
     const fmtFecha = formatDate;
@@ -138,10 +139,10 @@ const bloqueado = animal.es_terminal;
                             </button>}
                             {!bloqueado && (
                                 <button
-                                    onClick={() => setShowMuerte(true)}
+                                    onClick={() => setShowBaja(true)}
                                     className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition"
                                 >
-                                    <Skull className="w-4 h-4" /> Registrar muerte
+                                    <Skull className="w-4 h-4" /> Registrar baja
                                 </button>
                             )}
                         </div>
@@ -243,10 +244,10 @@ const bloqueado = animal.es_terminal;
                             <Data label="Peso actual"         value={pesoActual != null ? fmtPeso(pesoActual) : (animal.peso ? fmtPeso(animal.peso) : "N/D")} />
                             <Data label="BCS"                 value={animal.BCS || "N/D"} />
                             <Data label="Lote"                value={animal.lote?.nombre || "Sin lote"} />
-                            {animal.muerte && (
+                            {animal.baja && (
                                 <>
-                                    <Data label="Fecha de muerte" value={fmtFecha(animal.muerte.fecha)} />
-                                    <Data label="Causa de muerte" value={animal.muerte.causa} />
+                                    <Data label="Fecha de baja" value={fmtFecha(animal.baja.fecha)} />
+                                    <Data label="Causa de baja" value={animal.baja.causa} />
                                 </>
                             )}
                             <Data label="Fecha de Registro"   value={fmtFecha(animal.created_at)} />
@@ -547,10 +548,10 @@ const bloqueado = animal.es_terminal;
             {editProduccion && (
                 <ProduccionEditModal produccion={editProduccion} onClose={() => setEditProduccion(null)} />
             )}
-            <MuerteModal
-                show={showMuerte}
+            <BajaModal
+                show={showBaja}
                 animal={animal}
-                onClose={() => setShowMuerte(false)}
+                onClose={() => setShowBaja(false)}
             />
         </div>
     );

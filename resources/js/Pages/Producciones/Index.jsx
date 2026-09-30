@@ -201,7 +201,12 @@ function ProduccionesIndex({
 
 // 👇 AQUÍ SE CONECTA CON EL LAYOUT CON SIDEBAR
 ProduccionesIndex.layout = (page) => (
-    <AppLayout user={page.props.auth.user}>{page}</AppLayout>
+    <AppLayout
+        user={page.props.auth.user}
+        header={<h2 className="font-semibold text-xl text-gray-800">Módulo de Producción</h2>}
+    >
+        {page}
+    </AppLayout>
 );
 
 export default ProduccionesIndex;

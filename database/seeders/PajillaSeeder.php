@@ -72,8 +72,8 @@ class PajillaSeeder extends Seeder
                 'lote'               => 'LOTE-B',
                 'fecha_ingreso'      => '2024-03-10',
                 'fecha_utilizacion'  => null,
-                'estado'             => 'vencida',
-                'observaciones'      => 'Pajilla vencida, pendiente de baja.',
+                'estado'             => 'dañada',
+                'observaciones'      => 'Pajilla dañada.',
             ],
 
             /*

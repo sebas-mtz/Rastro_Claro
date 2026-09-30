@@ -11,7 +11,8 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
     const { formatCurrency, formatDate } = usePreferences();
     const [showModal, setShowModal] = useState(false);
     const [busqueda, setBusqueda] = useState('');
-
+const [ventaDetalle, setVentaDetalle] = useState(null);
+const [ventaEstado, setVentaEstado] = useState(null);
     // ✅ CORRECCIÓN: Usar ventas.data para el array de ventas
     const ventasArray = ventas?.data || [];
     const ventasFiltradas = ventasArray.filter(venta =>
@@ -326,22 +327,22 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex items-center gap-2">
-                                                    <Link
-                                                        href={route('ventas.show', venta.id)}
+                                                    <button
+                                                        onClick={() => setVentaDetalle(venta)}
                                                         className="text-blue-600 hover:text-blue-900 p-1 rounded transition"
                                                         title="Ver detalles"
                                                     >
                                                         <Eye className="w-4 h-4" />
-                                                    </Link>
-                                                    <Link
-                                                        href={route('ventas.edit', venta.id)}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setVentaEstado(venta)}
                                                         className="text-green-600 hover:text-green-900 p-1 rounded transition"
-                                                        title="Editar venta"
+                                                        title="Cambiar estado"
                                                     >
                                                         <Edit className="w-4 h-4" />
-                                                    </Link>
+                                                    </button>
                                                     <button
                                                         onClick={() => handleDelete(venta.id)}
                                                         className="text-red-600 hover:text-red-900 p-1 rounded transition"
@@ -392,6 +393,94 @@ export default function VentasIndex({ auth, ventas, estadisticas, animales, lote
                 faenas={faenas || []}
                 compradores={compradores || []}
             />
+            {/* Modal: Ver detalles (sin llamada al servidor, usa los datos ya cargados) */}
+{ventaDetalle && (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-gray-800">
+                    Detalle de venta {ventaDetalle.numero_factura}
+                </h3>
+                <button onClick={() => setVentaDetalle(null)} className="text-gray-400 hover:text-gray-600">
+                    ✕
+                </button>
+            </div>
+            <div className="space-y-2 text-sm text-gray-700">
+                <p><span className="font-medium">Fecha:</span> {formatDate(ventaDetalle.fecha_venta)}</p>
+                <p><span className="font-medium">Comprador:</span> {ventaDetalle.comprador_nombre}</p>
+                <p><span className="font-medium">Tipo:</span> {getTipoVentaTexto(ventaDetalle.tipo_venta)}</p>
+                <p><span className="font-medium">Producto:</span> {ventaDetalle.producto}</p>
+                <p><span className="font-medium">Cantidad:</span> {ventaDetalle.cantidad} {ventaDetalle.unidad}</p>
+                <p><span className="font-medium">Precio unitario:</span> {formatCurrency(ventaDetalle.precio_unitario)}</p>
+                <p><span className="font-medium">Precio total:</span> {formatCurrency(ventaDetalle.precio_total)}</p>
+                <p><span className="font-medium">Método de pago:</span> {getMetodoPagoTexto(ventaDetalle.metodo_pago)}</p>
+                <p><span className="font-medium">Estado de venta:</span> {ventaDetalle.estado_venta}</p>
+                <p><span className="font-medium">Estado de pago:</span> {ventaDetalle.estado_pago}</p>
+                {ventaDetalle.observaciones && (
+                    <p><span className="font-medium">Observaciones:</span> {ventaDetalle.observaciones}</p>
+                )}
+            </div>
+        </div>
+    </div>
+)}
+
+{/* Modal: Cambiar estado (usa VentaController::updateEstado) */}
+{ventaEstado && (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-gray-800">Cambiar estado</h3>
+                <button onClick={() => setVentaEstado(null)} className="text-gray-400 hover:text-gray-600">
+                    ✕
+                </button>
+            </div>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    router.put(route('ventas.update-estados', ventaEstado.id), {
+                        estado_venta: formData.get('estado_venta'),
+                        estado_pago: formData.get('estado_pago'),
+                    }, {
+                        onSuccess: () => setVentaEstado(null),
+                    });
+                }}
+                className="space-y-4"
+            >
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado de venta</label>
+                    <select
+                        name="estado_venta"
+                        defaultValue={ventaEstado.estado_venta}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                        <option value="pendiente">Pendiente</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado de pago</label>
+                    <select
+                        name="estado_pago"
+                        defaultValue={ventaEstado.estado_pago}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                        <option value="pendiente">Pendiente</option>
+                        <option value="parcial">Parcial</option>
+                        <option value="completado">Completado</option>
+                    </select>
+                </div>
+                <button
+                    type="submit"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg"
+                >
+                    Guardar cambios
+                </button>
+            </form>
+        </div>
+    </div>
+)}
         </AuthenticatedLayout>
     );
 }

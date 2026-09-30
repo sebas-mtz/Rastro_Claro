@@ -112,7 +112,7 @@ export default function ActividadModal({
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl my-8">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
                     <h3 className="text-lg font-semibold text-slate-800">Registrar actividad</h3>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-700" aria-label="Cerrar">
+                    <button onClick={onClose} className="text-slate-400 hover:text-blue-600" aria-label="Cerrar">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -330,7 +330,7 @@ export default function ActividadModal({
                                 type="button"
                                 onClick={calcular}
                                 disabled={calculando || !data.trabajador_id}
-                                className="text-sm text-emerald-700 hover:text-emerald-900 font-medium flex items-center gap-1 disabled:opacity-50"
+                            className="text-sm text-blue-700 hover:text-blue-900 font-medium flex items-center gap-1 disabled:opacity-50"
                             >
                                 <Calculator className="w-4 h-4" />
                                 {calculando ? 'Calculando…' : 'Calcular costo de mano de obra'}
@@ -370,14 +370,14 @@ export default function ActividadModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm"
+                            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-blue-50 hover:border-blue-200 text-sm"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={processing}
-                            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-60"
+                            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium disabled:opacity-60 shadow-sm hover:shadow-blue-200"
                         >
                             {processing ? 'Guardando…' : 'Registrar actividad'}
                         </button>

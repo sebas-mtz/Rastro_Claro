@@ -112,7 +112,7 @@ export default function TrabajadorModal({
                     <h3 className="text-lg font-semibold text-slate-800">
                         {editando ? 'Editar trabajador' : 'Nuevo trabajador'}
                     </h3>
-                    <button onClick={cerrar} className="text-slate-400 hover:text-slate-700" aria-label="Cerrar">
+                    <button onClick={cerrar} className="text-slate-400 hover:text-blue-600" aria-label="Cerrar">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -271,14 +271,14 @@ export default function TrabajadorModal({
                         <button
                             type="button"
                             onClick={cerrar}
-                            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm"
+                            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-blue-50 hover:border-blue-200 text-sm"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={processing}
-                            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-60"
+                            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium disabled:opacity-60 shadow-sm hover:shadow-blue-200"
                         >
                             {processing ? 'Guardando…' : editando ? 'Guardar cambios' : 'Registrar trabajador'}
                         </button>

@@ -391,6 +391,10 @@ function Salud({
     );
 }
 
-Salud.layout = (page) => <AppLayout>{page}</AppLayout>;
+Salud.layout = (page) => (
+    <AppLayout header={<h2 className="font-semibold text-xl text-gray-800">Módulo de Salud</h2>}>
+        {page}
+    </AppLayout>
+);
 
 export default Salud;

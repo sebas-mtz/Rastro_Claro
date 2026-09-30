@@ -108,12 +108,12 @@ export default function CostoModal({ show, onClose, costo, animales = [], lotes 
             <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center border-b p-6">
                     <div className="flex items-center gap-3">
-                        <DollarSign className="w-6 h-6 text-green-600" />
+                        <DollarSign className="w-6 h-6 text-blue-600" />
                         <h2 className="text-xl font-bold text-gray-800">
                             {esEdicion ? 'Editar Costo' : 'Registrar Costo'}
                         </h2>
                     </div>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-gray-600" disabled={processing}>
+                    <button onClick={handleClose} className="text-gray-400 hover:text-blue-600" disabled={processing}>
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -325,14 +325,14 @@ export default function CostoModal({ show, onClose, costo, animales = [], lotes 
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                            className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-200 disabled:opacity-50"
                             disabled={processing}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-blue-200"
                             disabled={processing}
                         >
                             {processing ? (

@@ -119,7 +119,7 @@ class AnimalController extends Controller
         );
     }
 unset($validated['motivo_movimiento_lote']);
-    DB::transaction(function () use ($validated, $historialNacimientoService, $request) {
+   try{ DB::transaction(function () use ($validated, $historialNacimientoService, $request) {
     
     $animal = Animal::create($validated);
 
@@ -127,6 +127,11 @@ unset($validated['motivo_movimiento_lote']);
         $historialNacimientoService->crear($animal, $validated, $request->user()->id);
     }
 });
+
+} catch (\Illuminate\Validation\ValidationException $e) {
+    \Log::error('Alta de animal falló validación', $e->errors());
+    throw $e;
+}
     return back()->with('success', 'Animal agregado exitosamente.');
 }
 
@@ -178,8 +183,7 @@ unset($validated['motivo_movimiento_lote']);
     }
 
 
-    public function update(UpdateAnimalRequest $request,Animal $animal,HistorialNacimientoService $historialNacimientoService
-    )
+    public function update(UpdateAnimalRequest $request,Animal $animal,HistorialNacimientoService $historialNacimientoService)
 
     {
     if (EstadoProductivoService::esTerminal($animal->estado_productivo)) {

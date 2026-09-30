@@ -10,10 +10,10 @@ export default function PlanesIndex() {
     };
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout header={<h2 className="font-semibold text-xl text-gray-800">Planes</h2>}>
             <Head title="Planes" />
             <div className="max-w-3xl mx-auto py-10 px-4">
-                <h1 className="text-2xl font-bold mb-4">Elige tu plan</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Elige tu plan</h1>
 
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="border rounded-2xl p-6 bg-white">

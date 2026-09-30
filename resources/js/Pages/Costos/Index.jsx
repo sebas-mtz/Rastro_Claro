@@ -94,17 +94,17 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                             href={route('costos.exportar.csv') + '?' + new URLSearchParams({ ...filtrosLocales, concepto }).toString()}
                             className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-3 py-2 rounded-lg flex items-center gap-2 transition text-sm"
                         >
-                            <Download className="w-4 h-4" /> CSV
+                            <Download className="w-4 h-4 text-blue-600" /> CSV
                         </a>
                         <a
                             href={route('costos.exportar.pdf') + '?' + new URLSearchParams({ ...filtrosLocales, concepto }).toString()}
                             className="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-3 py-2 rounded-lg flex items-center gap-2 transition text-sm"
                         >
-                            <FileText className="w-4 h-4" /> PDF
+                            <FileText className="w-4 h-4 text-blue-600" /> PDF
                         </a>
                         <button
                             onClick={abrirNuevo}
-                            className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm hover:shadow-blue-200"
                         >
                             <PlusCircle className="w-5 h-5" /> Nuevo Costo
                         </button>
@@ -120,7 +120,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">Ingresos por ventas</p>
-                        <p className="text-2xl font-bold text-green-700">{formatCurrency(comparacion?.ingresos, currency)}</p>
+                        <p className="text-2xl font-bold text-blue-700">{formatCurrency(comparacion?.ingresos, currency)}</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow border">
                         <p className="text-sm text-gray-600">{comparacion?.estado === 'utilidad' ? 'Utilidad' : 'Pérdida'}</p>
@@ -139,7 +139,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                 {Object.keys(totalPorCategoria).length > 0 && (
                     <div className="bg-white rounded-lg shadow border p-4 mb-6">
                         <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                            <Filter className="w-4 h-4" /> Total por categoría
+                            <Filter className="w-4 h-4 text-blue-600" /> Total por categoría
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {Object.entries(totalPorCategoria).map(([cat, monto]) => (
@@ -155,7 +155,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                 <div className="bg-white rounded-lg shadow border p-4 mb-6 space-y-3">
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="flex items-center bg-white border border-gray-300 rounded-lg px-3 py-2 flex-1">
-                            <Search className="w-5 h-5 text-gray-500 mr-2" />
+                            <Search className="w-5 h-5 text-blue-600 mr-2" />
                             <input
                                 type="text"
                                 placeholder="Buscar por concepto..."
@@ -167,7 +167,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                         </div>
                         <button
                             onClick={buscarPorConcepto}
-                            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition"
                         >
                             Buscar
                         </button>
@@ -261,7 +261,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {costosArray.map((costo) => (
-                                        <tr key={costo.id} className="hover:bg-gray-50">
+                                            <tr key={costo.id} className="hover:bg-blue-50 transition-colors">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {new Date(costo.fecha).toLocaleDateString('es-MX')}
                                             </td>
@@ -287,7 +287,7 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => abrirEditar(costo)}
-                                                        className="text-green-600 hover:text-green-900 p-1 rounded transition"
+                                                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 p-1 rounded transition"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                     </button>
@@ -316,8 +316,8 @@ export default function CostosIndex({ auth, costos, totales, comparacion, filtro
                                     href={link.url || '#'}
                                     className={`px-3 py-1 rounded-lg text-sm font-medium ${
                                         link.active
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-200'
                                     } ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

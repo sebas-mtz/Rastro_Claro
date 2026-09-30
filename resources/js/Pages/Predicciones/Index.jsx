@@ -135,6 +135,10 @@ function PrediccionesIndex() {
     );
 }
 
-PrediccionesIndex.layout = (page) => <AppLayout>{page}</AppLayout>;
+PrediccionesIndex.layout = (page) => (
+    <AppLayout header={<h2 className="font-semibold text-xl text-gray-800">Módulo de Predicciones</h2>}>
+        {page}
+    </AppLayout>
+);
 
 export default PrediccionesIndex;

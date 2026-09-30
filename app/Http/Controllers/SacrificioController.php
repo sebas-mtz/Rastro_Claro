@@ -66,11 +66,7 @@ class SacrificioController extends Controller
         // SacrificioController::store()
             $sacrificio = Sacrificio::create($validated);
 
-            $animal->update([
-                'estado_productivo' => 'sacrificado',
-                'activo' => false,
-                'fecha_baja' => $validated['fecha'],
-            ]);
+            $animal->update(['estado_productivo' => 'sacrificado']);
 
         return redirect()->route('sacrificios.index')->with([
             'message' => 'Sacrificio registrado exitosamente',

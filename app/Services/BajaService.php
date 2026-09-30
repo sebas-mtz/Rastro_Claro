@@ -36,11 +36,8 @@ class BajaService
         ]);
 
         $animal->update([
-            'activo' => false,
-            'fecha_baja' => $datos['fecha'],
             'estado_productivo' => Baja::ESTADO_PRODUCTIVO_POR_TIPO[$datos['tipo_salida']]
-                ?? $animal->estado_productivo,
-        ]);
+        ?? $animal->estado_productivo,]);
 
         return $baja;
     });
@@ -59,14 +56,12 @@ class BajaService
         if ($animal && ! $animal->bajas()->exists()) {
             Animal::conEdicionTerminalPermitida(function () use ($animal) {
                 $animal->update([
-                    'activo' => true,
-                    'fecha_baja' => null,
                     'estado_productivo' => EstadoProductivoService::estadoInicial($animal->especie),
                 ]);
+                    });
+                }
             });
         }
-    });
-}
 
     /**
      * Indicadores de salida del rebaño para un periodo.

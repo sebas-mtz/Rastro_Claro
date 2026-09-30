@@ -10,13 +10,13 @@ function Indicador({ etiqueta, valor, sufijo = '', formula, ausente = 'Sin datos
     const hayValor = valor !== null && valor !== undefined;
 
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+        <div className="rounded-2xl border border-blue-200 border-l-4 border-l-blue-600 bg-blue-50/50 p-4 shadow-sm shadow-blue-100/70 transition hover:border-blue-400 hover:bg-blue-50 hover:shadow-md hover:shadow-blue-100">
             <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-medium text-slate-500">{etiqueta}</p>
+                <p className="text-xs font-semibold text-blue-800">{etiqueta}</p>
                 {formula && (
                     <button
                         onClick={() => setVerFormula((v) => !v)}
-                        className="text-slate-300 hover:text-slate-500 shrink-0"
+                        className="text-blue-300 hover:text-blue-600 shrink-0 transition"
                         aria-label={`Ver fórmula de ${etiqueta}`}
                     >
                         <Info className="w-3.5 h-3.5" />
@@ -24,12 +24,12 @@ function Indicador({ etiqueta, valor, sufijo = '', formula, ausente = 'Sin datos
                 )}
             </div>
 
-            <p className={`mt-2 text-2xl font-semibold tabular-nums ${hayValor ? 'text-slate-900' : 'text-slate-300'}`}>
+            <p className={`mt-2 text-2xl font-bold tabular-nums ${hayValor ? 'text-blue-950' : 'text-blue-200'}`}>
                 {hayValor ? `${valor}${sufijo}` : ausente}
             </p>
 
             {verFormula && formula && (
-                <p className="mt-2 text-[11px] text-slate-500 bg-slate-50 rounded-lg p-2">{formula}</p>
+                <p className="mt-2 text-[11px] text-blue-800 bg-white/80 border border-blue-100 rounded-lg p-2">{formula}</p>
             )}
         </div>
     );
@@ -38,7 +38,7 @@ function Indicador({ etiqueta, valor, sufijo = '', formula, ausente = 'Sin datos
 function Seccion({ titulo, children }) {
     return (
         <div className="space-y-3">
-            <h2 className="text-sm font-semibold text-slate-900">{titulo}</h2>
+            <h2 className="text-sm font-semibold text-blue-800">{titulo}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">{children}</div>
         </div>
     );
@@ -74,10 +74,10 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
         >
             <Head title="Reportes ovinos" />
 
-            <div className="py-8 px-4 sm:px-6 max-w-6xl mx-auto space-y-8">
+            <div className="py-8 px-4 sm:px-6 max-w-7xl mx-auto space-y-8">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <BarChart3 className="w-7 h-7 text-emerald-600" />
+                        <BarChart3 className="w-7 h-7 text-blue-600" />
                         <div>
                             <h1 className="text-2xl font-bold text-slate-900">Indicadores del rebaño</h1>
                             <p className="text-sm text-slate-600">
@@ -103,7 +103,7 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
                         />
                         <button
                             onClick={() => { setLocales({ desde: '', hasta: '' }); router.get(route('reportes.ovinos'), {}, { preserveState: true, replace: true }); }}
-                            className="text-sm text-slate-500 hover:text-slate-800 underline"
+                            className="text-sm text-blue-600 hover:text-blue-800 underline"
                         >
                             Todo el historial
                         </button>
@@ -187,7 +187,7 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
                 </Seccion>
 
                 {des.peso_promedio_por_etapa && Object.keys(des.peso_promedio_por_etapa).length > 0 && (
-                    <div className="bg-white rounded-2xl border border-slate-200 p-5">
+                    <div className="bg-white rounded-2xl border border-blue-200 p-5">
                         <h3 className="text-sm font-semibold text-slate-900 mb-3">Peso promedio por etapa</h3>
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
@@ -241,7 +241,7 @@ export default function ReportesOvinos({ auth, resumen, costosPorLote = [], aler
                 </Seccion>
 
                 {costosPorLote.length > 0 && (
-                    <div className="bg-white rounded-2xl border border-slate-200 p-5">
+                    <div className="bg-white rounded-2xl border border-blue-200 p-5">
                         <h3 className="text-sm font-semibold text-slate-900 mb-3">Costos por lote</h3>
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
