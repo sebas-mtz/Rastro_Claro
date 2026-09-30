@@ -12,7 +12,7 @@ import Estadisticas from "./Estadisticas";
 import ServicioModal from "./ServicioModal";
 import DiagnosticoModal from "./DiagnosticoModal.jsx";
 import PartoModal from "./PartoModal";
-import TopSementales from "./TopSementales";
+import TopSementales from "./Topsementales";
 
 // El catálogo real de "sexo" en Animal usa "M"/"H" (StoreAnimalRequest:
 // 'sexo' => 'required|in:M,H'). Antes este archivo comparaba contra

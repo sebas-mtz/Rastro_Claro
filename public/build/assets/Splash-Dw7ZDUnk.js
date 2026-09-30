@@ -1,0 +1,1 @@
+import{r as e,a,j as s}from"./app-CMCebSGe.js";function r(){return e.useEffect(()=>{const t=setTimeout(()=>{a.visit("/login-custom")},2500);return()=>clearTimeout(t)},[]),s.jsx("div",{className:"splash-screen",children:s.jsx("img",{src:"/assets/logo.png",alt:"Itzcóatl Tech logo",className:"splash-logo"})})}export{r as default};

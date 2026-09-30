@@ -1,0 +1,1 @@
+const r={MXN:"es-MX",USD:"en-US",EUR:"es-ES",COP:"es-CO",ARS:"es-AR"};function s(n,t="MXN"){const e=Number(n??0),o=Number.isFinite(e)?e:0,m=r[t]??"es-MX";return new Intl.NumberFormat(m,{style:"currency",currency:t,minimumFractionDigits:2,maximumFractionDigits:2}).format(o)}export{s as f};
