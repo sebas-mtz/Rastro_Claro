@@ -1,14 +1,31 @@
-name: CI/CD Pipeline & Auto-Deploy - Rastro Claro
+name: CI/CD Pipeline - Rastro Claro
 
 on:
   push:
-    branches: [ test-ci ]
-  workflow_dispatch:
+    branches: [ main, develop ]
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install and Build Assets
+        run: |
+          npm ci
+          npm run build
+
+  deploy-to-production:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -41,7 +58,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/laravel/rastroclaro
-            git pull origin ${{ github.ref_name }}
+            git pull origin main
             php artisan migrate --force
             php artisan view:clear
             php artisan config:cache
