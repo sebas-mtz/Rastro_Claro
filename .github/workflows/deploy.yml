@@ -3,6 +3,21 @@ name: CI/CD Pipeline - Rastro Claro
 on:
   push:
     branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'README.md'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: \({{ github.workflow }}-\){{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
@@ -24,7 +39,7 @@ jobs:
 
   deploy-to-production:
     needs: build-and-test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
