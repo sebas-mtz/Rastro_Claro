@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { usePage } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
 import { Scale, TrendingUp } from "lucide-react";
-import TabPesajes from "./TabPesajes";
-import TabGanancia from "./TabGanancia";
+import TabPesajes from "./Tabpesajes";
+import TabGanancia from "./Tabganancia";
 
 function Pesajes() {
     const { animales = [], flash = {} } = usePage().props;
