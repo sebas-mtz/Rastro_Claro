@@ -95,6 +95,10 @@ public function sacrificios(): HasMany
     return $this->hasOne(Baja::class)
         ->where('tipo_salida', Baja::FALLECIMIENTO);
 }
+public function bajas(): HasMany
+{
+    return $this->hasMany(Baja::class);
+}
 public function tratamientos(): HasMany
 {
     return $this->hasMany(Tratamiento::class);

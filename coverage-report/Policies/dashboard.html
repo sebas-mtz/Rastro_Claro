@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for C:\Proyectos\Rastro_Claro_custom\app\Policies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">C:\Proyectos\Rastro_Claro_custom\app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Policies</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertaPolicy.php.html#9">App\Policies\AlertaPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#9">App\Policies\AlimentacionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#9">App\Policies\AnimalPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#9">App\Policies\InventarioInsumoPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#9">App\Policies\LotePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#9">App\Policies\ProduccionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#9">App\Policies\RacionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#9">App\Policies\ReproduccionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#9">App\Policies\SaludPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#23">App\Policies\TrabajadorPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#14">App\Policies\UserPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#9">App\Policies\VacunaPolicy</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="UserPolicy.php.html#14">App\Policies\UserPolicy</a></td><td class="text-right">210</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#23">App\Policies\TrabajadorPolicy</a></td><td class="text-right">182</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertaPolicy.php.html#14"><abbr title="App\Policies\AlertaPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#22"><abbr title="App\Policies\AlertaPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#30"><abbr title="App\Policies\AlertaPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#38"><abbr title="App\Policies\AlertaPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#46"><abbr title="App\Policies\AlertaPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#54"><abbr title="App\Policies\AlertaPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaPolicy.php.html#62"><abbr title="App\Policies\AlertaPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#14"><abbr title="App\Policies\AlimentacionPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#22"><abbr title="App\Policies\AlimentacionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#30"><abbr title="App\Policies\AlimentacionPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#38"><abbr title="App\Policies\AlimentacionPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#46"><abbr title="App\Policies\AlimentacionPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#54"><abbr title="App\Policies\AlimentacionPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlimentacionPolicy.php.html#62"><abbr title="App\Policies\AlimentacionPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#14"><abbr title="App\Policies\AnimalPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#22"><abbr title="App\Policies\AnimalPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#30"><abbr title="App\Policies\AnimalPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#38"><abbr title="App\Policies\AnimalPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#46"><abbr title="App\Policies\AnimalPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#54"><abbr title="App\Policies\AnimalPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalPolicy.php.html#62"><abbr title="App\Policies\AnimalPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#14"><abbr title="App\Policies\InventarioInsumoPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#22"><abbr title="App\Policies\InventarioInsumoPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#30"><abbr title="App\Policies\InventarioInsumoPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#38"><abbr title="App\Policies\InventarioInsumoPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#46"><abbr title="App\Policies\InventarioInsumoPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#54"><abbr title="App\Policies\InventarioInsumoPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InventarioInsumoPolicy.php.html#62"><abbr title="App\Policies\InventarioInsumoPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#14"><abbr title="App\Policies\LotePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#22"><abbr title="App\Policies\LotePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#30"><abbr title="App\Policies\LotePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#38"><abbr title="App\Policies\LotePolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#46"><abbr title="App\Policies\LotePolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#54"><abbr title="App\Policies\LotePolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LotePolicy.php.html#62"><abbr title="App\Policies\LotePolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#14"><abbr title="App\Policies\ProduccionPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#22"><abbr title="App\Policies\ProduccionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#30"><abbr title="App\Policies\ProduccionPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#38"><abbr title="App\Policies\ProduccionPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#46"><abbr title="App\Policies\ProduccionPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#54"><abbr title="App\Policies\ProduccionPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProduccionPolicy.php.html#62"><abbr title="App\Policies\ProduccionPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#14"><abbr title="App\Policies\RacionPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#22"><abbr title="App\Policies\RacionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#30"><abbr title="App\Policies\RacionPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#38"><abbr title="App\Policies\RacionPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#46"><abbr title="App\Policies\RacionPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#54"><abbr title="App\Policies\RacionPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RacionPolicy.php.html#62"><abbr title="App\Policies\RacionPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#14"><abbr title="App\Policies\ReproduccionPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#22"><abbr title="App\Policies\ReproduccionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#30"><abbr title="App\Policies\ReproduccionPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#38"><abbr title="App\Policies\ReproduccionPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#46"><abbr title="App\Policies\ReproduccionPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#54"><abbr title="App\Policies\ReproduccionPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ReproduccionPolicy.php.html#62"><abbr title="App\Policies\ReproduccionPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#14"><abbr title="App\Policies\SaludPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#22"><abbr title="App\Policies\SaludPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#30"><abbr title="App\Policies\SaludPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#38"><abbr title="App\Policies\SaludPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#46"><abbr title="App\Policies\SaludPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#54"><abbr title="App\Policies\SaludPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SaludPolicy.php.html#62"><abbr title="App\Policies\SaludPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#25"><abbr title="App\Policies\TrabajadorPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#30"><abbr title="App\Policies\TrabajadorPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#35"><abbr title="App\Policies\TrabajadorPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#40"><abbr title="App\Policies\TrabajadorPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#46"><abbr title="App\Policies\TrabajadorPolicy::cambiarEstado">cambiarEstado</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#58"><abbr title="App\Policies\TrabajadorPolicy::verDatosSensibles">verDatosSensibles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#66"><abbr title="App\Policies\TrabajadorPolicy::registrarActividad">registrarActividad</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#72"><abbr title="App\Policies\TrabajadorPolicy::verCostosManoObra">verCostosManoObra</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#81"><abbr title="App\Policies\TrabajadorPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#98"><abbr title="App\Policies\TrabajadorPolicy::esSuyo">esSuyo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#16"><abbr title="App\Policies\UserPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#21"><abbr title="App\Policies\UserPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#26"><abbr title="App\Policies\UserPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#35"><abbr title="App\Policies\UserPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#47"><abbr title="App\Policies\UserPolicy::cambiarRol">cambiarRol</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#56"><abbr title="App\Policies\UserPolicy::cambiarEstado">cambiarEstado</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#67"><abbr title="App\Policies\UserPolicy::restablecerPassword">restablecerPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#79"><abbr title="App\Policies\UserPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserPolicy.php.html#87"><abbr title="App\Policies\UserPolicy::verAuditoria">verAuditoria</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#14"><abbr title="App\Policies\VacunaPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#22"><abbr title="App\Policies\VacunaPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#30"><abbr title="App\Policies\VacunaPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#38"><abbr title="App\Policies\VacunaPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#46"><abbr title="App\Policies\VacunaPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#54"><abbr title="App\Policies\VacunaPolicy::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VacunaPolicy.php.html#62"><abbr title="App\Policies\VacunaPolicy::forceDelete">forceDelete</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="UserPolicy.php.html#79"><abbr title="App\Policies\UserPolicy::delete">delete</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#58"><abbr title="App\Policies\TrabajadorPolicy::verDatosSensibles">verDatosSensibles</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#81"><abbr title="App\Policies\TrabajadorPolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TrabajadorPolicy.php.html#98"><abbr title="App\Policies\TrabajadorPolicy::esSuyo">esSuyo</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="UserPolicy.php.html#47"><abbr title="App\Policies\UserPolicy::cambiarRol">cambiarRol</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="UserPolicy.php.html#56"><abbr title="App\Policies\UserPolicy::cambiarEstado">cambiarEstado</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="UserPolicy.php.html#67"><abbr title="App\Policies\UserPolicy::restablecerPassword">restablecerPassword</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.11</a> using <a href="https://www.php.net/" target="_top">PHP 8.2.12</a> and <a href="https://phpunit.de/">PHPUnit 11.5.41</a> at Wed Oct 7 5:14:02 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([12,0,0,0,0,0,0,0,0,0,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([89,0,0,0,0,0,0,0,0,0,0,0], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,7,"<a href=\"AlertaPolicy.php.html#9\">App\\Policies\\AlertaPolicy<\/a>"],[0,7,"<a href=\"AlimentacionPolicy.php.html#9\">App\\Policies\\AlimentacionPolicy<\/a>"],[0,7,"<a href=\"AnimalPolicy.php.html#9\">App\\Policies\\AnimalPolicy<\/a>"],[0,7,"<a href=\"InventarioInsumoPolicy.php.html#9\">App\\Policies\\InventarioInsumoPolicy<\/a>"],[0,7,"<a href=\"LotePolicy.php.html#9\">App\\Policies\\LotePolicy<\/a>"],[0,7,"<a href=\"ProduccionPolicy.php.html#9\">App\\Policies\\ProduccionPolicy<\/a>"],[0,7,"<a href=\"RacionPolicy.php.html#9\">App\\Policies\\RacionPolicy<\/a>"],[0,7,"<a href=\"ReproduccionPolicy.php.html#9\">App\\Policies\\ReproduccionPolicy<\/a>"],[0,7,"<a href=\"SaludPolicy.php.html#9\">App\\Policies\\SaludPolicy<\/a>"],[0,13,"<a href=\"TrabajadorPolicy.php.html#23\">App\\Policies\\TrabajadorPolicy<\/a>"],[0,14,"<a href=\"UserPolicy.php.html#14\">App\\Policies\\UserPolicy<\/a>"],[0,7,"<a href=\"VacunaPolicy.php.html#9\">App\\Policies\\VacunaPolicy<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"AlertaPolicy.php.html#14\">App\\Policies\\AlertaPolicy::viewAny<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#22\">App\\Policies\\AlertaPolicy::view<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#30\">App\\Policies\\AlertaPolicy::create<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#38\">App\\Policies\\AlertaPolicy::update<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#46\">App\\Policies\\AlertaPolicy::delete<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#54\">App\\Policies\\AlertaPolicy::restore<\/a>"],[0,1,"<a href=\"AlertaPolicy.php.html#62\">App\\Policies\\AlertaPolicy::forceDelete<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#14\">App\\Policies\\AlimentacionPolicy::viewAny<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#22\">App\\Policies\\AlimentacionPolicy::view<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#30\">App\\Policies\\AlimentacionPolicy::create<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#38\">App\\Policies\\AlimentacionPolicy::update<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#46\">App\\Policies\\AlimentacionPolicy::delete<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#54\">App\\Policies\\AlimentacionPolicy::restore<\/a>"],[0,1,"<a href=\"AlimentacionPolicy.php.html#62\">App\\Policies\\AlimentacionPolicy::forceDelete<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#14\">App\\Policies\\AnimalPolicy::viewAny<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#22\">App\\Policies\\AnimalPolicy::view<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#30\">App\\Policies\\AnimalPolicy::create<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#38\">App\\Policies\\AnimalPolicy::update<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#46\">App\\Policies\\AnimalPolicy::delete<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#54\">App\\Policies\\AnimalPolicy::restore<\/a>"],[0,1,"<a href=\"AnimalPolicy.php.html#62\">App\\Policies\\AnimalPolicy::forceDelete<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#14\">App\\Policies\\InventarioInsumoPolicy::viewAny<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#22\">App\\Policies\\InventarioInsumoPolicy::view<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#30\">App\\Policies\\InventarioInsumoPolicy::create<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#38\">App\\Policies\\InventarioInsumoPolicy::update<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#46\">App\\Policies\\InventarioInsumoPolicy::delete<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#54\">App\\Policies\\InventarioInsumoPolicy::restore<\/a>"],[0,1,"<a href=\"InventarioInsumoPolicy.php.html#62\">App\\Policies\\InventarioInsumoPolicy::forceDelete<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#14\">App\\Policies\\LotePolicy::viewAny<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#22\">App\\Policies\\LotePolicy::view<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#30\">App\\Policies\\LotePolicy::create<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#38\">App\\Policies\\LotePolicy::update<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#46\">App\\Policies\\LotePolicy::delete<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#54\">App\\Policies\\LotePolicy::restore<\/a>"],[0,1,"<a href=\"LotePolicy.php.html#62\">App\\Policies\\LotePolicy::forceDelete<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#14\">App\\Policies\\ProduccionPolicy::viewAny<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#22\">App\\Policies\\ProduccionPolicy::view<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#30\">App\\Policies\\ProduccionPolicy::create<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#38\">App\\Policies\\ProduccionPolicy::update<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#46\">App\\Policies\\ProduccionPolicy::delete<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#54\">App\\Policies\\ProduccionPolicy::restore<\/a>"],[0,1,"<a href=\"ProduccionPolicy.php.html#62\">App\\Policies\\ProduccionPolicy::forceDelete<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#14\">App\\Policies\\RacionPolicy::viewAny<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#22\">App\\Policies\\RacionPolicy::view<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#30\">App\\Policies\\RacionPolicy::create<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#38\">App\\Policies\\RacionPolicy::update<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#46\">App\\Policies\\RacionPolicy::delete<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#54\">App\\Policies\\RacionPolicy::restore<\/a>"],[0,1,"<a href=\"RacionPolicy.php.html#62\">App\\Policies\\RacionPolicy::forceDelete<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#14\">App\\Policies\\ReproduccionPolicy::viewAny<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#22\">App\\Policies\\ReproduccionPolicy::view<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#30\">App\\Policies\\ReproduccionPolicy::create<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#38\">App\\Policies\\ReproduccionPolicy::update<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#46\">App\\Policies\\ReproduccionPolicy::delete<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#54\">App\\Policies\\ReproduccionPolicy::restore<\/a>"],[0,1,"<a href=\"ReproduccionPolicy.php.html#62\">App\\Policies\\ReproduccionPolicy::forceDelete<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#14\">App\\Policies\\SaludPolicy::viewAny<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#22\">App\\Policies\\SaludPolicy::view<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#30\">App\\Policies\\SaludPolicy::create<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#38\">App\\Policies\\SaludPolicy::update<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#46\">App\\Policies\\SaludPolicy::delete<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#54\">App\\Policies\\SaludPolicy::restore<\/a>"],[0,1,"<a href=\"SaludPolicy.php.html#62\">App\\Policies\\SaludPolicy::forceDelete<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#25\">App\\Policies\\TrabajadorPolicy::viewAny<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#30\">App\\Policies\\TrabajadorPolicy::view<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#35\">App\\Policies\\TrabajadorPolicy::create<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#40\">App\\Policies\\TrabajadorPolicy::update<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#46\">App\\Policies\\TrabajadorPolicy::cambiarEstado<\/a>"],[0,2,"<a href=\"TrabajadorPolicy.php.html#58\">App\\Policies\\TrabajadorPolicy::verDatosSensibles<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#66\">App\\Policies\\TrabajadorPolicy::registrarActividad<\/a>"],[0,1,"<a href=\"TrabajadorPolicy.php.html#72\">App\\Policies\\TrabajadorPolicy::verCostosManoObra<\/a>"],[0,2,"<a href=\"TrabajadorPolicy.php.html#81\">App\\Policies\\TrabajadorPolicy::delete<\/a>"],[0,2,"<a href=\"TrabajadorPolicy.php.html#98\">App\\Policies\\TrabajadorPolicy::esSuyo<\/a>"],[0,1,"<a href=\"UserPolicy.php.html#16\">App\\Policies\\UserPolicy::viewAny<\/a>"],[0,1,"<a href=\"UserPolicy.php.html#21\">App\\Policies\\UserPolicy::view<\/a>"],[0,1,"<a href=\"UserPolicy.php.html#26\">App\\Policies\\UserPolicy::create<\/a>"],[0,1,"<a href=\"UserPolicy.php.html#35\">App\\Policies\\UserPolicy::update<\/a>"],[0,2,"<a href=\"UserPolicy.php.html#47\">App\\Policies\\UserPolicy::cambiarRol<\/a>"],[0,2,"<a href=\"UserPolicy.php.html#56\">App\\Policies\\UserPolicy::cambiarEstado<\/a>"],[0,2,"<a href=\"UserPolicy.php.html#67\">App\\Policies\\UserPolicy::restablecerPassword<\/a>"],[0,3,"<a href=\"UserPolicy.php.html#79\">App\\Policies\\UserPolicy::delete<\/a>"],[0,1,"<a href=\"UserPolicy.php.html#87\">App\\Policies\\UserPolicy::verAuditoria<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#14\">App\\Policies\\VacunaPolicy::viewAny<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#22\">App\\Policies\\VacunaPolicy::view<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#30\">App\\Policies\\VacunaPolicy::create<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#38\">App\\Policies\\VacunaPolicy::update<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#46\">App\\Policies\\VacunaPolicy::delete<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#54\">App\\Policies\\VacunaPolicy::restore<\/a>"],[0,1,"<a href=\"VacunaPolicy.php.html#62\">App\\Policies\\VacunaPolicy::forceDelete<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for C:\Proyectos\Rastro_Claro_custom\app\Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.11" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">C:\Proyectos\Rastro_Claro_custom\app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Services</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertaOperativaService.php.html#18">App\Services\AlertaOperativaService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#30">App\Services\AnimalValuationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#16">App\Services\AuditoriaService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BajaService.php.html#17">App\Services\BajaService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CostoService.php.html#10">App\Services\CostoService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CriaDisponibilidadService.php.html#7">App\Services\CriaDisponibilidadService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoActualAnimalService.php.html#10">App\Services\EstadoActualAnimalService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#16">App\Services\HaciendaService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#25">App\Services\IndicadoresOvinosService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#29">App\Services\ManoObraService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PaternidadProbableService.php.html#31">App\Services\PaternidadProbableService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#7">App\Services\EstadoProductivoService</a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#13">App\Services\HistorialNacimientoService</a></td><td class="text-right">86%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AnimalValuationService.php.html#30">App\Services\AnimalValuationService</a></td><td class="text-right">5852</td></tr>
+       <tr><td><a href="HaciendaService.php.html#16">App\Services\HaciendaService</a></td><td class="text-right">2352</td></tr>
+       <tr><td><a href="ManoObraService.php.html#29">App\Services\ManoObraService</a></td><td class="text-right">1560</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#25">App\Services\IndicadoresOvinosService</a></td><td class="text-right">812</td></tr>
+       <tr><td><a href="EstadoActualAnimalService.php.html#10">App\Services\EstadoActualAnimalService</a></td><td class="text-right">506</td></tr>
+       <tr><td><a href="CriaDisponibilidadService.php.html#7">App\Services\CriaDisponibilidadService</a></td><td class="text-right">272</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#18">App\Services\AlertaOperativaService</a></td><td class="text-right">210</td></tr>
+       <tr><td><a href="PaternidadProbableService.php.html#31">App\Services\PaternidadProbableService</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#7">App\Services\EstadoProductivoService</a></td><td class="text-right">67</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#16">App\Services\AuditoriaService</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="BajaService.php.html#17">App\Services\BajaService</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="CostoService.php.html#10">App\Services\CostoService</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#13">App\Services\HistorialNacimientoService</a></td><td class="text-right">38</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertaOperativaService.php.html#24"><abbr title="App\Services\AlertaOperativaService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#31"><abbr title="App\Services\AlertaOperativaService::todas">todas</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#53"><abbr title="App\Services\AlertaOperativaService::alerta">alerta</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#70"><abbr title="App\Services\AlertaOperativaService::partosProximos">partosProximos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#83"><abbr title="App\Services\AlertaOperativaService::diagnosticosPendientes">diagnosticosPendientes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#112"><abbr title="App\Services\AlertaOperativaService::destetesProximos">destetesProximos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#133"><abbr title="App\Services\AlertaOperativaService::criasSinIdentificar">criasSinIdentificar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#150"><abbr title="App\Services\AlertaOperativaService::vacunasVencidas">vacunasVencidas</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#165"><abbr title="App\Services\AlertaOperativaService::vacunasProximas">vacunasProximas</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#187"><abbr title="App\Services\AlertaOperativaService::enPeriodoRetiro">enPeriodoRetiro</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#205"><abbr title="App\Services\AlertaOperativaService::vendidosAunActivos">vendidosAunActivos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#223"><abbr title="App\Services\AlertaOperativaService::ejemplaresSinGenealogia">ejemplaresSinGenealogia</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#240"><abbr title="App\Services\AlertaOperativaService::ejemplaresSinPesajeReciente">ejemplaresSinPesajeReciente</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#42"><abbr title="App\Services\AnimalValuationService::calcular">calcular</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#117"><abbr title="App\Services\AnimalValuationService::guardar">guardar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#207"><abbr title="App\Services\AnimalValuationService::registrarMovimiento">registrarMovimiento</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#245"><abbr title="App\Services\AnimalValuationService::detallesGestacion">detallesGestacion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#313"><abbr title="App\Services\AnimalValuationService::detallesCostoInicial">detallesCostoInicial</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#336"><abbr title="App\Services\AnimalValuationService::detallesSanitarios">detallesSanitarios</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#428"><abbr title="App\Services\AnimalValuationService::detallesAlimentacion">detallesAlimentacion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#533"><abbr title="App\Services\AnimalValuationService::detallesPorCategoriaCosto">detallesPorCategoriaCosto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#598"><abbr title="App\Services\AnimalValuationService::observacionesDelCosto">observacionesDelCosto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#617"><abbr title="App\Services\AnimalValuationService::detallesOtrosCostos">detallesOtrosCostos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#640"><abbr title="App\Services\AnimalValuationService::resolverMargen">resolverMargen</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#657"><abbr title="App\Services\AnimalValuationService::sugerirEstadoReproductivo">sugerirEstadoReproductivo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#708"><abbr title="App\Services\AnimalValuationService::fechaNacimiento">fechaNacimiento</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#730"><abbr title="App\Services\AnimalValuationService::cargadaPorSementalDeRegistro">cargadaPorSementalDeRegistro</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#753"><abbr title="App\Services\AnimalValuationService::avisos">avisos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#21"><abbr title="App\Services\AuditoriaService::registrarSobreUsuario">registrarSobreUsuario</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#42"><abbr title="App\Services\AuditoriaService::registrarSobreEntidad">registrarSobreEntidad</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#60"><abbr title="App\Services\AuditoriaService::escribir">escribir</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#76"><abbr title="App\Services\AuditoriaService::ip">ip</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BajaService.php.html#22"><abbr title="App\Services\BajaService::registrar">registrar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BajaService.php.html#49"><abbr title="App\Services\BajaService::revertir">revertir</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BajaService.php.html#72"><abbr title="App\Services\BajaService::indicadores">indicadores</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CostoService.php.html#15"><abbr title="App\Services\CostoService::aplicarFiltros">aplicarFiltros</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CostoService.php.html#28"><abbr title="App\Services\CostoService::totales">totales</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CostoService.php.html#67"><abbr title="App\Services\CostoService::compararIngresosCostos">compararIngresosCostos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CostoService.php.html#98"><abbr title="App\Services\CostoService::existeDuplicadoReciente">existeDuplicadoReciente</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CriaDisponibilidadService.php.html#9"><abbr title="App\Services\CriaDisponibilidadService::clasificar">clasificar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CriaDisponibilidadService.php.html#103"><abbr title="App\Services\CriaDisponibilidadService::resultado">resultado</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoActualAnimalService.php.html#25"><abbr title="App\Services\EstadoActualAnimalService::obtener">obtener</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoActualAnimalService.php.html#130"><abbr title="App\Services\EstadoActualAnimalService::fechaTerminal">fechaTerminal</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#30"><abbr title="App\Services\EstadoProductivoService::estadoInicial">estadoInicial</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#45"><abbr title="App\Services\EstadoProductivoService::especiesConReproduccion">especiesConReproduccion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#62"><abbr title="App\Services\EstadoProductivoService::transicionPorEvento">transicionPorEvento</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#30"><abbr title="App\Services\HaciendaService::getAvailableAnimals">getAvailableAnimals</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#54"><abbr title="App\Services\HaciendaService::getLotes">getLotes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#85"><abbr title="App\Services\HaciendaService::getCompradores">getCompradores</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#97"><abbr title="App\Services\HaciendaService::getProduccionesPaginated">getProduccionesPaginated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#128"><abbr title="App\Services\HaciendaService::getProduccionStatistics">getProduccionStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#239"><abbr title="App\Services\HaciendaService::getProduccionIngresos">getProduccionIngresos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#272"><abbr title="App\Services\HaciendaService::getVentasPaginated">getVentasPaginated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#305"><abbr title="App\Services\HaciendaService::getVentaStatistics">getVentaStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#368"><abbr title="App\Services\HaciendaService::getInventarioProducciones">getInventarioProducciones</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#392"><abbr title="App\Services\HaciendaService::getInventarioSubproductos">getInventarioSubproductos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#425"><abbr title="App\Services\HaciendaService::getFaenasPaginated">getFaenasPaginated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#457"><abbr title="App\Services\HaciendaService::getFaenaStatistics">getFaenaStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#514"><abbr title="App\Services\HaciendaService::getSacrificiosPaginated">getSacrificiosPaginated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#548"><abbr title="App\Services\HaciendaService::getSacrificioStatistics">getSacrificioStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#599"><abbr title="App\Services\HaciendaService::validarStock">validarStock</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#614"><abbr title="App\Services\HaciendaService::calcularGananciaNeta">calcularGananciaNeta</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HaciendaService.php.html#628"><abbr title="App\Services\HaciendaService::getProductoInfo">getProductoInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#27"><abbr title="App\Services\IndicadoresOvinosService::resumen">resumen</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#39"><abbr title="App\Services\IndicadoresOvinosService::inventario">inventario</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#59"><abbr title="App\Services\IndicadoresOvinosService::reproduccion">reproduccion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#103"><abbr title="App\Services\IndicadoresOvinosService::partosProximos">partosProximos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#120"><abbr title="App\Services\IndicadoresOvinosService::desarrollo">desarrollo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#150"><abbr title="App\Services\IndicadoresOvinosService::economico">economico</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#183"><abbr title="App\Services\IndicadoresOvinosService::salidas">salidas</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#250"><abbr title="App\Services\IndicadoresOvinosService::costosPorLote">costosPorLote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#43"><abbr title="App\Services\ManoObraService::horasEntre">horasEntre</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#70"><abbr title="App\Services\ManoObraService::calcular">calcular</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#122"><abbr title="App\Services\ManoObraService::resolverDistribucion">resolverDistribucion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#188"><abbr title="App\Services\ManoObraService::registrar">registrar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#226"><abbr title="App\Services\ManoObraService::actualizar">actualizar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#270"><abbr title="App\Services\ManoObraService::sincronizarCostos">sincronizarCostos</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#329"><abbr title="App\Services\ManoObraService::repartir">repartir</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#348"><abbr title="App\Services\ManoObraService::concepto">concepto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#363"><abbr title="App\Services\ManoObraService::descripcion">descripcion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#386"><abbr title="App\Services\ManoObraService::existeDuplicadoReciente">existeDuplicadoReciente</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#400"><abbr title="App\Services\ManoObraService::resumen">resumen</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#422"><abbr title="App\Services\ManoObraService::normalizarHora">normalizarHora</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ManoObraService.php.html#429"><abbr title="App\Services\ManoObraService::hoy">hoy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PaternidadProbableService.php.html#59"><abbr title="App\Services\PaternidadProbableService::candidatosParaParto">candidatosParaParto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PaternidadProbableService.php.html#117"><abbr title="App\Services\PaternidadProbableService::resolverPadre">resolverPadre</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#208"><abbr title="App\Services\HistorialNacimientoService::validarDatos">validarDatos</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#265"><abbr title="App\Services\HistorialNacimientoService::diasGestacionPorEspecie">diasGestacionPorEspecie</abbr></a></td><td class="text-right">63%</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#250"><abbr title="App\Services\HistorialNacimientoService::numeroCriasDesdeTipo">numeroCriasDesdeTipo</abbr></a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#103"><abbr title="App\Services\EstadoProductivoService::esTerminal">esTerminal</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#285"><abbr title="App\Services\HistorialNacimientoService::sexoCria">sexoCria</abbr></a></td><td class="text-right">87%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="EstadoActualAnimalService.php.html#25"><abbr title="App\Services\EstadoActualAnimalService::obtener">obtener</abbr></a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="CriaDisponibilidadService.php.html#9"><abbr title="App\Services\CriaDisponibilidadService::clasificar">clasificar</abbr></a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#62"><abbr title="App\Services\EstadoProductivoService::transicionPorEvento">transicionPorEvento</abbr></a></td><td class="text-right">182</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#657"><abbr title="App\Services\AnimalValuationService::sugerirEstadoReproductivo">sugerirEstadoReproductivo</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="ManoObraService.php.html#70"><abbr title="App\Services\ManoObraService::calcular">calcular</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="PaternidadProbableService.php.html#117"><abbr title="App\Services\PaternidadProbableService::resolverPadre">resolverPadre</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#428"><abbr title="App\Services\AnimalValuationService::detallesAlimentacion">detallesAlimentacion</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#336"><abbr title="App\Services\AnimalValuationService::detallesSanitarios">detallesSanitarios</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#533"><abbr title="App\Services\AnimalValuationService::detallesPorCategoriaCosto">detallesPorCategoriaCosto</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#117"><abbr title="App\Services\AnimalValuationService::guardar">guardar</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#245"><abbr title="App\Services\AnimalValuationService::detallesGestacion">detallesGestacion</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="HaciendaService.php.html#628"><abbr title="App\Services\HaciendaService::getProductoInfo">getProductoInfo</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#59"><abbr title="App\Services\IndicadoresOvinosService::reproduccion">reproduccion</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#120"><abbr title="App\Services\IndicadoresOvinosService::desarrollo">desarrollo</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="HaciendaService.php.html#128"><abbr title="App\Services\HaciendaService::getProduccionStatistics">getProduccionStatistics</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="ManoObraService.php.html#122"><abbr title="App\Services\ManoObraService::resolverDistribucion">resolverDistribucion</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="ManoObraService.php.html#270"><abbr title="App\Services\ManoObraService::sincronizarCostos">sincronizarCostos</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#598"><abbr title="App\Services\AnimalValuationService::observacionesDelCosto">observacionesDelCosto</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="EstadoActualAnimalService.php.html#130"><abbr title="App\Services\EstadoActualAnimalService::fechaTerminal">fechaTerminal</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#39"><abbr title="App\Services\IndicadoresOvinosService::inventario">inventario</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#708"><abbr title="App\Services\AnimalValuationService::fechaNacimiento">fechaNacimiento</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#753"><abbr title="App\Services\AnimalValuationService::avisos">avisos</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="HaciendaService.php.html#97"><abbr title="App\Services\HaciendaService::getProduccionesPaginated">getProduccionesPaginated</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="HaciendaService.php.html#272"><abbr title="App\Services\HaciendaService::getVentasPaginated">getVentasPaginated</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="ManoObraService.php.html#43"><abbr title="App\Services\ManoObraService::horasEntre">horasEntre</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#208"><abbr title="App\Services\HistorialNacimientoService::validarDatos">validarDatos</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#42"><abbr title="App\Services\AnimalValuationService::calcular">calcular</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#640"><abbr title="App\Services\AnimalValuationService::resolverMargen">resolverMargen</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#730"><abbr title="App\Services\AnimalValuationService::cargadaPorSementalDeRegistro">cargadaPorSementalDeRegistro</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="BajaService.php.html#49"><abbr title="App\Services\BajaService::revertir">revertir</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#30"><abbr title="App\Services\EstadoProductivoService::estadoInicial">estadoInicial</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#30"><abbr title="App\Services\HaciendaService::getAvailableAnimals">getAvailableAnimals</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#368"><abbr title="App\Services\HaciendaService::getInventarioProducciones">getInventarioProducciones</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#392"><abbr title="App\Services\HaciendaService::getInventarioSubproductos">getInventarioSubproductos</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#425"><abbr title="App\Services\HaciendaService::getFaenasPaginated">getFaenasPaginated</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#514"><abbr title="App\Services\HaciendaService::getSacrificiosPaginated">getSacrificiosPaginated</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HaciendaService.php.html#599"><abbr title="App\Services\HaciendaService::validarStock">validarStock</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#150"><abbr title="App\Services\IndicadoresOvinosService::economico">economico</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="IndicadoresOvinosService.php.html#183"><abbr title="App\Services\IndicadoresOvinosService::salidas">salidas</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ManoObraService.php.html#329"><abbr title="App\Services\ManoObraService::repartir">repartir</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#265"><abbr title="App\Services\HistorialNacimientoService::diasGestacionPorEspecie">diasGestacionPorEspecie</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#250"><abbr title="App\Services\HistorialNacimientoService::numeroCriasDesdeTipo">numeroCriasDesdeTipo</abbr></a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="AlertaOperativaService.php.html#53"><abbr title="App\Services\AlertaOperativaService::alerta">alerta</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AnimalValuationService.php.html#313"><abbr title="App\Services\AnimalValuationService::detallesCostoInicial">detallesCostoInicial</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#42"><abbr title="App\Services\AuditoriaService::registrarSobreEntidad">registrarSobreEntidad</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#60"><abbr title="App\Services\AuditoriaService::escribir">escribir</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AuditoriaService.php.html#76"><abbr title="App\Services\AuditoriaService::ip">ip</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="BajaService.php.html#72"><abbr title="App\Services\BajaService::indicadores">indicadores</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CostoService.php.html#28"><abbr title="App\Services\CostoService::totales">totales</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CostoService.php.html#67"><abbr title="App\Services\CostoService::compararIngresosCostos">compararIngresosCostos</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="HaciendaService.php.html#54"><abbr title="App\Services\HaciendaService::getLotes">getLotes</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="HaciendaService.php.html#305"><abbr title="App\Services\HaciendaService::getVentaStatistics">getVentaStatistics</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ManoObraService.php.html#363"><abbr title="App\Services\ManoObraService::descripcion">descripcion</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ManoObraService.php.html#400"><abbr title="App\Services\ManoObraService::resumen">resumen</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="HistorialNacimientoService.php.html#285"><abbr title="App\Services\HistorialNacimientoService::sexoCria">sexoCria</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="EstadoProductivoService.php.html#103"><abbr title="App\Services\EstadoProductivoService::esTerminal">esTerminal</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.11</a> using <a href="https://www.php.net/" target="_top">PHP 8.2.12</a> and <a href="https://phpunit.de/">PHPUnit 11.5.41</a> at Wed Oct 7 5:14:02 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.11" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([11,0,0,0,0,0,1,0,0,1,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([86,0,0,0,0,0,1,1,1,2,0,9], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,14,"<a href=\"AlertaOperativaService.php.html#18\">App\\Services\\AlertaOperativaService<\/a>"],[0,76,"<a href=\"AnimalValuationService.php.html#30\">App\\Services\\AnimalValuationService<\/a>"],[0,7,"<a href=\"AuditoriaService.php.html#16\">App\\Services\\AuditoriaService<\/a>"],[0,6,"<a href=\"BajaService.php.html#17\">App\\Services\\BajaService<\/a>"],[0,6,"<a href=\"CostoService.php.html#10\">App\\Services\\CostoService<\/a>"],[0,16,"<a href=\"CriaDisponibilidadService.php.html#7\">App\\Services\\CriaDisponibilidadService<\/a>"],[0,22,"<a href=\"EstadoActualAnimalService.php.html#10\">App\\Services\\EstadoActualAnimalService<\/a>"],[57.89473684210527,24,"<a href=\"EstadoProductivoService.php.html#7\">App\\Services\\EstadoProductivoService<\/a>"],[0,48,"<a href=\"HaciendaService.php.html#16\">App\\Services\\HaciendaService<\/a>"],[86.9281045751634,36,"<a href=\"HistorialNacimientoService.php.html#13\">App\\Services\\HistorialNacimientoService<\/a>"],[0,28,"<a href=\"IndicadoresOvinosService.php.html#25\">App\\Services\\IndicadoresOvinosService<\/a>"],[0,39,"<a href=\"ManoObraService.php.html#29\">App\\Services\\ManoObraService<\/a>"],[0,11,"<a href=\"PaternidadProbableService.php.html#31\">App\\Services\\PaternidadProbableService<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"AlertaOperativaService.php.html#24\">App\\Services\\AlertaOperativaService::__construct<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#31\">App\\Services\\AlertaOperativaService::todas<\/a>"],[0,2,"<a href=\"AlertaOperativaService.php.html#53\">App\\Services\\AlertaOperativaService::alerta<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#70\">App\\Services\\AlertaOperativaService::partosProximos<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#83\">App\\Services\\AlertaOperativaService::diagnosticosPendientes<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#112\">App\\Services\\AlertaOperativaService::destetesProximos<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#133\">App\\Services\\AlertaOperativaService::criasSinIdentificar<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#150\">App\\Services\\AlertaOperativaService::vacunasVencidas<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#165\">App\\Services\\AlertaOperativaService::vacunasProximas<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#187\">App\\Services\\AlertaOperativaService::enPeriodoRetiro<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#205\">App\\Services\\AlertaOperativaService::vendidosAunActivos<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#223\">App\\Services\\AlertaOperativaService::ejemplaresSinGenealogia<\/a>"],[0,1,"<a href=\"AlertaOperativaService.php.html#240\">App\\Services\\AlertaOperativaService::ejemplaresSinPesajeReciente<\/a>"],[0,3,"<a href=\"AnimalValuationService.php.html#42\">App\\Services\\AnimalValuationService::calcular<\/a>"],[0,7,"<a href=\"AnimalValuationService.php.html#117\">App\\Services\\AnimalValuationService::guardar<\/a>"],[0,1,"<a href=\"AnimalValuationService.php.html#207\">App\\Services\\AnimalValuationService::registrarMovimiento<\/a>"],[0,7,"<a href=\"AnimalValuationService.php.html#245\">App\\Services\\AnimalValuationService::detallesGestacion<\/a>"],[0,2,"<a href=\"AnimalValuationService.php.html#313\">App\\Services\\AnimalValuationService::detallesCostoInicial<\/a>"],[0,8,"<a href=\"AnimalValuationService.php.html#336\">App\\Services\\AnimalValuationService::detallesSanitarios<\/a>"],[0,9,"<a href=\"AnimalValuationService.php.html#428\">App\\Services\\AnimalValuationService::detallesAlimentacion<\/a>"],[0,8,"<a href=\"AnimalValuationService.php.html#533\">App\\Services\\AnimalValuationService::detallesPorCategoriaCosto<\/a>"],[0,5,"<a href=\"AnimalValuationService.php.html#598\">App\\Services\\AnimalValuationService::observacionesDelCosto<\/a>"],[0,1,"<a href=\"AnimalValuationService.php.html#617\">App\\Services\\AnimalValuationService::detallesOtrosCostos<\/a>"],[0,3,"<a href=\"AnimalValuationService.php.html#640\">App\\Services\\AnimalValuationService::resolverMargen<\/a>"],[0,11,"<a href=\"AnimalValuationService.php.html#657\">App\\Services\\AnimalValuationService::sugerirEstadoReproductivo<\/a>"],[0,4,"<a href=\"AnimalValuationService.php.html#708\">App\\Services\\AnimalValuationService::fechaNacimiento<\/a>"],[0,3,"<a href=\"AnimalValuationService.php.html#730\">App\\Services\\AnimalValuationService::cargadaPorSementalDeRegistro<\/a>"],[0,4,"<a href=\"AnimalValuationService.php.html#753\">App\\Services\\AnimalValuationService::avisos<\/a>"],[0,1,"<a href=\"AuditoriaService.php.html#21\">App\\Services\\AuditoriaService::registrarSobreUsuario<\/a>"],[0,2,"<a href=\"AuditoriaService.php.html#42\">App\\Services\\AuditoriaService::registrarSobreEntidad<\/a>"],[0,2,"<a href=\"AuditoriaService.php.html#60\">App\\Services\\AuditoriaService::escribir<\/a>"],[0,2,"<a href=\"AuditoriaService.php.html#76\">App\\Services\\AuditoriaService::ip<\/a>"],[0,1,"<a href=\"BajaService.php.html#22\">App\\Services\\BajaService::registrar<\/a>"],[0,3,"<a href=\"BajaService.php.html#49\">App\\Services\\BajaService::revertir<\/a>"],[0,2,"<a href=\"BajaService.php.html#72\">App\\Services\\BajaService::indicadores<\/a>"],[0,1,"<a href=\"CostoService.php.html#15\">App\\Services\\CostoService::aplicarFiltros<\/a>"],[0,2,"<a href=\"CostoService.php.html#28\">App\\Services\\CostoService::totales<\/a>"],[0,2,"<a href=\"CostoService.php.html#67\">App\\Services\\CostoService::compararIngresosCostos<\/a>"],[0,1,"<a href=\"CostoService.php.html#98\">App\\Services\\CostoService::existeDuplicadoReciente<\/a>"],[0,15,"<a href=\"CriaDisponibilidadService.php.html#9\">App\\Services\\CriaDisponibilidadService::clasificar<\/a>"],[0,1,"<a href=\"CriaDisponibilidadService.php.html#103\">App\\Services\\CriaDisponibilidadService::resultado<\/a>"],[0,17,"<a href=\"EstadoActualAnimalService.php.html#25\">App\\Services\\EstadoActualAnimalService::obtener<\/a>"],[0,5,"<a href=\"EstadoActualAnimalService.php.html#130\">App\\Services\\EstadoActualAnimalService::fechaTerminal<\/a>"],[100,1,"<a href=\"EstadoProductivoService.php.html#18\">App\\Services\\EstadoProductivoService::estadosManualesPorEspecie<\/a>"],[100,1,"<a href=\"EstadoProductivoService.php.html#25\">App\\Services\\EstadoProductivoService::estadosPorEspecie<\/a>"],[0,3,"<a href=\"EstadoProductivoService.php.html#30\">App\\Services\\EstadoProductivoService::estadoInicial<\/a>"],[100,1,"<a href=\"EstadoProductivoService.php.html#39\">App\\Services\\EstadoProductivoService::estadosAutomaticos<\/a>"],[0,1,"<a href=\"EstadoProductivoService.php.html#45\">App\\Services\\EstadoProductivoService::especiesConReproduccion<\/a>"],[0,13,"<a href=\"EstadoProductivoService.php.html#62\">App\\Services\\EstadoProductivoService::transicionPorEvento<\/a>"],[100,1,"<a href=\"EstadoProductivoService.php.html#93\">App\\Services\\EstadoProductivoService::estadosSistema<\/a>"],[85.71428571428571,2,"<a href=\"EstadoProductivoService.php.html#103\">App\\Services\\EstadoProductivoService::esTerminal<\/a>"],[100,1,"<a href=\"EstadoProductivoService.php.html#117\">App\\Services\\EstadoProductivoService::todosLosValores<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#30\">App\\Services\\HaciendaService::getAvailableAnimals<\/a>"],[0,2,"<a href=\"HaciendaService.php.html#54\">App\\Services\\HaciendaService::getLotes<\/a>"],[0,1,"<a href=\"HaciendaService.php.html#85\">App\\Services\\HaciendaService::getCompradores<\/a>"],[0,4,"<a href=\"HaciendaService.php.html#97\">App\\Services\\HaciendaService::getProduccionesPaginated<\/a>"],[0,6,"<a href=\"HaciendaService.php.html#128\">App\\Services\\HaciendaService::getProduccionStatistics<\/a>"],[0,1,"<a href=\"HaciendaService.php.html#239\">App\\Services\\HaciendaService::getProduccionIngresos<\/a>"],[0,4,"<a href=\"HaciendaService.php.html#272\">App\\Services\\HaciendaService::getVentasPaginated<\/a>"],[0,2,"<a href=\"HaciendaService.php.html#305\">App\\Services\\HaciendaService::getVentaStatistics<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#368\">App\\Services\\HaciendaService::getInventarioProducciones<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#392\">App\\Services\\HaciendaService::getInventarioSubproductos<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#425\">App\\Services\\HaciendaService::getFaenasPaginated<\/a>"],[0,1,"<a href=\"HaciendaService.php.html#457\">App\\Services\\HaciendaService::getFaenaStatistics<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#514\">App\\Services\\HaciendaService::getSacrificiosPaginated<\/a>"],[0,1,"<a href=\"HaciendaService.php.html#548\">App\\Services\\HaciendaService::getSacrificioStatistics<\/a>"],[0,3,"<a href=\"HaciendaService.php.html#599\">App\\Services\\HaciendaService::validarStock<\/a>"],[0,1,"<a href=\"HaciendaService.php.html#614\">App\\Services\\HaciendaService::calcularGananciaNeta<\/a>"],[0,7,"<a href=\"HaciendaService.php.html#628\">App\\Services\\HaciendaService::getProductoInfo<\/a>"],[100,3,"<a href=\"HistorialNacimientoService.php.html#21\">App\\Services\\HistorialNacimientoService::crear<\/a>"],[100,1,"<a href=\"HistorialNacimientoService.php.html#158\">App\\Services\\HistorialNacimientoService::calcularFechaServicio<\/a>"],[100,3,"<a href=\"HistorialNacimientoService.php.html#170\">App\\Services\\HistorialNacimientoService::validarEdadPadre<\/a>"],[100,3,"<a href=\"HistorialNacimientoService.php.html#188\">App\\Services\\HistorialNacimientoService::validarDisponibilidadMadre<\/a>"],[52,8,"<a href=\"HistorialNacimientoService.php.html#208\">App\\Services\\HistorialNacimientoService::validarDatos<\/a>"],[70,7,"<a href=\"HistorialNacimientoService.php.html#250\">App\\Services\\HistorialNacimientoService::numeroCriasDesdeTipo<\/a>"],[63.63636363636363,7,"<a href=\"HistorialNacimientoService.php.html#265\">App\\Services\\HistorialNacimientoService::diasGestacionPorEspecie<\/a>"],[87.5,4,"<a href=\"HistorialNacimientoService.php.html#285\">App\\Services\\HistorialNacimientoService::sexoCria<\/a>"],[0,1,"<a href=\"IndicadoresOvinosService.php.html#27\">App\\Services\\IndicadoresOvinosService::resumen<\/a>"],[0,5,"<a href=\"IndicadoresOvinosService.php.html#39\">App\\Services\\IndicadoresOvinosService::inventario<\/a>"],[0,7,"<a href=\"IndicadoresOvinosService.php.html#59\">App\\Services\\IndicadoresOvinosService::reproduccion<\/a>"],[0,1,"<a href=\"IndicadoresOvinosService.php.html#103\">App\\Services\\IndicadoresOvinosService::partosProximos<\/a>"],[0,7,"<a href=\"IndicadoresOvinosService.php.html#120\">App\\Services\\IndicadoresOvinosService::desarrollo<\/a>"],[0,3,"<a href=\"IndicadoresOvinosService.php.html#150\">App\\Services\\IndicadoresOvinosService::economico<\/a>"],[0,3,"<a href=\"IndicadoresOvinosService.php.html#183\">App\\Services\\IndicadoresOvinosService::salidas<\/a>"],[0,1,"<a href=\"IndicadoresOvinosService.php.html#250\">App\\Services\\IndicadoresOvinosService::costosPorLote<\/a>"],[0,4,"<a href=\"ManoObraService.php.html#43\">App\\Services\\ManoObraService::horasEntre<\/a>"],[0,10,"<a href=\"ManoObraService.php.html#70\">App\\Services\\ManoObraService::calcular<\/a>"],[0,6,"<a href=\"ManoObraService.php.html#122\">App\\Services\\ManoObraService::resolverDistribucion<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#188\">App\\Services\\ManoObraService::registrar<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#226\">App\\Services\\ManoObraService::actualizar<\/a>"],[0,6,"<a href=\"ManoObraService.php.html#270\">App\\Services\\ManoObraService::sincronizarCostos<\/a>"],[0,3,"<a href=\"ManoObraService.php.html#329\">App\\Services\\ManoObraService::repartir<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#348\">App\\Services\\ManoObraService::concepto<\/a>"],[0,2,"<a href=\"ManoObraService.php.html#363\">App\\Services\\ManoObraService::descripcion<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#386\">App\\Services\\ManoObraService::existeDuplicadoReciente<\/a>"],[0,2,"<a href=\"ManoObraService.php.html#400\">App\\Services\\ManoObraService::resumen<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#422\">App\\Services\\ManoObraService::normalizarHora<\/a>"],[0,1,"<a href=\"ManoObraService.php.html#429\">App\\Services\\ManoObraService::hoy<\/a>"],[0,1,"<a href=\"PaternidadProbableService.php.html#59\">App\\Services\\PaternidadProbableService::candidatosParaParto<\/a>"],[0,10,"<a href=\"PaternidadProbableService.php.html#117\">App\\Services\\PaternidadProbableService::resolverPadre<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>
