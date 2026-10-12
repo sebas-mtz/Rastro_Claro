@@ -108,7 +108,10 @@ public function bajaActual(): HasOne
 {
     return $this->hasOne(Baja::class)->latestOfMany('fecha');
 }
-
+public function bajas(): HasMany
+{
+    return $this->hasMany(Baja::class);
+}
     public function salud() {
         return $this->hasMany(EventoSalud::class);
     }
