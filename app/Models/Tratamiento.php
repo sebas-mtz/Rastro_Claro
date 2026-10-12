@@ -18,6 +18,7 @@ class Tratamiento extends Model
         'fecha_fin',
         'estado',
         'notas',
+        'zona_corporal',
         'responsable',
         'user_id',
         'costo',

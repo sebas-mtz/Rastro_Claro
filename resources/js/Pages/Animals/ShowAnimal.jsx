@@ -9,11 +9,17 @@ import {
     Tooltip, ResponsiveContainer,
 } from "recharts";
 import EditModal from "./Edit";
+import DocumentosPanel from "./DocumentosPanel";
+import CuerpoPanel from "./CuerpoPanel";
+import PrediccionPesoPanel from "./PrediccionPesoPanel";
 import ProduccionModal from "../Producciones/ProduccionModal";
 import BajaModal from "../Bajas/BajaModal";
 import ShowProduccionModal from "../Producciones/ShowProduccionModal";
 import ProduccionEditModal from "../Producciones/ProduccionEditModal";
 import { usePreferences } from "@/Contexts/PreferencesContext";
+
+//import ScanIdentificadorModal from "./ScanIdentificadorModal";
+//import QrCodeModal from "./QrCodeModal";
 
 export default function ShowAnimal({
     animal,
@@ -22,6 +28,14 @@ export default function ShowAnimal({
     razasPorEspecie,
     estadosProductivos,
     estadoContextual = [],
+    movimientosLote = [],
+    documentos = [],
+    tiposDocumento = {},
+    extensionesDocumento = [],
+    tamanoMaximoKb = 5120,
+    marcasCorporales = [],
+    tiposMarca = {},
+    prediccionPeso = null,
 }) {
     const { formatWeight, formatDate, formatAnimalAge } = usePreferences();
     const { data, setData, post, processing, reset } = useForm({
@@ -281,6 +295,28 @@ const bloqueado = animal.es_terminal;
                     </div>
                 </div>
 
+                {/* ── Card: Proyección de peso ─────────────────────────── */}
+                {prediccionPeso && (
+                    <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
+                        <PrediccionPesoPanel prediccion={prediccionPeso} />
+                    </div>
+                )}
+                {/* ── Card: Cuerpo del ejemplar en 3D ──────────────────── */}
+                <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
+                    <CuerpoPanel
+                        animal={animal}
+                        marcas={marcasCorporales}
+                        tipos={tiposMarca}
+                    />
+                </div>
+                {/* ── Card: Documentos y evidencias ────────────────────── */}
+                <DocumentosPanel
+                    animal={animal}
+                    documentos={documentos}
+                    tiposDocumento={tiposDocumento}
+                    extensiones={extensionesDocumento}
+                    tamanoMaximoKb={tamanoMaximoKb}
+                />
                 {/* ── Card: Historial de Peso ──────────────────────────────── */}
                 <div className="bg-white shadow-xl rounded-2xl p-6 border border-gray-200">
                     <div className="flex items-center justify-between mb-4">

@@ -1,0 +1,13 @@
+# Predicción de pesajes — Rastro Claro
+# Instalación:
+#   python -m venv scripts/.venv
+#   scripts\.venv\Scripts\pip install -r scripts/requirements.txt
+#
+# Versiones probadas con Python 3.14.6 en Windows.
+
+numpy>=2.0
+pandas>=2.2
+matplotlib>=3.8
+scipy>=1.12        # curve_fit: ajuste de las curvas de crecimiento
+PyMySQL>=1.1       # lectura directa de la base del proyecto
+python-dotenv>=1.0 # para leer la conexión del .env de Laravel

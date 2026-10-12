@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import ModalAnimalSelect from './ModalAnimalSelect';
+import { ZONAS } from '@/Components/Borrega3D/zonas';
 
 /**
  * Modal para registrar un Tratamiento independiente (sin evento previo).
@@ -24,6 +25,7 @@ export default function ModalNuevoTratamiento({ isOpen, onClose, animals = [], s
         fecha_inicio: new Date().toISOString().slice(0, 10), // hoy por defecto
         fecha_fin:    '',
         notas:        '',
+        zona_corporal: '',
         responsable:  '',
         costo:        '',   // se refleja solo en el módulo de Costos
         estado:       'activo',
@@ -204,6 +206,22 @@ export default function ModalNuevoTratamiento({ isOpen, onClose, animals = [], s
                             placeholder="Ej: 10 ml IM cada 24h por 5 días, diluir en 500 ml de solución…"
                             style={css.textarea} />
                         {errors.notas && <span style={css.error}>{errors.notas}</span>}
+                    </label>
+
+                    {/* Al indicarla, la marca aparece sola sobre la figura 3D
+                        del ejemplar en su ficha. */}
+                    <label style={css.label}>
+                        Parte del cuerpo <span style={css.hint}>(opcional)</span>
+                        <select
+                            value={data.zona_corporal}
+                            onChange={e => setData('zona_corporal', e.target.value)}
+                            style={css.input}>
+                            <option value="">Sin especificar</option>
+                            {Object.entries(ZONAS).map(([clave, z]) => (
+                                <option key={clave} value={clave}>{z.etiqueta}</option>
+                            ))}
+                        </select>
+                        {errors.zona_corporal && <span style={css.error}>{errors.zona_corporal}</span>}
                     </label>
 
                     <hr style={css.divider} />

@@ -27,8 +27,10 @@ class StoreEventoSaludRequest extends FormRequest
             'costo'            => ['nullable', 'numeric', 'min:0'],
             'periodo_retiro_dias' => ['nullable', 'integer', 'min:0', 'max:365'],
             'producto'         => ['nullable', 'string', 'max:255'],
-            'via_administracion' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(EventoSalud::VIAS_ADMINISTRACION))],
             'lote_vacuna'      => ['nullable', 'string', 'max:100'],
+            // Opcional: cuando se indica, la marca sobre la figura del
+            // ejemplar aparece sola (ver MarcaDesdeSanidadObserver).
+            'zona_corporal'    => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Models\MarcaCorporal::ZONAS))],
             'observaciones'    => ['nullable', 'string'],
             'estado'           => ['nullable', 'in:pendiente,aplicada,vencida'],
             'responsable'      => ['nullable', 'string', 'max:150'],

@@ -46,6 +46,7 @@ use App\Http\Controllers\ActividadTrabajadorController;
 use App\Http\Controllers\CalendarioSanitarioController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\ReporteOvinoController;
+use App\Http\Controllers\MarcaCorporalController;
 
 
 /*
@@ -154,6 +155,55 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('tratamientos', TratamientoController::class);
     Route::get('/salud/estadisticas', EstadisticasSaludController::class)
     ->name('salud.estadisticas');
+
+   
+    /*
+    |----------------------------------------------------------------------
+    | Identificación (microchip / RFID / QR)
+    |----------------------------------------------------------------------
+    */
+    // Nota: NO se usa el prefijo /api/animales/... a propósito: routes/api.php (capa
+    // móvil sin comitear, fuera de alcance) ya registra GET /api/animales/{animale},
+    // y esa ruta comodín capturaría "buscar-identificador" como si fuera un ID.
+    Route::get('/api/identificadores/buscar', [AnimalController::class, 'buscarPorIdentificador'])
+        ->name('animales.buscar-identificador');
+    Route::post('/animales/{animal}/identificador', [AnimalController::class, 'registrarIdentificador'])
+        ->name('animales.identificador.store');
+    Route::get('/animales/{animal}/qr', [AnimalController::class, 'qr'])
+        ->name('animales.qr');
+    Route::get('/escanear/{token}', [AnimalController::class, 'escanearQr'])
+        ->name('animales.escanear');
+
+    // Marcas sobre el cuerpo del ejemplar: dónde tiene la lesión, dónde se
+    // le aplicó la vacuna, en qué oreja trae el arete.
+    Route::post('/animales/{animal}/marcas', [MarcaCorporalController::class, 'store'])
+        ->name('marcas.store');
+    Route::patch('/marcas-corporales/{marca}', [MarcaCorporalController::class, 'resolver'])
+        ->name('marcas.resolver');
+    Route::delete('/marcas-corporales/{marca}', [MarcaCorporalController::class, 'destroy'])
+        ->name('marcas.destroy');
+        
+/*
+    // Diagnóstico del lector. Sin permiso de módulo a propósito: quien tiene
+    // que probar el equipo suele ser justamente quien todavía no puede entrar
+    // a nada, y la pantalla no consulta ni un solo dato del rancho.
+    Route::get('/herramientas/diagnostico-lector', function () {
+        return Inertia::render('Herramientas/DiagnosticoLector', [
+            // El navegador aplica las mismas reglas que el servidor, para que
+            // lo que muestra el diagnóstico sea lo que de verdad se guardaría.
+            'configuracion' => \App\Models\ConfiguracionLector::first()?->paraNavegador(),
+        ]);
+    })->name('herramientas.diagnostico-lector');
+
+    /*
+    // Ajustes del lector: los edita el dueño del rancho, no el
+    // superadministrador. El controlador explica por qué.
+    Route::get('/herramientas/lector', [ConfiguracionLectorController::class, 'show'])
+        ->name('herramientas.lector');
+    Route::put('/herramientas/lector', [ConfiguracionLectorController::class, 'update'])
+        ->name('herramientas.lector.update');
+    Route::post('/herramientas/lector/probar', [ConfiguracionLectorController::class, 'probar'])
+        ->name('herramientas.lector.probar');
 
     /*
     |----------------------------------------------------------------------

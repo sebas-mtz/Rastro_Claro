@@ -156,6 +156,29 @@ unset($validated['motivo_movimiento_lote']);
         return Inertia::render('Animals/ShowAnimal', [
             'animal'             => $animal,
             'movimientosLote' => $animal->movimientosLote()->with(['loteAnterior:id,nombre', 'loteNuevo:id,nombre', 'responsable:id,name'])->get(),
+            'documentos'         => $animal->documentos()->get()->map(fn ($d) => [
+                'id' => $d->id,
+                'nombre' => $d->nombre,
+                'tipo' => $d->tipo,
+                'fecha_documento' => $d->fecha_documento?->toDateString(),
+                'observaciones' => $d->observaciones,
+                'tamano_legible' => $d->tamano_legible,
+                'es_imagen' => $d->es_imagen,
+            ]),
+            'tiposDocumento'     => \App\Models\Documento::TIPOS,
+            // Marcas sobre el cuerpo, ordenadas con las activas primero: son
+            // las que interesan de un vistazo al abrir la ficha.
+            'marcasCorporales'   => $animal->marcasCorporales()
+                ->orderByRaw("CASE estado WHEN 'activa' THEN 0 ELSE 1 END")
+                ->orderByDesc('fecha')
+                ->get(),
+            'tiposMarca'         => \App\Models\MarcaCorporal::TIPOS,
+            // Proyección del peso a 90 días. Viaja en null cuando no hay
+            // pesajes suficientes: la ficha entonces no pinta la sección, en
+            // vez de mostrar una curva inventada.
+            'prediccionPeso'     => (new \App\Services\PrediccionPesoService(90))->para($animal),
+            'extensionesDocumento' => \App\Models\Documento::EXTENSIONES,
+            'tamanoMaximoKb'     => \App\Models\Documento::TAMANO_MAXIMO_KB,
             'lotes'              => Lote::all(),
             'especies'           => $this->especiesDisponibles(),
             'razasPorEspecie'    => $this->razasPorEspecie,
@@ -172,14 +195,14 @@ unset($validated['motivo_movimiento_lote']);
             'lotes'              => Lote::all(),
             'especies'           => $this->especiesDisponibles(),
             'razasPorEspecie'    => $this->razasPorEspecie,
-'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(), 
-'posiblesPadres' => Animal::where('sexo', 'M')
-    ->where('id', '!=', $animal->id)
-    ->orderBy('arete')
-    ->get(),
+            'estadosProductivos' => EstadoProductivoService::estadosManualesPorEspecie(), 
+            'posiblesPadres' => Animal::where('sexo', 'M')
+                ->where('id', '!=', $animal->id)
+                ->orderBy('arete')
+                ->get(),
 
-'donadoresExternos' => DonadorExterno::orderBy('nombre')->get(),
-       ]);
+            'donadoresExternos' => DonadorExterno::orderBy('nombre')->get(),
+                ]);
     }
 
 

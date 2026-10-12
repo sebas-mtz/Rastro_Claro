@@ -19,6 +19,8 @@ class StoreTratamientoRequest extends FormRequest
             'estado'      => ['nullable', 'in:activo,completado'],
             'costo'       => ['nullable', 'numeric', 'min:0'],
             'notas'       => ['nullable', 'string'],
+            // Opcional: al indicarla, se dibuja sola sobre el cuerpo.
+            'zona_corporal' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Models\MarcaCorporal::ZONAS))],
             'responsable' => ['nullable', 'string', 'max:150'],
         ];
     }

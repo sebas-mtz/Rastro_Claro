@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import ModalAnimalSelect from '@Pages/Salud/ModalAnimalSelect';
 import ModalLoteSelect from '@Pages/Salud/ModalLoteSelect';
 import ModalNuevaVacuna from '@Pages/Salud/ModalNuevaVacuna';
+import { ZONAS } from '@/Components/Borrega3D/zonas';
 /**
  * Modal completo para registrar un EventoSalud.
  * Muestra campos dinámicos según el tipo seleccionado.
@@ -30,7 +31,9 @@ export default function ModalNuevaCita({ isOpen, onClose, animals = [],   lotes 
         vacuna_id:        '',   // FK al catálogo de Vacunas
         dosis:            '',
         lote_vacuna:      '',
-        costo:            '',//se refleja solo en el modulo de costos
+        costo:            '',
+        zona_corporal:    '',   // al indicarla, se dibuja sola sobre el ejemplar
+        periodo_retiro_dias: '',
         observaciones:    '',
         responsable:      '',
         estado:           'pendiente',
@@ -105,7 +108,6 @@ const loteLabel = selectedLote
         { key: 'emergencia', emoji: '🚨', label: 'Emergencia',
           desc: 'Evento urgente. Puedes registrar el tratamiento aplicado.' },
     ];
-
     // ── Estilos ──────────────────────────────────────────────────
     const css = {
         backdrop: {
@@ -456,7 +458,43 @@ const loteLabel = selectedLote
                         </label>
                         
                         </div>
-                        
+
+                        {/* Al indicar la parte del cuerpo, la marca aparece
+                            sola sobre la figura 3D del ejemplar. Solo tiene
+                            sentido cuando la atención es de un ejemplar
+                            concreto: un evento de lote no marca cuerpos. */}
+                        {data.animal_id && (
+                            <label style={css.label}>
+                                Parte del cuerpo <span style={css.labelHint}>(opcional)</span>
+                                <select value={data.zona_corporal}
+                                    onChange={e => setData('zona_corporal', e.target.value)}
+                                    style={css.input}>
+                                    <option value="">Sin especificar</option>
+                                    {Object.entries(ZONAS).map(([clave, z]) => (
+                                        <option key={clave} value={clave}>{z.etiqueta}</option>
+                                    ))}
+                                </select>
+                                {errors.zona_corporal && <span style={css.error}>{errors.zona_corporal}</span>}
+                                <span style={{ ...css.labelHint, marginTop: 4 }}>
+                                    Si la indicas, quedará señalada sobre la figura del ejemplar en su ficha.
+                                </span>
+                            </label>
+                        )}
+
+                        <label style={css.label}>
+                            Periodo de retiro <span style={css.labelHint}>(días, opcional)</span>
+                            <input type="number" min="0" max="365" value={data.periodo_retiro_dias}
+                                onChange={e => setData('periodo_retiro_dias', e.target.value)}
+                                placeholder="Ej: 35"
+                                style={css.input} />
+                            {errors.periodo_retiro_dias && <span style={css.error}>{errors.periodo_retiro_dias}</span>}
+                            <span style={{ ...css.labelHint, marginTop: 4 }}>
+                                Días tras la aplicación en los que el ejemplar no puede destinarse a
+                                consumo ni a venta para sacrificio. El sistema calcula la fecha de fin
+                                y avisa mientras siga vigente.
+                            </span>
+                        </label>
+
                         <label style={css.label}>
                             Observaciones <span style={css.labelHint}>(opcional)</span>
                             <textarea
@@ -472,13 +510,13 @@ const loteLabel = selectedLote
                     {/* Errores sin campo específico */}
                     {Object.keys(errors).some(k =>
                         !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna','diagnostico',
-                          'tratamiento','fecha_programada','costo','responsable','observaciones'].includes(k)
+                          'tratamiento','fecha_programada','costo','responsable','observaciones','periodo_retiro_dias'].includes(k)
                     ) && (
                         <div style={css.error}>
                             {Object.entries(errors)
                                 .filter(([k]) => !['animal_id','lote_id','vacuna_id','dosis','lote_vacuna',
                                     'diagnostico','tratamiento','fecha_programada',
-                                    'responsable','costo','observaciones'].includes(k))
+                                    'responsable','costo','periodo_retiro_dias','observaciones'].includes(k))
                                 .map(([, v]) => v).join(' · ')}
                         </div>
                     )}

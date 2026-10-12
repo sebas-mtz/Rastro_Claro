@@ -45,9 +45,11 @@ class UpdateAnimalRequest extends FormRequest
             Rule::in(EstadoProductivoService::todosLosValores()),
         ],
 
-        'concepcion_historica' => 'required_with:madre_id|in:monta_natural,monta_controlada,inseminacion_artificial,iatf,transferencia_embriones,fiv',
-'tipo_nacimiento_historico' => 'required_with:madre_id|in:simple,gemelar,triple,cuadruple,quintuple',
-'tipo_parto_origen' => 'required_with:madre_id|in:normal,distocico,cesarea',
+        'concepcion_historica' => 'nullable|required_with:madre_id|in:monta_natural,monta_controlada,inseminacion_artificial,iatf,transferencia_embriones,fiv',
+
+'tipo_nacimiento_historico' => 'nullable|required_with:madre_id|in:simple,gemelar,triple,cuadruple,quintuple',
+
+'tipo_parto_origen' => 'nullable|required_with:madre_id|in:normal,distocico,cesarea',
             'lote_id' => 'nullable|exists:lotes,id',
 
             'madre_id' => 'nullable|exists:animals,id',

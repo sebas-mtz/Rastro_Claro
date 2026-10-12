@@ -29,7 +29,7 @@ class EventoSalud extends Model
         'costo',
         'periodo_retiro_dias',
         'fecha_fin_retiro',
-        'via_administracion',
+        'zona_corporal',
         'lote_vacuna',
         'observaciones',
         'estado',
@@ -120,16 +120,6 @@ class EventoSalud extends Model
         self::TIPO_EMERGENCIA            => 'Emergencia',
     ];
 
-    /** Vías de administración habituales en ovinos. */
-    public const VIAS_ADMINISTRACION = [
-        'subcutanea'    => 'Subcutánea',
-        'intramuscular' => 'Intramuscular',
-        'intravenosa'   => 'Intravenosa',
-        'oral'          => 'Oral',
-        'topica'        => 'Tópica',
-        'intramamaria'  => 'Intramamaria',
-        'otra'          => 'Otra',
-    ];
 
     // ─── Relaciones ───────────────────────────────────────────────
 

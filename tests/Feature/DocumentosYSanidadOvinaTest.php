@@ -261,8 +261,6 @@ class DocumentosYSanidadOvinaTest extends TestCase
             'fecha_aplicacion' => now()->toDateString(),
             'estado' => 'aplicada',
             'diagnostico' => 'Ivermectina',
-            'producto' => 'Ivermectina 1%',
-            'via_administracion' => 'subcutanea',
             'periodo_retiro_dias' => 35,
         ])->assertSessionHasNoErrors();
 

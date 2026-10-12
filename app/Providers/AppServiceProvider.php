@@ -8,6 +8,7 @@ use App\Models\Costo;
 use App\Models\EventoSalud;
 use App\Models\Tratamiento;
 use App\Models\User;
+use App\Observers\MarcaDesdeSanidadObserver;
 use App\Observers\MovimientoLoteObserver;
 use App\Observers\ValuacionRecalculoObserver;
 use App\Support\ModuloSistema;
@@ -67,6 +68,12 @@ $this->app->make('validator')
 
         // Conserva el lote anterior de cada ejemplar antes de sobrescribirlo.
         Animal::observe(MovimientoLoteObserver::class);
+
+        // Cuando la atención sanitaria dice en qué parte del cuerpo fue, la
+        // marca sobre la figura del ejemplar aparece sola.
+        foreach ([EventoSalud::class, Tratamiento::class] as $modelClass) {
+            $modelClass::observe(MarcaDesdeSanidadObserver::class);
+        }
 
         $this->definirGatesCriticos();
 

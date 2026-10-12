@@ -35,8 +35,9 @@ class UpdateEventoSaludRequest extends FormRequest
             'dosis'            => ['sometimes', 'nullable', 'string', 'max:100'],
             'costo'            => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'periodo_retiro_dias' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:365'],
-            'via_administracion' => ['sometimes', 'nullable', \Illuminate\Validation\Rule::in(array_keys(EventoSalud::VIAS_ADMINISTRACION))],
             'lote_vacuna'      => ['sometimes', 'nullable', 'string', 'max:100'],
+            // Cambiarla mueve la marca sobre la figura; vaciarla la retira.
+            'zona_corporal'    => ['sometimes', 'nullable', \Illuminate\Validation\Rule::in(array_keys(\App\Models\MarcaCorporal::ZONAS))],
             'observaciones'    => ['sometimes', 'nullable', 'string'],
             'estado'           => ['sometimes', 'nullable', 'in:pendiente,aplicada,vencida'],
             'responsable'      => ['sometimes', 'nullable', 'string', 'max:150'],

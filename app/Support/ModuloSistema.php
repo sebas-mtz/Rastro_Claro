@@ -103,6 +103,9 @@ class ModuloSistema
         'vacunas' => self::SALUD,
         'tratamientos' => self::SALUD,
         'calendario' => self::SALUD,
+        // Marcar dónde tiene una lesión es trabajo sanitario, no de altas
+        // de ejemplares: cae bajo Salud para que el veterinario pueda hacerlo.
+        'marcas' => self::SALUD,
         'reproduccion' => self::REPRODUCCION,
         'partos' => self::REPRODUCCION,
         'crias' => self::REPRODUCCION,

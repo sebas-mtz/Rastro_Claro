@@ -129,10 +129,7 @@ public function bajas(): HasMany
     {
         return $this->morphMany(Venta::class, 'vendible');
     }
-public function documentos(): \Illuminate\Database\Eloquent\Relations\MorphMany
-{
-    return $this->morphMany(Documento::class, 'documentable')->orderByDesc('created_at');
-}
+
 public function movimientosLote(): HasMany
 {
     return $this->hasMany(MovimientoLote::class)->orderByDesc('fecha');
@@ -473,7 +470,20 @@ public function valuacionActiva(): HasOne
                 ->where('estado', AnimalValuation::ESTADO_ACTIVA)
                 ->latestOfMany();
 }
-// Animal.php
+
+
+/** Señalamientos sobre el cuerpo: lesiones, aplicaciones, arete. */
+public function marcasCorporales(): HasMany
+{
+    return $this->hasMany(MarcaCorporal::class);
+}
+
+
+public function documentos(): \Illuminate\Database\Eloquent\Relations\MorphMany
+{
+    return $this->morphMany(Documento::class, 'documentable')->orderByDesc('created_at');
+}
+
 public function scopeActivo($query)
 {
     return $query->where(function ($q) {
